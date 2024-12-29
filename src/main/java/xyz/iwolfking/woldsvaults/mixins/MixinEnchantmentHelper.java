@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.Iterator;
 import java.util.Map;
 
 @Mixin(EnchantmentHelper.class)
@@ -21,7 +20,7 @@ public abstract class MixinEnchantmentHelper {
 
 
     @Shadow
-    public static int getItemEnchantmentLevel(Enchantment p_44844_, ItemStack p_44845_) {
+    public static int getItemEnchantmentLevel(Enchantment pEnchantment, ItemStack pStack) {
         return 0;
     }
 
@@ -31,27 +30,20 @@ public abstract class MixinEnchantmentHelper {
      */
     @Overwrite
     public static int getEnchantmentLevel(Enchantment enchantment, LivingEntity entity) {
-        Iterable<ItemStack> iterable = enchantment.getSlotItems(entity).values();
-        if (iterable == null) {
-            return 0;
-        } else {
-            int i = 0;
-            Iterator var4 = iterable.iterator();
+        int i = 0;
 
-            while (var4.hasNext()) {
-                ItemStack itemstack = (ItemStack) var4.next();
-                int j = getItemEnchantmentLevel(enchantment, itemstack);
-                if (j > i) {
-                    i = j;
-                }
+        for (ItemStack itemstack: enchantment.getSlotItems(entity).values()) {
+            int j = getItemEnchantmentLevel(enchantment, itemstack);
+            if (j > i) {
+                i = j;
             }
-            if(MAX_ENCHANTMENT_LEVEL_VALUE_MAP.containsKey(enchantment)) {
-                int maxLevel = MAX_ENCHANTMENT_LEVEL_VALUE_MAP.get(enchantment);
-                if(i > maxLevel) {
-                    return maxLevel;
-                }
-            }
-            return i;
         }
+        if(MAX_ENCHANTMENT_LEVEL_VALUE_MAP.containsKey(enchantment)) {
+            int maxLevel = MAX_ENCHANTMENT_LEVEL_VALUE_MAP.get(enchantment);
+            if(i > maxLevel) {
+                return maxLevel;
+            }
+        }
+        return i;
     }
 }

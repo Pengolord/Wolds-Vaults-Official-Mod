@@ -3,13 +3,10 @@ package xyz.iwolfking.woldsvaults.util;
 import iskallia.vault.VaultMod;
 import iskallia.vault.core.random.ChunkRandom;
 import iskallia.vault.core.random.JavaRandom;
-import iskallia.vault.core.random.RandomSource;
-import iskallia.vault.core.vault.Modifiers;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.modifier.registry.VaultModifierRegistry;
 import iskallia.vault.core.vault.modifier.spi.VaultModifier;
 import iskallia.vault.core.vault.player.Listener;
-import iskallia.vault.core.vault.player.Listeners;
 import iskallia.vault.init.ModConfigs;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +29,7 @@ public class VaultModifierUtils {
     }
 
     public static void addModifierFromPool(Vault vault, ResourceLocation modifierPool) {
-        List<VaultModifier<?>> modifiers = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(modifierPool, 0, (RandomSource) JavaRandom.ofNanoTime());
+        List<VaultModifier<?>> modifiers = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(modifierPool, 0, JavaRandom.ofNanoTime());
 
         if(!modifiers.isEmpty()) {
             Iterator<VaultModifier<?>> modIter = modifiers.iterator();
@@ -40,17 +37,17 @@ public class VaultModifierUtils {
             VaultModifier<?> modifier = VaultModifierRegistry.get(VaultMod.id("empty"));
 
             while(modIter.hasNext()) {
-                VaultModifier<?> mod = (VaultModifier<?>) modIter.next();
+                VaultModifier<?> mod = modIter.next();
                 modifier = mod;
-                ((Modifiers)vault.get(Vault.MODIFIERS)).addModifier(mod, 1, true, ChunkRandom.any());
+                (vault.get(Vault.MODIFIERS)).addModifier(mod, 1, true, ChunkRandom.any());
             }
 
             if(modifier.getId().equals(VaultMod.id("empty"))) {
                 return;
             }
 
-            for (Listener listener : ((Listeners) vault.get(Vault.LISTENERS)).getAll()) {
-                listener.getPlayer().ifPresent((other) -> {
+            for (Listener listener : vault.get(Vault.LISTENERS).getAll()) {
+                listener.getPlayer().ifPresent(other -> {
                     sendModifierAddedMessage(other, modifiers.get(0), 1);
                 });
             }

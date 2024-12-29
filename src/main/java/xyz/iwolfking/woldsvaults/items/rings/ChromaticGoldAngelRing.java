@@ -40,24 +40,26 @@ public class ChromaticGoldAngelRing extends AngelRingItem {
         }
     }
 
+    @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag unused) {
         return ExternalMods.CURIOS.isLoaded() ? ChromaticGoldAngelRingInteraction.initCapabilities() : super.initCapabilities(stack, unused);
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipFlag tooltipFlag) {
         if (!Screen.hasShiftDown()) {
             tooltip.add((new TranslatableComponent("item.angelring.itemring.tooltip")).withStyle(ChatFormatting.GRAY));
         }
 
-        if (Screen.hasShiftDown() && (Integer) Configuration.XPCost.get() != 0) {
+        if (Screen.hasShiftDown() && Configuration.XPCost.get() != 0) {
             tooltip.add((new TranslatableComponent("item.angelring.itemring.desc0")).withStyle(ChatFormatting.DARK_GREEN));
             tooltip.add(new TextComponent("Chromatic Gold is more efficient and uses less experience to fly.").withStyle(ChatFormatting.GREEN));
             tooltip.add((new TranslatableComponent("item.angelring.itemring.desc1")).withStyle(ChatFormatting.GRAY));
             tooltip.add((new TranslatableComponent("item.angelring.itemring.desc2")).withStyle(ChatFormatting.GRAY));
         }
 
-        if (Screen.hasShiftDown() && (Integer)Configuration.XPCost.get() == 0) {
+        if (Screen.hasShiftDown() && Configuration.XPCost.get() == 0) {
             tooltip.add((new TranslatableComponent("item.angelring.itemring.classic.desc0")).withStyle(ChatFormatting.RED));
         }
 

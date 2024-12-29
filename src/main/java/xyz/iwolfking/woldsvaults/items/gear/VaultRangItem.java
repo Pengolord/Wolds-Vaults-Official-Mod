@@ -32,7 +32,11 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeableLeatherItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -63,6 +67,7 @@ public class VaultRangItem extends BasicItem implements VaultGearItem, DyeableLe
         return false;
     }
 
+    @Override
     public @NotNull Component getName(@NotNull ItemStack stack) {
         return VaultGearHelper.getDisplayName(stack, super.getName(stack));
     }
@@ -120,6 +125,7 @@ public class VaultRangItem extends BasicItem implements VaultGearItem, DyeableLe
 
     @NotNull
     @Override
+    @SuppressWarnings({"deprecation","removal"})
     public ProficiencyType getCraftingProficiencyType(ItemStack itemStack) {
         return ProficiencyType.SWORD;
     }
@@ -139,14 +145,17 @@ public class VaultRangItem extends BasicItem implements VaultGearItem, DyeableLe
     }
 
 
+    @Override
     public int getDefaultTooltipHideFlags(@NotNull ItemStack stack) {
         return super.getDefaultTooltipHideFlags(stack) | ItemStack.TooltipPart.MODIFIERS.getMask();
     }
 
+    @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         return VaultGearHelper.getModifiers(stack, slot);
     }
 
+    @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
         if (entity instanceof ServerPlayer player) {
@@ -155,12 +164,14 @@ public class VaultRangItem extends BasicItem implements VaultGearItem, DyeableLe
 
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
         tooltip.addAll(this.createTooltip(stack, GearTooltip.itemTooltip()));
     }
 
+    @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
             items.add(this.defaultItem());
@@ -168,12 +179,14 @@ public class VaultRangItem extends BasicItem implements VaultGearItem, DyeableLe
 
     }
 
+    @Override
     public boolean isDamageable(ItemStack stack) {
         return VaultGearData.read(stack).getState() == VaultGearState.IDENTIFIED;
     }
 
+    @Override
     public int getMaxDamage(ItemStack stack) {
-        return (Integer)VaultGearData.read(stack).get(ModGearAttributes.DURABILITY, VaultGearAttributeTypeMerger.intSum());
+        return VaultGearData.read(stack).get(ModGearAttributes.DURABILITY, VaultGearAttributeTypeMerger.intSum());
     }
 
     @Override

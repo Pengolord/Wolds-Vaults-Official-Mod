@@ -2,11 +2,14 @@ package xyz.iwolfking.woldsvaults.config;
 
 import com.google.gson.annotations.Expose;
 import iskallia.vault.config.Config;
-import iskallia.vault.config.ElixirConfig;
 import iskallia.vault.config.entry.LevelEntryList;
 import iskallia.vault.core.random.RandomSource;
 import iskallia.vault.core.util.WeightedList;
-import iskallia.vault.core.vault.objective.elixir.*;
+import iskallia.vault.core.vault.objective.elixir.ChestElixirTask;
+import iskallia.vault.core.vault.objective.elixir.CoinStacksElixirTask;
+import iskallia.vault.core.vault.objective.elixir.ElixirTask;
+import iskallia.vault.core.vault.objective.elixir.MobElixirTask;
+import iskallia.vault.core.vault.objective.elixir.OreElixirTask;
 import iskallia.vault.core.vault.stat.VaultChestType;
 import iskallia.vault.core.world.data.entity.EntityPredicate;
 import iskallia.vault.core.world.roll.IntRoll;
@@ -35,32 +38,32 @@ public class EnchantedElixirConfig extends Config {
     }
 
     protected void reset() {
-        this.elixirToSize = new LinkedHashMap();
+        this.elixirToSize = new LinkedHashMap<>();
 
         for(int i = 0; i < 11; ++i) {
             this.elixirToSize.put(i, i);
         }
 
-        this.mobGroups = new LinkedHashMap();
-        this.mobGroups.put(new ResourceLocation("main"), (EntityPredicate)EntityPredicate.of("minecraft:zombie", true).orElseThrow());
-        this.entries = new LevelEntryList();
-        List<ElixirTask.Config<?>> tasks = new ArrayList();
-        tasks.add(new ChestElixirTask.Config((new WeightedList()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.WOODEN));
-        tasks.add(new ChestElixirTask.Config((new WeightedList()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.LIVING));
-        tasks.add(new ChestElixirTask.Config((new WeightedList()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.GILDED));
-        tasks.add(new ChestElixirTask.Config((new WeightedList()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.ORNATE));
-        tasks.add(new CoinStacksElixirTask.Config((new WeightedList()).add(IntRoll.ofUniform(1, 10), 1)));
-        tasks.add(new OreElixirTask.Config((new WeightedList()).add(IntRoll.ofUniform(1, 10), 1)));
-        tasks.add(new MobElixirTask.Config((new WeightedList()).add(IntRoll.ofUniform(1, 10), 1), new ResourceLocation("main")));
-        this.entries.add(new EnchantedElixirConfig.Entry(0, (new WeightedList()).add(IntRoll.ofUniform(80, 100), 1), tasks));
+        this.mobGroups = new LinkedHashMap<>();
+        this.mobGroups.put(new ResourceLocation("main"), EntityPredicate.of("minecraft:zombie", true).orElseThrow());
+        this.entries = new LevelEntryList<>();
+        List<ElixirTask.Config<?>> tasks = new ArrayList<>();
+        tasks.add(new ChestElixirTask.Config((new WeightedList<IntRoll>()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.WOODEN));
+        tasks.add(new ChestElixirTask.Config((new WeightedList<IntRoll>()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.LIVING));
+        tasks.add(new ChestElixirTask.Config((new WeightedList<IntRoll>()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.GILDED));
+        tasks.add(new ChestElixirTask.Config((new WeightedList<IntRoll>()).add(IntRoll.ofUniform(1, 10), 1), VaultChestType.ORNATE));
+        tasks.add(new CoinStacksElixirTask.Config((new WeightedList<IntRoll>()).add(IntRoll.ofUniform(1, 10), 1)));
+        tasks.add(new OreElixirTask.Config((new WeightedList<IntRoll>()).add(IntRoll.ofUniform(1, 10), 1)));
+        tasks.add(new MobElixirTask.Config((new WeightedList<IntRoll>()).add(IntRoll.ofUniform(1, 10), 1), new ResourceLocation("main")));
+        this.entries.add(new EnchantedElixirConfig.Entry(0, (new WeightedList<IntRoll>()).add(IntRoll.ofUniform(80, 100), 1), tasks));
     }
 
     public int getSize(int elixir) {
-        List<Map.Entry<Integer, Integer>> list = new ArrayList(this.elixirToSize.entrySet());
+        List<Map.Entry<Integer, Integer>> list = new ArrayList<>(this.elixirToSize.entrySet());
 
         for(int i = list.size() - 1; i >= 0; --i) {
-            if ((Integer)((Map.Entry)list.get(i)).getKey() <= elixir) {
-                return (Integer)((Map.Entry)list.get(i)).getValue();
+            if (list.get(i).getKey() <= elixir) {
+                return list.get(i).getValue();
             }
         }
 
@@ -68,25 +71,21 @@ public class EnchantedElixirConfig extends Config {
     }
 
     public boolean isEntityInGroup(Entity entity, ResourceLocation group) {
-        return this.mobGroups.containsKey(group) && ((EntityPredicate)this.mobGroups.get(group)).test(entity);
+        return this.mobGroups.containsKey(group) && this.mobGroups.get(group).test(entity);
     }
 
     public int generateTarget(int level, RandomSource random) {
-        EnchantedElixirConfig.Entry entry = (EnchantedElixirConfig.Entry)this.entries.getForLevel(level).orElse((EnchantedElixirConfig.Entry)null);
-        return entry == null ? 0 : (Integer)entry.getTarget().getRandom(random).map((roll) -> {
-            return roll.get(random);
-        }).orElse(0);
+        EnchantedElixirConfig.Entry entry =this.entries.getForLevel(level).orElse(null);
+        return entry == null ? 0 : entry.getTarget().getRandom(random).map(roll -> roll.get(random)).orElse(0);
     }
 
     public List<ElixirTask> generateGoals(int level, RandomSource random) {
         EnchantedElixirConfig.Entry entry = this.entries.getForLevel(level).orElse( null);
         if (entry == null) {
-            return new ArrayList();
+            return new ArrayList<>();
         } else {
             EnchantedElixirConfig.IntBalancingRandom balancingRandom = new EnchantedElixirConfig.IntBalancingRandom(random);
-            return (List)entry.getTasks().stream().map((config) -> {
-                return config.generate(balancingRandom);
-            }).collect(Collectors.toList());
+            return entry.getTasks().stream().map(config -> config.generate(balancingRandom)).collect(Collectors.toList());
         }
     }
 
@@ -125,14 +124,15 @@ public class EnchantedElixirConfig extends Config {
             this.delegate = randomSource;
         }
 
+        @Override
         public int nextInt(int bound) {
             int balancedBound = bound + (int)this.balance;
             if (balancedBound <= 0) {
-                this.balance += (double)bound / 2.0;
+                this.balance += bound / 2.0;
                 return 0;
             } else {
                 int randValue = this.delegate.nextInt(balancedBound);
-                this.balance += (double)bound / 2.0 - (double)randValue;
+                this.balance += bound / 2.0 - randValue;
                 return randValue;
             }
         }

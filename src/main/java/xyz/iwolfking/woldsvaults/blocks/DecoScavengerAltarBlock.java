@@ -33,33 +33,29 @@ import java.util.stream.Stream;
 
 public class DecoScavengerAltarBlock extends Block implements EntityBlock {
 
-    private static VoxelShape SHAPE = (VoxelShape) Stream.of(Block.box(1.0, 0.0, 1.0, 15.0, 2.0, 15.0), Block.box(4.0, 3.0, 4.0, 12.0, 11.0, 12.0), Block.box(0.0, 13.0, 0.0, 16.0, 16.0, 16.0), Block.box(1.0, 11.0, 1.0, 15.0, 13.0, 15.0), Block.box(2.0, 9.0, 2.0, 14.0, 11.0, 14.0), Block.box(2.0, 2.0, 2.0, 14.0, 4.0, 14.0)).reduce((v1, v2) -> {
-        return Shapes.join(v1, v2, BooleanOp.OR);
-    }).get();
+    private static VoxelShape SHAPE = Stream.of(Block.box(1.0, 0.0, 1.0, 15.0, 2.0, 15.0), Block.box(4.0, 3.0, 4.0, 12.0, 11.0, 12.0), Block.box(0.0, 13.0, 0.0, 16.0, 16.0, 16.0), Block.box(1.0, 11.0, 1.0, 15.0, 13.0, 15.0), Block.box(2.0, 9.0, 2.0, 14.0, 11.0, 14.0), Block.box(2.0, 2.0, 2.0, 14.0, 4.0, 14.0)).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     public DecoScavengerAltarBlock() {
-        super(Properties.of(Material.STONE, MaterialColor.COLOR_LIGHT_GREEN).strength(2.0F, 3600000.0F).noOcclusion().lightLevel((state) -> {
-            return 12;
-        }));
-        this.registerDefaultState((BlockState)this.stateDefinition.any());
+        super(Properties.of(Material.STONE, MaterialColor.COLOR_LIGHT_GREEN).strength(2.0F, 3600000.0F).noOcclusion().lightLevel(state -> 12));
+        this.registerDefaultState(this.stateDefinition.any());
     }
 
-
+    @Override
     public boolean isPathfindable(BlockState pState, BlockGetter pLevel, BlockPos pPos, PathComputationType pType) {
         return false;
     }
 
+    @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE;
     }
 
+    @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) {
             return InteractionResult.CONSUME;
         } else {
-            BlockEntity var8 = world.getBlockEntity(pos);
-            if (var8 instanceof ScavengerAltarTileEntity) {
-                ScavengerAltarTileEntity tile = (ScavengerAltarTileEntity)var8;
+            if (world.getBlockEntity(pos) instanceof ScavengerAltarTileEntity tile) {
                 boolean mainHandEmpty = player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty();
                 boolean offHandEmpty = player.getItemInHand(InteractionHand.OFF_HAND).isEmpty();
                 ItemStack existing = tile.getHeldItem().copy();
@@ -78,7 +74,7 @@ public class DecoScavengerAltarBlock extends Block implements EntityBlock {
 
                     tile.ticksToConsume = 40;
                     tile.consuming = false;
-                    world.playSound((Player)null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 1.0F, 1.0F);
+                    world.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 1.0F, 1.0F);
                     tile.setChanged();
                     world.sendBlockUpdated(pos, tile.getBlockState(), tile.getBlockState(), 3);
                     return InteractionResult.CONSUME;

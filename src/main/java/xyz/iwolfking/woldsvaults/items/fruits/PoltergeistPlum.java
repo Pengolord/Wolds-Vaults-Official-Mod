@@ -40,7 +40,7 @@ public class PoltergeistPlum extends ItemVaultFruit {
 
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag tooltipFlag) {
-        int seconds = Mth.floor((float)this.extraVaultTicks / 20.0F);
+        int seconds = Mth.floor(this.extraVaultTicks / 20.0F);
         String timeText = String.format("%d seconds", seconds);
         if (seconds > 90) {
             int minutes = seconds / 60;
@@ -84,7 +84,7 @@ public class PoltergeistPlum extends ItemVaultFruit {
                 }
             }
 
-            level.playSound((Player)null, player.getX(), player.getY(), player.getZ(), SoundEvents.CONDUIT_ACTIVATE, SoundSource.MASTER, 1.0F, 1.0F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CONDUIT_ACTIVATE, SoundSource.MASTER, 1.0F, 1.0F);
         }
 
         return entityLiving.eat(level, stack);
@@ -105,8 +105,8 @@ public class PoltergeistPlum extends ItemVaultFruit {
 
     public boolean specialOnEaten(Level level, Player player, int ticks) {
         AttributeSnapshot snapshot = AttributeSnapshotHelper.getInstance().getSnapshot(player);
-        float effectiveness = (Float)snapshot.getAttributeValue(ModGearAttributes.FRUIT_EFFECTIVENESS, VaultGearAttributeTypeMerger.floatSum());
-        int time = (int)((float)ticks * (1.0F + effectiveness));
+        float effectiveness = snapshot.getAttributeValue(ModGearAttributes.FRUIT_EFFECTIVENESS, VaultGearAttributeTypeMerger.floatSum());
+        int time = (int)(ticks * (1.0F + effectiveness));
         CommonEvents.FRUIT_EATEN.invoke(this, player, time);
         return true;
     }

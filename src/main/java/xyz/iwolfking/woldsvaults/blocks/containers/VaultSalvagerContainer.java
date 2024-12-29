@@ -5,13 +5,11 @@ import iskallia.vault.container.oversized.OverSizedTabSlot;
 import iskallia.vault.container.slot.TabSlot;
 import iskallia.vault.container.spi.AbstractElementContainer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import xyz.iwolfking.woldsvaults.blocks.tiles.VaultSalvagerTileEntity;
 import xyz.iwolfking.woldsvaults.init.ModContainers;
 
@@ -22,8 +20,7 @@ public class VaultSalvagerContainer extends AbstractElementContainer {
     public VaultSalvagerContainer(int windowId, Level world, BlockPos pos, Inventory playerInventory) {
         super(ModContainers.VAULT_SALVAGER_CONTAINER, windowId, playerInventory.player);
         this.tilePos = pos;
-        BlockEntity tile = world.getBlockEntity(this.tilePos);
-        if (tile instanceof VaultSalvagerTileEntity recyclerTileEntity) {
+        if (world.getBlockEntity(this.tilePos) instanceof VaultSalvagerTileEntity recyclerTileEntity) {
             this.tileEntity = recyclerTileEntity;
             this.initSlots(playerInventory);
         } else {
@@ -46,22 +43,21 @@ public class VaultSalvagerContainer extends AbstractElementContainer {
 
         SimpleSidedContainer ct = this.tileEntity.getInventory();
         this.addSlot(new Slot(ct, 0, 40, 50) {
+            @Override
             public boolean mayPlace(ItemStack stack) {
                 return tileEntity.isValidInput(stack);
             }
         });
         VaultSalvagerTileEntity.SalvagerInventory salvagerInventory = this.tileEntity.getInventory();
-        /*  49 */     for (int column = 1; column < 10; column++) {
-            /*  50 */
-            addSlot(new OverSizedTabSlot((Container) salvagerInventory, column, 8 + (column-1) * 18, 22)
-                    /*     */ {
-            });
+        for (int column = 1; column < 10; column++) {
+            addSlot(new OverSizedTabSlot(salvagerInventory, column, 8 + (column-1) * 18, 22));
         }
     }
 
+    @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(index);
+        Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
             ItemStack slotStack = slot.getItem();
             itemstack = slotStack.copy();

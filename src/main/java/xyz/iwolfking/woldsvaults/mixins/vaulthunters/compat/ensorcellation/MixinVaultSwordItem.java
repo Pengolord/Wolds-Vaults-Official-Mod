@@ -20,8 +20,9 @@ import org.spongepowered.asm.mixin.Mixin;
 )
 @Mixin(VaultSwordItem.class)
 public abstract class MixinVaultSwordItem extends SwordItem implements VaultGearItem, DyeableLeatherItem {
-    public MixinVaultSwordItem(Tier p_43269_, int p_43270_, float p_43271_, Properties p_43272_) {
-        super(p_43269_, p_43270_, p_43271_, p_43272_);
+
+    public MixinVaultSwordItem(Tier pTier, int pAttackDamageModifier, float pAttackSpeedModifier, Properties pProperties) {
+        super(pTier, pAttackDamageModifier, pAttackSpeedModifier, pProperties);
     }
 
     @Override

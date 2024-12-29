@@ -16,8 +16,8 @@ import xyz.iwolfking.woldsvaults.helpers.OfferingPillarHelper;
 @Mixin(value = OfferingPillarTileEntity.class, remap = false)
 public abstract class MixinOfferingBossTileEntity extends BlockEntity {
 
-    public MixinOfferingBossTileEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
-        super(p_155228_, p_155229_, p_155230_);
+    public MixinOfferingBossTileEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
+        super(pType, pPos, pBlockState);
     }
 
     /**
@@ -28,9 +28,7 @@ public abstract class MixinOfferingBossTileEntity extends BlockEntity {
     public static void tick(Level world, BlockPos pos, BlockState state, OfferingPillarTileEntity entity) {
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> {
             if(world.isClientSide()) {
-                return () -> {
-                    OfferingPillarHelper.safelyCallClientTick(entity, world, pos, state);
-                };
+                return () -> OfferingPillarHelper.safelyCallClientTick(entity, world, pos, state);
             }
             else {
                 return () -> {

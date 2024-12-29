@@ -33,7 +33,7 @@ public enum VaultOresBlockScannerModule implements BlockScannerModule {
 
     private Predicate<BlockState> filter;
 
-    public static Set<ResourceLocation> vaultOreBlocks = (Set) Util.make(new HashSet(), (c) -> {
+    public static Set<ResourceLocation> vaultOreBlocks = Util.make(new HashSet<>(), c -> {
         c.add(ModBlocks.LARIMAR_ORE.getRegistryName());
         c.add(ModBlocks.BENITOITE_ORE.getRegistryName());
         c.add(ModBlocks.ALEXANDRITE_ORE.getRegistryName());

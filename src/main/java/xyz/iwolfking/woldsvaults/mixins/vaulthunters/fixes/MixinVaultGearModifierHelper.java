@@ -9,7 +9,6 @@ import iskallia.vault.gear.comparator.VaultGearAttributeComparator;
 import iskallia.vault.gear.data.VaultGearData;
 import iskallia.vault.gear.modification.GearModification;
 import iskallia.vault.util.MiscUtils;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,8 +37,11 @@ public abstract class MixinVaultGearModifierHelper {
                 return GearModification.Result.errorUnmodifiable();
             } else {
                 List<Tuple<VaultGearModifier<?>, WeightedList<VaultGearTierConfig.ModifierOutcome<?>>>> modifierReplacements = getAvailableModifierConfigurationOutcomes(data, stack, true);
-                modifierReplacements.removeIf((tpl) -> {
-                    VaultGearModifier<?> existing = (VaultGearModifier) tpl.getA();
+                if (modifierReplacements == null) {
+                    return GearModification.Result.errorInternal();
+                }
+                modifierReplacements.removeIf(tpl -> {
+                    VaultGearModifier<?> existing = tpl.getA();
                     if(existing.hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL"))) {
                         return true;
                     }
@@ -48,21 +50,21 @@ public abstract class MixinVaultGearModifierHelper {
                         return true;
                     } else {
                         ConfigurableAttributeGenerator generator = existing.getAttribute().getGenerator();
-                        ((WeightedList<VaultGearTierConfig.ModifierOutcome<?>>) tpl.getB()).entrySet().removeIf((weightedOutcome) -> {
+                        (tpl.getB()).entrySet().removeIf(weightedOutcome -> {
                             VaultGearTierConfig.ModifierOutcome<?> outcome = weightedOutcome.getKey();
                             Object tierConfig = outcome.tier().getModifierConfiguration();
-                            Object maxValue = generator.getMaximumValue(List.of(tierConfig)).orElse((Object) null);
+                            Object maxValue = generator.getMaximumValue(List.of(tierConfig)).orElse(null);
                             if (maxValue == null) {
                                 return true;
                             } else {
                                 return comparator.compare(maxValue, existing.getValue()) <= 0;
                             }
                         });
-                        return ((WeightedList<VaultGearTierConfig.ModifierOutcome<?>>)tpl.getB()).isEmpty() ? true : ((WeightedList<VaultGearTierConfig.ModifierOutcome<?>>) tpl.getB()).entrySet().stream().allMatch((weightedOutcome) -> {
-                            VaultGearTierConfig.ModifierOutcome<?> outcome = (VaultGearTierConfig.ModifierOutcome) weightedOutcome.getKey();
+                        return (tpl.getB()).isEmpty() || (tpl.getB()).entrySet().stream().allMatch(weightedOutcome -> {
+                            VaultGearTierConfig.ModifierOutcome<?> outcome = weightedOutcome.getKey();
                             Object tierConfig = outcome.tier().getModifierConfiguration();
-                            Object minValue = generator.getMinimumValue(List.of(tierConfig)).orElse((Object) null);
-                            Object maxValue = generator.getMaximumValue(List.of(tierConfig)).orElse((Object) null);
+                            Object minValue = generator.getMinimumValue(List.of(tierConfig)).orElse(null);
+                            Object maxValue = generator.getMaximumValue(List.of(tierConfig)).orElse(null);
                             if (minValue != null && maxValue != null) {
                                 return comparator.compare(minValue, existing.getValue()) == 0 && comparator.compare(maxValue, existing.getValue()) == 0;
                             } else {
@@ -72,17 +74,17 @@ public abstract class MixinVaultGearModifierHelper {
                     }
                 });
                 if (modifierReplacements.isEmpty()) {
-                    return GearModification.Result.makeActionError("all_max", new Component[0]);
+                    return GearModification.Result.makeActionError("all_max");
                 } else {
-                    Tuple<VaultGearModifier<?>, WeightedList<VaultGearTierConfig.ModifierOutcome<?>>> potentialReplacements = (Tuple) MiscUtils.getRandomEntry(modifierReplacements);
+                    Tuple<VaultGearModifier<?>, WeightedList<VaultGearTierConfig.ModifierOutcome<?>>> potentialReplacements = MiscUtils.getRandomEntry(modifierReplacements);
                     if (potentialReplacements == null) {
                         return GearModification.Result.errorInternal();
                     } else {
-                        VaultGearTierConfig.ModifierOutcome<?> replacement = (VaultGearTierConfig.ModifierOutcome) ((WeightedList) potentialReplacements.getB()).getRandom(random).orElse((Object) null);
+                        VaultGearTierConfig.ModifierOutcome<?> replacement = (potentialReplacements.getB()).getRandom(random).orElse(null);
                         if (replacement == null) {
                             return GearModification.Result.errorInternal();
                         } else {
-                            VaultGearModifier existing = (VaultGearModifier) potentialReplacements.getA();
+                            VaultGearModifier existing = potentialReplacements.getA();
                             VaultGearAttributeComparator comparator = existing.getAttribute().getAttributeComparator();
                             if (comparator == null) {
                                 return GearModification.Result.errorInternal();
@@ -138,24 +140,27 @@ public abstract class MixinVaultGearModifierHelper {
             return GearModification.Result.errorUnmodifiable();
         } else {
             List<Tuple<VaultGearModifier<?>, WeightedList<VaultGearTierConfig.ModifierOutcome<?>>>> modifierReplacements = getAvailableModifierConfigurationOutcomes(data, stack, true);
-            modifierReplacements.removeIf((tpl) -> {
+            if (modifierReplacements == null) {
+                return GearModification.Result.errorInternal();
+            }
+            modifierReplacements.removeIf(tpl -> {
                 if(tpl.getA().hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL"))){
                     return true;
                 }
-                return ((WeightedList) tpl.getB()).size() <= 1;
+                return (tpl.getB()).size() <= 1;
             });
             if (modifierReplacements.isEmpty()) {
-                return GearModification.Result.makeActionError("no_modifiers", new Component[0]);
+                return GearModification.Result.makeActionError("no_modifiers");
             } else {
-                Tuple<VaultGearModifier<?>, WeightedList<VaultGearTierConfig.ModifierOutcome<?>>> potentialReplacements = (Tuple) MiscUtils.getRandomEntry(modifierReplacements);
+                Tuple<VaultGearModifier<?>, WeightedList<VaultGearTierConfig.ModifierOutcome<?>>> potentialReplacements = MiscUtils.getRandomEntry(modifierReplacements);
                 if (potentialReplacements == null) {
                     return GearModification.Result.errorInternal();
                 } else {
-                    VaultGearTierConfig.ModifierOutcome<?> replacement = (VaultGearTierConfig.ModifierOutcome) ((WeightedList) potentialReplacements.getB()).getRandom(random).orElse((Object) null);
+                    VaultGearTierConfig.ModifierOutcome<?> replacement = potentialReplacements.getB().getRandom(random).orElse(null);
                     if (replacement == null) {
                         return GearModification.Result.errorInternal();
                     } else {
-                        VaultGearModifier existing = (VaultGearModifier) potentialReplacements.getA();
+                        VaultGearModifier existing = potentialReplacements.getA();
                         VaultGearModifier newModifier = replacement.makeModifier(random);
                         VaultGearAttributeComparator comparator = existing.getAttribute().getAttributeComparator();
                         if (comparator != null && comparator.compare(existing.getValue(), newModifier.getValue()) == 0) {

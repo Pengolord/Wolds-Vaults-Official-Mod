@@ -27,8 +27,9 @@ public class ChestOpenBombModifier extends VaultModifier<ChestOpenBombModifier.P
         super(id, properties, display);
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault, ModifierContext context) {
-        CommonEvents.PLAYER_MINE.register(context.getUUID(), EventPriority.HIGHEST, (event) -> {
+        CommonEvents.PLAYER_MINE.register(context.getUUID(), EventPriority.HIGHEST, event -> {
             if(!(event.getPlayer().getLevel().dimension().equals(world.dimension()))) {
                 return;
             }

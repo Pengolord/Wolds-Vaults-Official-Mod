@@ -7,7 +7,7 @@ import iskallia.vault.item.crystal.model.CoreCrystalModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.nbt.CompoundTag;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Optional;
 import java.util.Random;
 
@@ -30,26 +30,30 @@ public class UnhingedCrystalModel extends CoreCrystalModel {
     }
 
     public int getColor(int second, float progress) {
-        Random random = new Random((long)(second - 1));
+        Random random = new Random(second - 1);
         random.nextLong();
         int previous = Color.getHSBColor(random.nextFloat(), random.nextFloat(), random.nextFloat()).getRGB();
-        random = new Random((long)second);
+        random = new Random(second);
         random.nextLong();
         int current = Color.getHSBColor(random.nextFloat(), random.nextFloat(), random.nextFloat()).getRGB();
         return ColorUtil.blendColors(previous, current, 1.0F - progress);
     }
 
+    @Override
     public Optional<CompoundTag> writeNbt() {
         return Optional.of(new CompoundTag());
     }
 
+    @Override
     public void readNbt(CompoundTag nbt) {
     }
 
+    @Override
     public Optional<JsonObject> writeJson() {
         return Optional.of(new JsonObject());
     }
 
+    @Override
     public void readJson(JsonObject json) {
     }
 }

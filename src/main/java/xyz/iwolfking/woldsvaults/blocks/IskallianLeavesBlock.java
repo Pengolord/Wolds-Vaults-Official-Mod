@@ -20,7 +20,8 @@ public class IskallianLeavesBlock extends LootableBlock {
         super(Properties.copy(Blocks.OAK_LEAVES));
     }
 
-    @javax.annotation.Nullable
+    @Nullable
+    @Override
     public <A extends BlockEntity> BlockEntityTicker<A> getTicker(Level world, BlockState state, BlockEntityType<A> type) {
         return !world.isClientSide() ? null : BlockHelper.getTicker(type, ModBlocks.ISKALLIAN_LEAVES_TILE_ENTITY_BLOCK_ENTITY_TYPE, IskallianLeavesTileEntity::tick);
     }

@@ -16,7 +16,7 @@ public class PlayerResearchCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("researchs").then(Commands.argument("player", MessageArgument.message()).executes(AddCommand -> openResearchGUI(AddCommand.getSource(),
                 MessageArgument.getMessage(AddCommand, "player").getString()
-        ))));;
+        ))));
     }
 
     private static int openResearchGUI(CommandSourceStack ctx, String target) throws CommandSyntaxException {

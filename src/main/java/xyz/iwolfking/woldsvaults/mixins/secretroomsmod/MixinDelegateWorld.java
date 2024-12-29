@@ -33,9 +33,7 @@ public abstract class MixinDelegateWorld implements BlockAndTintGetter {
         if(this.world == null) {
             return null;
         }
-        return (BlockState) SecretBaseBlock.getMirrorState(this.world, pos).orElseGet(() -> {
-            return this.world.getBlockState(pos);
-        });
+        return SecretBaseBlock.getMirrorState(this.world, pos).orElseGet(() -> this.world.getBlockState(pos));
     }
 
     /**
@@ -48,8 +46,6 @@ public abstract class MixinDelegateWorld implements BlockAndTintGetter {
         if(this.world == null) {
             return null;
         }
-        return (BlockEntity) SecretBaseBlock.getMirrorData(this.world, pos).map(SecretData::getTileEntityCache).orElseGet(() -> {
-            return this.world.getBlockEntity(pos);
-        });
+        return SecretBaseBlock.getMirrorData(this.world, pos).map(SecretData::getTileEntityCache).orElseGet(() -> this.world.getBlockEntity(pos));
     }
 }

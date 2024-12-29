@@ -27,7 +27,7 @@ public abstract class MixinEIHEntity extends TropicraftCreatureEntity {
      * @author iwolfking
      * @reason Make EIH take damage from anything
      */
-    @Overwrite
+    @Overwrite @Override
     public boolean hurt(DamageSource source, float amount) {
         return super.hurt(source, amount);
     }

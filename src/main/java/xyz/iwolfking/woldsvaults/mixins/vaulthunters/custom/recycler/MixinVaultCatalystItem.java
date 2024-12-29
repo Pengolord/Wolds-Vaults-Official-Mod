@@ -16,8 +16,9 @@ import java.util.UUID;
 
 @Mixin(value = InfusedCatalystItem.class, remap = false)
 public abstract class MixinVaultCatalystItem extends Item implements VaultLevelItem, IManualModelLoading, DataInitializationItem, RecyclableItem {
-    public MixinVaultCatalystItem(Properties p_41383_) {
-        super(p_41383_);
+
+    public MixinVaultCatalystItem(Properties pProperties) {
+        super(pProperties);
     }
 
     @Override

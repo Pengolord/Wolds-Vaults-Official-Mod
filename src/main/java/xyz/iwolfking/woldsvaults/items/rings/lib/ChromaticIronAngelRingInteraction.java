@@ -31,17 +31,12 @@ public class ChromaticIronAngelRingInteraction {
     }
 
     public static void sendImc() {
-        InterModComms.sendTo("curios", "register_type", () -> {
-            return (new SlotTypeMessage.Builder("angelring")).build();
-        });
+        InterModComms.sendTo("curios", "register_type", () -> (new SlotTypeMessage.Builder("angelring")).build());
     }
 
     public static ICapabilityProvider initCapabilities() {
         final ICurio curio = new AbstractRingCurio(ModItems.CHROMATIC_IRON_ANGEL_RING) {
-            final ItemStack stack;
-            {
-                this.stack = new ItemStack(ModItems.CHROMATIC_IRON_ANGEL_RING.asItem());
-            }
+            final ItemStack stack = new ItemStack(ModItems.CHROMATIC_IRON_ANGEL_RING.asItem());
 
             public ItemStack getStack() {
                 return this.stack;
@@ -51,10 +46,10 @@ public class ChromaticIronAngelRingInteraction {
                 if(ServerVaults.get(player.getLevel()).isPresent()) {
                     return false;
                 }
-                if ((Integer) Configuration.XPCost.get() == 0) {
+                if (Configuration.XPCost.get() == 0) {
                     return true;
                 } else {
-                    return ExperienceUtils.getPlayerXP(player) >= (Integer)Configuration.XPCost.get();
+                    return ExperienceUtils.getPlayerXP(player) >= Configuration.XPCost.get();
                 }
             }
 
@@ -64,14 +59,14 @@ public class ChromaticIronAngelRingInteraction {
 
             protected void payForFlight(Player player, ItemStack stack) {
                 ++ChromaticIronAngelRingInteraction.ticksDrained;
-                if (ChromaticIronAngelRingInteraction.ticksDrained > (Integer)Configuration.TicksPerDrain.get()) {
+                if (ChromaticIronAngelRingInteraction.ticksDrained > Configuration.TicksPerDrain.get()) {
                     if (!ChromaticIronAngelRingInteraction.once) {
                         return;
                     }
 
                     ServerPlayer serverPlayer = ChromaticIronAngelRingInteraction.getServerPlayerInstance(player.getUUID());
                     if (serverPlayer != null) {
-                        serverPlayer.giveExperiencePoints(-(Integer)Configuration.XPCost.get());
+                        serverPlayer.giveExperiencePoints(-Configuration.XPCost.get());
                     }
 
                     ChromaticIronAngelRingInteraction.ticksDrained = 0;
@@ -82,9 +77,7 @@ public class ChromaticIronAngelRingInteraction {
 
         };
         return new ICapabilityProvider() {
-            private final LazyOptional<ICurio> curioOpt = LazyOptional.of(() -> {
-                return curio;
-            });
+            private final LazyOptional<ICurio> curioOpt = LazyOptional.of(() -> curio);
 
             @Nonnull
             public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {

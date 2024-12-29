@@ -58,20 +58,22 @@ public class MysteryEggRecipeCategory implements IRecipeCategory<MysteryEggConfi
     }
 
     @Nonnull
+    @Override
     public RecipeType<MysteryEggConfig> getRecipeType() {
         return this.RECIPE_TYPE;
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public ResourceLocation getUid() {
         return this.getRecipeType().getUid();
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public Class<? extends MysteryEggConfig> getRecipeClass() {
         return this.getRecipeType().getRecipeClass();
     }
 
+    @Override
     @ParametersAreNonnullByDefault
     public void setRecipe(IRecipeLayoutBuilder builder, MysteryEggConfig recipe, IFocusGroup focuses) {
         List<ItemStack> itemList = new ArrayList<>();
@@ -80,7 +82,7 @@ public class MysteryEggRecipeCategory implements IRecipeCategory<MysteryEggConfi
         int count = itemList.size();
 
         for(int i = 0; i < count; ++i) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip((ItemStack)itemList.get(i)));
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip(itemList.get(i)));
         }
 
     }

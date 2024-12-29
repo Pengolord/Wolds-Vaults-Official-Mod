@@ -13,14 +13,11 @@ import iskallia.vault.core.event.ClientEvents;
 import iskallia.vault.core.event.CommonEvents;
 import iskallia.vault.core.random.ChunkRandom;
 import iskallia.vault.core.random.JavaRandom;
-import iskallia.vault.core.random.RandomSource;
-import iskallia.vault.core.vault.Modifiers;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.modifier.spi.VaultModifier;
 import iskallia.vault.core.vault.objective.BingoObjective;
 import iskallia.vault.core.vault.objective.Objective;
 import iskallia.vault.core.vault.player.Listener;
-import iskallia.vault.core.vault.player.Listeners;
 import iskallia.vault.core.vault.player.Runner;
 import iskallia.vault.core.world.storage.VirtualWorld;
 import iskallia.vault.init.ModConfigs;
@@ -30,7 +27,6 @@ import iskallia.vault.task.ProgressConfiguredTask;
 import iskallia.vault.task.Task;
 import iskallia.vault.task.TaskContext;
 import iskallia.vault.task.counter.TargetTaskCounter;
-import iskallia.vault.task.counter.TaskCounter;
 import iskallia.vault.task.renderer.context.BingoRendererContext;
 import iskallia.vault.task.source.EntityTaskSource;
 import iskallia.vault.task.source.TaskSource;
@@ -45,7 +41,6 @@ import xyz.iwolfking.woldsvaults.util.VaultModifierUtils;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 public class BallisticBingoObjective extends BingoObjective {
     public static final SupplierKey<Objective> KEY;
@@ -61,47 +56,39 @@ public class BallisticBingoObjective extends BingoObjective {
         return (BallisticBingoObjective)(new BallisticBingoObjective()).set(TASK, task);
     }
 
+    @Override
     public SupplierKey<Objective> getKey() {
         return KEY;
     }
 
+    @Override
     public FieldRegistry getFields() {
         return FIELDS;
     }
 
+    @Override
     public TaskContext getContext(VirtualWorld world, Vault vault) {
-        this.setIfAbsent(TASK_SOURCE, () -> {
-            return EntityTaskSource.ofUuids(JavaRandom.ofInternal((Long)vault.get(Vault.SEED)), new UUID[0]);
-        });
-        return TaskContext.of((TaskSource)this.get(TASK_SOURCE), world.getServer()).setVault(vault);
+        this.setIfAbsent(TASK_SOURCE, () -> EntityTaskSource.ofUuids(JavaRandom.ofInternal(vault.get(Vault.SEED))));
+        return TaskContext.of(this.get(TASK_SOURCE), world.getServer()).setVault(vault);
     }
 
+    @Override
     public boolean isCompleted() {
-        Object var2 = this.get(TASK);
-        boolean var10000;
-        if (var2 instanceof BingoTask bingo) {
-            if (bingo.areAllCompleted()) {
-                var10000 = true;
-                return var10000;
-            }
+        if (this.get(TASK) instanceof BingoTask bingo) {
+            return bingo.areAllCompleted();
         }
-
-        var10000 = false;
-        return var10000;
+        return false;
     }
 
+    @Override
     public int getBingos() {
-        Object var2 = this.get(TASK);
-        int var10000;
-        if (var2 instanceof BingoTask bingo) {
-            var10000 = bingo.getCompletedBingos();
-        } else {
-            var10000 = 0;
+        if (this.get(TASK) instanceof BingoTask bingo) {
+            return bingo.getCompletedBingos();
         }
-
-        return var10000;
+        return 0;
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault) {
         boolean hasGeneratedModifiers = false;
         for(VaultModifier<?> modifier : vault.get(Vault.MODIFIERS).getModifiers()) {
@@ -115,76 +102,59 @@ public class BallisticBingoObjective extends BingoObjective {
         }
 
 
-        CommonEvents.LISTENER_JOIN.register(this, (data) -> {
+        CommonEvents.LISTENER_JOIN.register(this, data -> {
             if (data.getVault() == vault) {
-                Listener patt3500$temp = data.getListener();
-                if (patt3500$temp instanceof Runner) {
-                    Runner runner = (Runner)patt3500$temp;
-                    Object patt3573$temp = this.get(TASK_SOURCE);
-                    if (patt3573$temp instanceof EntityTaskSource) {
-                        EntityTaskSource entitySource = (EntityTaskSource)patt3573$temp;
-                        entitySource.add(new UUID[]{runner.getId()});
+                if (data.getListener() instanceof Runner runner) {
+                    if (this.get(TASK_SOURCE) instanceof EntityTaskSource entitySource) {
+                        entitySource.add(runner.getId());
                     }
 
-                    this.set(JOINED, (Integer)this.getOr(JOINED, 0) + 1);
+                    this.set(JOINED, this.getOr(JOINED, 0) + 1);
                 }
             }
         });
-        CommonEvents.LISTENER_LEAVE.register(this, (data) -> {
+        CommonEvents.LISTENER_LEAVE.register(this, data -> {
             if (data.getVault() == vault) {
-                Listener patt3898$temp = data.getListener();
-                if (patt3898$temp instanceof Runner) {
-                    Runner runner = (Runner)patt3898$temp;
-                    Object patt3971$temp = this.get(TASK_SOURCE);
-                    if (patt3971$temp instanceof EntityTaskSource) {
-                        EntityTaskSource entitySource = (EntityTaskSource)patt3971$temp;
-                        entitySource.remove(new UUID[]{runner.getId()});
+                if (data.getListener() instanceof Runner runner) {
+                    if (this.get(TASK_SOURCE) instanceof EntityTaskSource entitySource) {
+                        entitySource.remove(runner.getId());
                     }
 
                 }
             }
         });
-        ((Task)this.get(TASK)).onAttach(this.getContext(world, vault));
-        CommonEvents.GRID_GATEWAY_UPDATE.register(this, (data) -> {
+        this.get(TASK).onAttach(this.getContext(world, vault));
+        CommonEvents.GRID_GATEWAY_UPDATE.register(this, data -> {
             if (data.getLevel() == world) {
                 data.getEntity().setCompletedBingos(this.getBingos());
             }
         });
-        ((ObjList)this.get(CHILDREN)).forEach((child) -> {
-            child.initServer(world, vault);
-        });
+        this.get(CHILDREN).forEach(child -> child.initServer(world, vault));
     }
 
+    @Override
     public void tickServer(VirtualWorld world, Vault vault) {
         if (this.getBingos() > 0) {
-            ((ObjList)this.get(CHILDREN)).forEach((child) -> {
-                child.tickServer(world, vault);
-            });
+            this.get(CHILDREN).forEach(child -> child.tickServer(world, vault));
             if (this.isCompleted()) {
                 return;
             }
         }
 
-        Object var4 = this.get(TASK);
-        if (var4 instanceof BingoTask root) {
+        if (this.get(TASK) instanceof BingoTask root) {
             for(int index = 0; index < root.getWidth() * root.getHeight(); ++index) {
                 if (!root.isCompleted(index)) {
-                    root.getChild(index).streamSelfAndDescendants(ProgressConfiguredTask.class).forEach((task) -> {
-                        TaskCounter patt4993$temp = task.getCounter();
-                        if (patt4993$temp instanceof TargetTaskCounter<?, ?> counter) {
+                    root.getChild(index).streamSelfAndDescendants(ProgressConfiguredTask.class).forEach(task -> {
+                        if (task.getCounter() instanceof TargetTaskCounter<?, ?> counter) {
                             if (counter.isPopulated()) {
-                                counter.get("targetPlayerContribution", Adapters.DOUBLE).ifPresent((contribution) -> {
-                                    Object patt5229$temp = counter.getBaseTarget();
-                                    if (patt5229$temp instanceof Integer base) {
-                                        int additional = Math.max((Integer)this.getOr(JOINED, 0) - 1, 0);
-                                        counter.setTarget((int)((double)base + (double)additional * contribution * (double)base));
+                                counter.get("targetPlayerContribution", Adapters.DOUBLE).ifPresent(contribution -> {
+                                    if (counter.getBaseTarget() instanceof Integer base) {
+                                        int additional = Math.max(this.getOr(JOINED, 0) - 1, 0);
+                                        counter.setTarget((int)(base + additional * contribution * base));
                                     }
-
                                 });
-                                return;
                             }
                         }
-
                     });
                 }
             }
@@ -192,55 +162,54 @@ public class BallisticBingoObjective extends BingoObjective {
 
     }
 
+    @Override
     public void tickListener(VirtualWorld world, Vault vault, Listener listener) {
         if (listener instanceof Runner && listener.getPriority(this) < 0) {
             listener.addObjective(vault, this);
         }
 
         if (listener instanceof Runner && this.getBingos() > 0) {
-            ((ObjList)this.get(CHILDREN)).forEach((child) -> {
-                child.tickListener(world, vault, listener);
-            });
+            (this.get(CHILDREN)).forEach(child -> child.tickListener(world, vault, listener));
         }
 
     }
 
+    @Override
     public void releaseServer() {
-        ((Task)this.get(TASK)).onDetach();
+        this.get(TASK).onDetach();
         CommonEvents.release(this);
-        ((ObjList)this.get(CHILDREN)).forEach(Objective::releaseServer);
+        this.get(CHILDREN).forEach(Objective::releaseServer);
     }
 
+    @Override
     public void onScroll(Player player, double delta) {
-        Object var5 = this.get(TASK);
-        if (var5 instanceof BingoTask bingo) {
+        if (this.get(TASK) instanceof BingoTask bingo) {
             bingo.progressBingoLine(player.getUUID(), delta < 0.0 ? 1 : -1);
         }
 
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public void initClient(Vault vault) {
-        ClientEvents.MOUSE_SCROLL.register(vault, (event) -> {
-            BingoRendererContext context = new BingoRendererContext((PoseStack)null, 0.0F, MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()), Minecraft.getInstance().font);
-            if (((Task)this.get(TASK)).onMouseScrolled(event.getScrollDelta(), context)) {
+        ClientEvents.MOUSE_SCROLL.register(vault, event -> {
+            BingoRendererContext context = new BingoRendererContext(null, 0.0F, MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()), Minecraft.getInstance().font);
+            if (this.get(TASK).onMouseScrolled(event.getScrollDelta(), context)) {
                 event.setCanceled(true);
             }
 
         });
-        ((ObjList)this.get(CHILDREN)).forEach((child) -> {
-            child.initClient(vault);
-        });
+        this.get(CHILDREN).forEach(child -> child.initClient(vault));
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public boolean render(Vault vault, PoseStack poseStack, Window window, float partialTicks, Player player) {
         if (this.isCompleted() && (Minecraft.getInstance().screen != null || !ModKeybinds.openBingo.isDown())) {
             boolean rendered = false;
 
-            Objective objective;
-            for(Iterator var7 = ((Objective.ObjList)this.get(CHILDREN)).iterator(); var7.hasNext(); rendered |= objective.render(vault, poseStack, window, partialTicks, player)) {
-                objective = (Objective)var7.next();
+            for (Objective objective : this.get(CHILDREN)) {
+                rendered |= objective.render(vault, poseStack, window, partialTicks, player);
             }
 
             if (rendered) {
@@ -249,31 +218,23 @@ public class BallisticBingoObjective extends BingoObjective {
         }
 
         BingoRendererContext context = new BingoRendererContext(poseStack, partialTicks, MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()), Minecraft.getInstance().font);
-        ((Task)this.get(TASK)).onRender(context);
+        this.get(TASK).onRender(context);
         return true;
     }
 
+    @Override
     public boolean isActive(VirtualWorld world, Vault vault, Objective objective) {
-        Iterator var4;
-        Objective child;
         if (this.isCompleted()) {
-            var4 = ((Objective.ObjList)this.get(CHILDREN)).iterator();
-
-            do {
-                if (!var4.hasNext()) {
-                    return false;
+            for (Objective child : this.get(CHILDREN)) {
+                if (child.isActive(world, vault, objective)) {
+                    return true;
                 }
+            }
 
-                child = (Objective)var4.next();
-            } while(!child.isActive(world, vault, objective));
-
-            return true;
+            return false;
         } else {
             if (this.getBingos() > 0) {
-                var4 = ((Objective.ObjList)this.get(CHILDREN)).iterator();
-
-                while(var4.hasNext()) {
-                    child = (Objective)var4.next();
+                for (Objective child : this.get(CHILDREN)) {
                     if (child.isActive(world, vault, objective)) {
                         return true;
                     }
@@ -283,36 +244,35 @@ public class BallisticBingoObjective extends BingoObjective {
             return objective == this;
         }
     }
+
     public void addBingoTaskModifier(Vault vault, String modifierPoolName) {
         ChunkRandom random = ChunkRandom.any();
         TextComponent text = new TextComponent("");
-        List<VaultModifier<?>> modifiers = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id(modifierPoolName), 0, (RandomSource) JavaRandom.ofNanoTime());
+        List<VaultModifier<?>> modifiers = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id(modifierPoolName), 0, JavaRandom.ofNanoTime());
         if(!modifiers.isEmpty()) {
             Iterator<VaultModifier<?>> modIter = modifiers.iterator();
 
             while(modIter.hasNext()) {
-                VaultModifier<?> mod = (VaultModifier<?>) modIter.next();
+                VaultModifier<?> mod = modIter.next();
                 TextComponent suffix = (TextComponent) mod.getChatDisplayNameComponent(1);
                 text.append("The task completion").append((new TextComponent(" added ")).withStyle(ChatFormatting.GRAY)).append(suffix).append((new TextComponent(".")).withStyle(ChatFormatting.GRAY));
                 if(modIter.hasNext()) {
                     text.append("\n");
                 }
-                ((Modifiers)vault.get(Vault.MODIFIERS)).addModifier(mod, 1, true, random);
+                vault.get(Vault.MODIFIERS).addModifier(mod, 1, true, random);
             }
 
-            for (Listener listener : ((Listeners) vault.get(Vault.LISTENERS)).getAll()) {
-                listener.getPlayer().ifPresent((other) -> {
-                    other.displayClientMessage(text, false);
-                });
+            for (Listener listener : vault.get(Vault.LISTENERS).getAll()) {
+                listener.getPlayer().ifPresent(other -> other.displayClientMessage(text, false));
             }
         }
     }
 
     static {
-        KEY = (SupplierKey)SupplierKey.of("ballistic_bingo", Objective.class).with(Version.v1_27, BallisticBingoObjective::new);
-        FIELDS = (FieldRegistry)Objective.FIELDS.merge(new FieldRegistry());
-        TASK = (FieldKey)FieldKey.of("task", Task.class).with(Version.v1_27, Adapters.TASK_NBT, DISK.all().or(CLIENT.all())).register(FIELDS);
-        TASK_SOURCE = (FieldKey)FieldKey.of("task_source", TaskSource.class).with(Version.v1_27, Adapters.TASK_SOURCE_NBT, DISK.all().or(CLIENT.all())).register(FIELDS);
-        JOINED = (FieldKey)FieldKey.of("joined", Integer.class).with(Version.v1_27, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
+        KEY = SupplierKey.of("ballistic_bingo", Objective.class).with(Version.v1_27, BallisticBingoObjective::new);
+        FIELDS = Objective.FIELDS.merge(new FieldRegistry());
+        TASK = FieldKey.of("task", Task.class).with(Version.v1_27, Adapters.TASK_NBT, DISK.all().or(CLIENT.all())).register(FIELDS);
+        TASK_SOURCE = FieldKey.of("task_source", TaskSource.class).with(Version.v1_27, Adapters.TASK_SOURCE_NBT, DISK.all().or(CLIENT.all())).register(FIELDS);
+        JOINED = FieldKey.of("joined", Integer.class).with(Version.v1_27, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
     }
 }

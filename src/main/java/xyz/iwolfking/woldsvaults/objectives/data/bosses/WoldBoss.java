@@ -1,7 +1,11 @@
 package xyz.iwolfking.woldsvaults.objectives.data.bosses;
 
 import iskallia.vault.entity.VaultBoss;
-import iskallia.vault.entity.ai.*;
+import iskallia.vault.entity.ai.AOEGoal;
+import iskallia.vault.entity.ai.RegenAfterAWhile;
+import iskallia.vault.entity.ai.TeleportGoal;
+import iskallia.vault.entity.ai.TeleportRandomly;
+import iskallia.vault.entity.ai.ThrowProjectilesGoal;
 import iskallia.vault.entity.entity.EternalEntity;
 import iskallia.vault.init.ModSounds;
 import net.minecraft.server.level.ServerBossEvent;
@@ -24,30 +28,33 @@ import net.minecraft.world.phys.EntityHitResult;
 
 public class WoldBoss extends Zombie implements VaultBoss {
 
-    public TeleportRandomly<WoldBoss> teleportTask = new TeleportRandomly(this, new TeleportRandomly.Condition[]{(entity, source, amount) -> {
+    public TeleportRandomly<WoldBoss> teleportTask = new TeleportRandomly(this, (entity, source, amount) -> {
         return !(source.getEntity() instanceof LivingEntity) ? 0.2 : 0.0;
-    }});
+    });
     public final ServerBossEvent bossInfo;
     public RegenAfterAWhile<WoldBoss> regenAfterAWhile;
 
-    public WoldBoss(EntityType<? extends Zombie> p_34271_, Level p_34272_) {
-        super(p_34271_, p_34272_);
+    public WoldBoss(EntityType<? extends Zombie> pEntityType, Level pLevel) {
+        super(pEntityType, pLevel);
         this.bossInfo = new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS);
-        this.regenAfterAWhile = new RegenAfterAWhile(this);
+        this.regenAfterAWhile = new RegenAfterAWhile<>(this);
     }
 
+    @Override
     protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
     }
 
+    @Override
     protected void doUnderWaterConversion() {
     }
 
+    @Override
     protected void addBehaviourGoals() {
         super.addBehaviourGoals();
         this.goalSelector.addGoal(1, TeleportGoal.builder(this).start((entity) -> {
             return entity.getTarget() != null && entity.tickCount % 60 == 0;
         }).to((entity) -> {
-            return entity.getTarget().position().add((entity.random.nextDouble() - 0.5) * 8.0, (double)(entity.random.nextInt(16) - 8), (entity.random.nextDouble() - 0.5) * 8.0);
+            return entity.getTarget().position().add((entity.random.nextDouble() - 0.5) * 8.0, entity.random.nextInt(16) - 8, (entity.random.nextDouble() - 0.5) * 8.0);
         }).then((entity) -> {
             entity.playSound(ModSounds.BOSS_TP_SFX, 1.0F, 1.0F);
         }).build());
@@ -59,10 +66,12 @@ public class WoldBoss extends Zombie implements VaultBoss {
         this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(100.0);
     }
 
+    @Override
     protected boolean isSunSensitive() {
         return false;
     }
 
+    @Override
     public boolean hurt(DamageSource source, float amount) {
         if (!(source.getEntity() instanceof Player) && !(source.getEntity() instanceof EternalEntity) && source != DamageSource.OUT_OF_WORLD) {
             return false;
@@ -82,6 +91,7 @@ public class WoldBoss extends Zombie implements VaultBoss {
         return this.bossInfo;
     }
 
+    @Override
     public void tick() {
         super.tick();
         if (!this.level.isClientSide) {
@@ -91,34 +101,41 @@ public class WoldBoss extends Zombie implements VaultBoss {
 
     }
 
+    @Override
     public void startSeenByPlayer(ServerPlayer player) {
         super.startSeenByPlayer(player);
         this.bossInfo.addPlayer(player);
     }
 
+    @Override
     public void stopSeenByPlayer(ServerPlayer player) {
         super.stopSeenByPlayer(player);
         this.bossInfo.removePlayer(player);
     }
 
+    @Override
     public SoundSource getSoundSource() {
         return SoundSource.HOSTILE;
     }
 
+    @Override
     protected SoundEvent getAmbientSound() {
         return xyz.iwolfking.woldsvaults.init.ModSounds.WOLD_AMBIENT;
     }
 
+    @Override
     public SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return xyz.iwolfking.woldsvaults.init.ModSounds.WOLD_HURT;
     }
 
+    @Override
     public SoundEvent getDeathSound() {
         return xyz.iwolfking.woldsvaults.init.ModSounds.WOLD_DEATH;
     }
 
     public static final ThrowProjectilesGoal.Projectile BALLS = (world1, shooter) -> {
         return new Snowball(world1, shooter) {
+            @Override
             protected void onHitEntity(EntityHitResult raycast) {
                 Entity entity = raycast.getEntity();
                 if (entity != shooter) {

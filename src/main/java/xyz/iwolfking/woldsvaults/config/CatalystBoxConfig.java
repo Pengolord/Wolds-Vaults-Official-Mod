@@ -8,11 +8,11 @@ import net.minecraft.world.item.Items;
 
 public class CatalystBoxConfig extends Config {
     @Expose
-    public iskallia.vault.util.data.WeightedList<ProductEntry> POOL = new WeightedList();
+    public WeightedList<ProductEntry> POOL = new WeightedList<>();
 
     public String getName() {
-        /* 14 */     return "catalyst_box";
-        /*    */   }
+        return "catalyst_box";
+    }
 
     protected void reset() {
         this.POOL.add(new ProductEntry(Items.APPLE, 8, null), 3);

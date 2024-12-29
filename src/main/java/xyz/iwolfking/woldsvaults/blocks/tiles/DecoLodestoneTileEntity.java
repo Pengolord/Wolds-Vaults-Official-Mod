@@ -57,13 +57,13 @@ public class DecoLodestoneTileEntity extends BlockEntity {
                     ParticleEngine mgr = Minecraft.getInstance().particleEngine;
                     float ringSize = 3.0F;
 
-                    for(int i = 0; (float)i < ringSize; ++i) {
-                        float angle = (float)(i + 1) * 3.1415927F / ringSize + (float)this.getLevel().getGameTime() / 7.0F;
+                    for(int i = 0; i < ringSize; ++i) {
+                        float angle = (i + 1) * 3.1415927F / ringSize + this.getLevel().getGameTime() / 7.0F;
                         float radius = 1.0F;
-                        float x = (float)((double)((float)pos.getX() + 0.5F) + (double)radius * Math.cos((double)angle));
-                        float y = (float)((double)((float)pos.getY() + 0.2F * (float)(3 * i + 1)) + Math.sin((double)angle) * 0.4000000059604645);
-                        float z = (float)((double)((float)pos.getZ() + 0.5F) + (double)radius * Math.sin((double)angle));
-                        Particle fwParticle = mgr.createParticle(ParticleTypes.FIREWORK, (double)x, (double)y, (double)z, 0.0, 0.0, 0.0);
+                        float x = (float)((pos.getX() + 0.5F) + radius * Math.cos(angle));
+                        float y = (float)((pos.getY() + 0.2F * (3 * i + 1)) + Math.sin(angle) * 0.4000000059604645);
+                        float z = (float)((pos.getZ() + 0.5F) + radius * Math.sin(angle));
+                        Particle fwParticle = mgr.createParticle(ParticleTypes.FIREWORK, x, y, z, 0.0, 0.0, 0.0);
                         if (fwParticle != null) {
                             fwParticle.setColor(0.76862746F, 0.13333334F, 0.9254902F);
                             fwParticle.setParticleSpeed(0.0, 0.0, 0.0);
@@ -76,22 +76,26 @@ public class DecoLodestoneTileEntity extends BlockEntity {
         }
     }
 
+    @Override
     protected void saveAdditional(@Nonnull CompoundTag nbt) {
         super.saveAdditional(nbt);
         nbt.putBoolean("Consumed", this.consumed);
     }
 
+    @Override
     public void load(@Nonnull CompoundTag nbt) {
         super.load(nbt);
         this.consumed = nbt.getBoolean("Consumed");
     }
 
     @Nonnull
+    @Override
     public CompoundTag getUpdateTag() {
         return this.saveWithoutMetadata();
     }
 
     @Nullable
+    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }

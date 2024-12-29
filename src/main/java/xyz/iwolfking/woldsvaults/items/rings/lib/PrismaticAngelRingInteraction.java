@@ -39,11 +39,7 @@ public class PrismaticAngelRingInteraction {
     public static ICapabilityProvider initCapabilities() {
 
         final ICurio curio = new AbstractRingCurio(ModItems.PRISMATIC_ANGEL_RING) {
-            final ItemStack stack;
-
-            {
-                this.stack = new ItemStack(ModItems.PRISMATIC_ANGEL_RING.asItem());
-            }
+            final ItemStack stack = new ItemStack(ModItems.PRISMATIC_ANGEL_RING.asItem());
 
             public ItemStack getStack() {
                 return this.stack;
@@ -54,11 +50,11 @@ public class PrismaticAngelRingInteraction {
             protected boolean checkIfAllowedToFly(Player player, ItemStack stack) {
 //                boolean hasAngelExpertise = false;
 //                for (TieredSkill learnedTalentNode : ClientExpertiseData.getLearnedTalentNodes()) {
-//                    /*     */               LearnableSkill temp = learnedTalentNode.getChild();
-//                    /*     */               if (temp instanceof AngelExpertise) {
-//                                                  hasAngelExpertise = true;
-//                        /*     */           }
-//                    /*     */             }
+//                    LearnableSkill temp = learnedTalentNode.getChild();
+//                    if (temp instanceof AngelExpertise) {
+//                        hasAngelExpertise = true;
+//                    }
+//                }
 //                if (!hasAngelExpertise) {
 //                    return false;
 //                }
@@ -69,16 +65,12 @@ public class PrismaticAngelRingInteraction {
                 return new TranslatableComponent("item.angelring.itemring.not_enough_xp");
             }
 
-            protected void payForFlight(Player player, ItemStack stack) {
-                return;
-            }
+            protected void payForFlight(Player player, ItemStack stack) {}
 
 
         };
         return new ICapabilityProvider() {
-            private final LazyOptional<ICurio> curioOpt = LazyOptional.of(() -> {
-                return curio;
-            });
+            private final LazyOptional<ICurio> curioOpt = LazyOptional.of(() -> curio);
 
             @Nonnull
             public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {

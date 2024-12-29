@@ -9,12 +9,12 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-@Mixin(value = ModBlocks.class)
+@Mixin(value = ModBlocks.class, remap = false)
 public class MixinModBlocks {
 
-    @ModifyArg(method = "lambda$static$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/BlockEntityType$Builder;of(Lnet/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier;[Lnet/minecraft/world/level/block/Block;)Lnet/minecraft/world/level/block/entity/BlockEntityType$Builder;"), index = 1)
-    private static Block[] injectNewBackpack(Block[] p_155275_) {
-        ArrayList<Block> backpackList = new java.util.ArrayList<>(Arrays.stream(p_155275_).toList());
+    @ModifyArg(method = "lambda$static$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/BlockEntityType$Builder;of(Lnet/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier;[Lnet/minecraft/world/level/block/Block;)Lnet/minecraft/world/level/block/entity/BlockEntityType$Builder;", remap = true), index = 1)
+    private static Block[] injectNewBackpack(Block[] pValidBlocks) {
+        ArrayList<Block> backpackList = new java.util.ArrayList<>(Arrays.stream(pValidBlocks).toList());
         backpackList.add(xyz.iwolfking.woldsvaults.init.ModBlocks.XL_BACKPACK);
         return backpackList.toArray(new Block[]{});
    }

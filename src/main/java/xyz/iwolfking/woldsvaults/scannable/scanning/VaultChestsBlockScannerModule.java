@@ -30,7 +30,7 @@ public enum VaultChestsBlockScannerModule implements BlockScannerModule {
 
     private Predicate<BlockState> filter;
 
-    public static Set<ResourceLocation> vaultBlocks = (Set) Util.make(new HashSet(), (c) -> {
+    public static Set<ResourceLocation> vaultBlocks = Util.make(new HashSet<>(), c -> {
         c.add(ModBlocks.LIVING_CHEST.getRegistryName());
         c.add(ModBlocks.LIVING_STRONGBOX.getRegistryName());
         c.add(ModBlocks.GILDED_CHEST.getRegistryName());

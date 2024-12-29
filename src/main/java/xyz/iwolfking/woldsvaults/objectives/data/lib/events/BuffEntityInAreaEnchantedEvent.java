@@ -37,9 +37,7 @@ public class BuffEntityInAreaEnchantedEvent extends BasicEnchantedEvent {
 
         nearbyEntities.forEach(livingEntity -> {
             if(!(livingEntity instanceof Player) && shouldGrantAllEffects) {
-                effects.forEach((mobEffectInstance, aDouble) -> {
-                    livingEntity.addEffect(mobEffectInstance);
-                });
+                effects.forEach((mobEffectInstance, aDouble) -> livingEntity.addEffect(mobEffectInstance));
             }
             else {
                 for(int i = 0; i < randomEffectCount; i++) {

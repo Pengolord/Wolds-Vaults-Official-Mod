@@ -24,15 +24,11 @@ public class InceptionEnchantedEvent extends BasicEnchantedEvent {
     public void triggerEvent(BlockPos pos, ServerPlayer player, Vault vault) {
         if(shouldEventsBeRandom) {
             for(int i = 0; i < count; i++) {
-                events.getRandom().ifPresent(basicEnchantedEvent -> {
-                    basicEnchantedEvent.triggerEvent(pos, player, vault);
-                });
+                events.getRandom().ifPresent(basicEnchantedEvent -> basicEnchantedEvent.triggerEvent(pos, player, vault));
             }
         }
         else {
-            events.forEach((basicEnchantedEvent, aDouble) -> {
-                basicEnchantedEvent.triggerEvent(pos, player, vault);
-            });
+            events.forEach((basicEnchantedEvent, aDouble) -> basicEnchantedEvent.triggerEvent(pos, player, vault));
         }
 
         super.triggerEvent(pos, player, vault);

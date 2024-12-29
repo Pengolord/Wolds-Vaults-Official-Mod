@@ -29,7 +29,7 @@ public class MixinFireballAbility {
      */
     @Overwrite
     protected Ability.ActionResult doAction(SkillContext context) {
-        return (Ability.ActionResult) context.getSource().as(ServerPlayer.class).map((player) -> {
+        return context.getSource().as(ServerPlayer.class).map(player -> {
             VaultFireball fireball = new VaultFireball(player.level, player);
             fireball.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.0F, 0.0F);
             fireball.pickup = AbstractArrow.Pickup.DISALLOWED;
@@ -53,7 +53,7 @@ public class MixinFireballAbility {
 
                 }
             }
-            player.level.playSound((Player) null, player, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
+            player.level.playSound(null, player, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
             return Ability.ActionResult.successCooldownImmediate();
         }).orElse(Ability.ActionResult.fail());
     }

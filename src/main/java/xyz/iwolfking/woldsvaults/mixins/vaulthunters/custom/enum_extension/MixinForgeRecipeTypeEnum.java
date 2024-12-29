@@ -16,6 +16,7 @@ public class MixinForgeRecipeTypeEnum {
     @Shadow
     @Final
     @Mutable
+    @SuppressWarnings("target")
     private static ForgeRecipeType[] $VALUES;
 
     private static final ForgeRecipeType AUGMENT = enumExpansion$addVariant("AUGMENT", AugmentForgeRecipe::new, () -> {

@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(value = WoodStorageBlockBase.class)
 public class MixinPackingTape {
     @Redirect(method = "packStorage", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setDamageValue(I)V"))
-    private static void removeDurabilityFromPackingTape(ItemStack instance, int p_41722_) {
+    private static void removeDurabilityFromPackingTape(ItemStack instance, int pDamage) {
         
     }
 

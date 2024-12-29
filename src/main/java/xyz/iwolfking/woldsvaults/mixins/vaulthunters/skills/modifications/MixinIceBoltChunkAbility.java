@@ -32,7 +32,6 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import xyz.iwolfking.woldsvaults.modifiers.gear.special.GlacialBlastModification;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,18 +50,17 @@ public abstract class MixinIceBoltChunkAbility  extends AbstractIceBoltAbility {
      * @author
      * @reason
      */
-    @Overwrite
+    @Overwrite @Override
     protected Ability.ActionResult doAction(SkillContext context) {
-        return (Ability.ActionResult) context.getSource().as(ServerPlayer.class).map((player) -> {
+        return context.getSource().as(ServerPlayer.class).map((player) -> {
             IceBoltEntity arrow = new IceBoltEntity(player, IceBoltEntity.Model.CHUNK, (result) -> {
                 float radius = this.getRadius(player);
                 Vec3 pos = result.getLocation();
                 ModNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new StonefallFrostParticleMessage(pos, this.getRadius(player)));
-                player.level.playSound((Player) null, pos.x, pos.y, pos.z, ModSounds.NOVA_SPEED, SoundSource.PLAYERS, 0.2F, 1.0F);
+                player.level.playSound(null, pos.x, pos.y, pos.z, ModSounds.NOVA_SPEED, SoundSource.PLAYERS, 0.2F, 1.0F);
                 List<LivingEntity> nearbyEntities = player.level.getNearbyEntities(LivingEntity.class, TargetingConditions.forCombat().selector((entity) -> {
                     return !(entity instanceof Player);
                 }).range(1000.0), player, AABBHelper.create(pos, radius));
-                Iterator var6 = nearbyEntities.iterator();
 
                 int hypothermia = 1;
                 for(ConfiguredModification<GlacialBlastModification, IntRangeConfig, IntValue> mod : SpecialAbilityModification.getModifications(player, GlacialBlastModification.class)) {
@@ -72,9 +70,7 @@ public abstract class MixinIceBoltChunkAbility  extends AbstractIceBoltAbility {
                     hypothermia = 1;
                 }
 
-                while (var6.hasNext()) {
-                    LivingEntity nearbyEntity = (LivingEntity) var6.next();
-
+                for (LivingEntity nearbyEntity : nearbyEntities) {
 
                     nearbyEntity.addEffect(new MobEffectInstance(ModEffects.CHILLED, this.getDurationTicks(player), this.getAmplifier(), false, false, false));
 
@@ -83,16 +79,16 @@ public abstract class MixinIceBoltChunkAbility  extends AbstractIceBoltAbility {
                     if (player.level.random.nextFloat() <= (this.glacialChance * hypothermia)) {
                         nearbyEntity.removeEffect(ModEffects.GLACIAL_SHATTER);
                         nearbyEntity.addEffect(new MobEffectInstance(ModEffects.GLACIAL_SHATTER, this.getDurationTicks(player), this.getAmplifier()));
-                        player.level.playSound((Player) null, pos.x, pos.y, pos.z, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.25F, 0.65F);
+                        player.level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 0.25F, 0.65F);
                     }
                 }
 
             });
             arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, this.getThrowPower(), 0.0F);
             player.level.addFreshEntity(arrow);
-            player.level.playSound((Player) null, player, ModSounds.ICE_BOLT_CHUNK, SoundSource.PLAYERS, 1.0F, player.level.random.nextFloat() * 0.3F + 0.9F);
-            return Ability.ActionResult.successCooldownImmediate();
-        }).orElse(Ability.ActionResult.fail());
+            player.level.playSound(null, player, ModSounds.ICE_BOLT_CHUNK, SoundSource.PLAYERS, 1.0F, player.level.random.nextFloat() * 0.3F + 0.9F);
+            return ActionResult.successCooldownImmediate();
+        }).orElse(ActionResult.fail());
     }
 
     private static void setAbilityData(LivingEntity livingEntity, int intervalTicks, UUID playerUUID) {

@@ -18,7 +18,7 @@ public class ToolStylishAdderRecipe extends VanillaAnvilRecipe {
 
         ItemStack primary = context.getInput()[0];
         ItemStack secondary = context.getInput()[1];
-        if (primary.getItem() instanceof ToolItem tool && secondary.getItem() == ModItems.STYLISH_FOCUS) {
+        if (primary.getItem() instanceof ToolItem && secondary.getItem() == ModItems.STYLISH_FOCUS) {
             ItemStack output = primary.copy();
             VaultGearData gear = ToolGearData.read(output);
             if(gear.getFirstValue(xyz.iwolfking.woldsvaults.init.ModGearAttributes.ROTATING_TOOL).isPresent()) {

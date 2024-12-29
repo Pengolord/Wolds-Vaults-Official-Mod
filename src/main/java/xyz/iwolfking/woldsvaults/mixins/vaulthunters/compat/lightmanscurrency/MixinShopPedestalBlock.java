@@ -15,7 +15,6 @@ import iskallia.vault.world.data.ServerVaults;
 import me.fallenbreath.conditionalmixin.api.annotation.Condition;
 import me.fallenbreath.conditionalmixin.api.annotation.Restriction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -33,7 +32,11 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,21 +52,19 @@ public abstract class MixinShopPedestalBlock extends Block implements EntityBloc
 
     @Shadow @Final public static BooleanProperty ACTIVE;
 
-    public MixinShopPedestalBlock(Properties p_49795_) {
-        super(p_49795_);
+    public MixinShopPedestalBlock(Properties pProperties) {
+        super(pProperties);
     }
-
 
 
     /**
      * @author iwolfking
      * @reason Handle shop pedestal to extend coin definitions
      */
-    @Overwrite
-    public InteractionResult m_6227_(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-        BlockEntity var8 = worldIn.getBlockEntity(pos);
+    @Overwrite(remap = true) @Override
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         ItemStack c;
-        if (var8 instanceof ShopPedestalBlockTile tile) {
+        if (worldIn.getBlockEntity(pos) instanceof ShopPedestalBlockTile tile) {
             if(ServerVaults.get(worldIn).isPresent()) {
                 Optional<Vault> vaultOpt = ServerVaults.get(worldIn);
 
@@ -86,13 +87,13 @@ public abstract class MixinShopPedestalBlock extends Block implements EntityBloc
                     ShopPedestalPriceEvent event = new ShopPedestalPriceEvent(player, c, tile.getCurrencyStack());
                     MinecraftForge.EVENT_BUS.post(event);
                     ItemStack currency = event.getCost();
-                    return (InteractionResult) player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, (Direction) null).map((itemHandler) -> {
+                    return player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).map(itemHandler -> {
                         List<InventoryUtil.ItemAccess> allItems = List.of();
                         if (!player.isCreative()) {
                             allItems = InventoryUtil.findAllItems(player);
                             if(!woldsVaults$lightmansCurrencyExtract(player, currency)) {
                                 if (worldIn.isClientSide) {
-                                    player.displayClientMessage(new TranslatableComponent("message.the_vault.shop_pedestal.fail", new Object[]{currency.getHoverName()}), true);
+                                    player.displayClientMessage(new TranslatableComponent("message.the_vault.shop_pedestal.fail", currency.getHoverName()), true);
                                 }
 
                                 return InteractionResult.sidedSuccess(worldIn.isClientSide);
@@ -102,19 +103,19 @@ public abstract class MixinShopPedestalBlock extends Block implements EntityBloc
 
                         if (!worldIn.isClientSide) {
                             if (!player.isCreative()) {
-                                BlockState inactiveState = (BlockState) state.setValue(ACTIVE, false);
+                                BlockState inactiveState = state.setValue(ACTIVE, false);
                                 tile.setRemoved();
                                 worldIn.setBlockAndUpdate(pos, inactiveState);
                             }
                             //ItemHandlerHelper.giveItemToPlayer(player, c.copy());
                             popResource(worldIn, pos, c.copy());
-                            worldIn.playSound((Player) null, pos, SoundEvents.AMETHYST_BLOCK_STEP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            worldIn.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_STEP, SoundSource.BLOCKS, 1.0F, 1.0F);
                         } else {
                             if (!player.getAbilities().instabuild) {
                                 tile.setRemoved();
                             }
 
-                            player.displayClientMessage(new TranslatableComponent("message.the_vault.shop_pedestal.purchase", new Object[]{c.getCount(), c.getHoverName(), currency.getCount(), currency.getHoverName()}), true);
+                            player.displayClientMessage(new TranslatableComponent("message.the_vault.shop_pedestal.purchase", c.getCount(), c.getHoverName(), currency.getCount(), currency.getHoverName()), true);
                         }
 
                         return InteractionResult.sidedSuccess(worldIn.isClientSide);
@@ -129,16 +130,14 @@ public abstract class MixinShopPedestalBlock extends Block implements EntityBloc
             ItemStack o = player.getItemInHand(InteractionHand.MAIN_HAND);
             c = player.getItemInHand(InteractionHand.OFF_HAND);
             if (!c.isEmpty() && !o.isEmpty()) {
-                worldIn.setBlockAndUpdate(pos, (BlockState) state.setValue(ACTIVE, true));
-                BlockEntity var10 = worldIn.getBlockEntity(pos);
-                if (var10 instanceof ShopPedestalBlockTile) {
-                    ShopPedestalBlockTile tile = (ShopPedestalBlockTile) var10;
+                worldIn.setBlockAndUpdate(pos, state.setValue(ACTIVE, true));
+                if (worldIn.getBlockEntity(pos) instanceof ShopPedestalBlockTile tile) {
                     tile.setOffer(o.copy(), OverSizedItemStack.of(c.copy()));
                     tile.setChanged();
                     return InteractionResult.sidedSuccess(worldIn.isClientSide);
                 }
 
-                worldIn.setBlockAndUpdate(pos, (BlockState) state.setValue(ACTIVE, false));
+                worldIn.setBlockAndUpdate(pos, state.setValue(ACTIVE, false));
             }
         }
 

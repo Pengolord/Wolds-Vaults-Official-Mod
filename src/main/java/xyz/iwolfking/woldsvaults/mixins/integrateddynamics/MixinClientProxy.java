@@ -42,7 +42,7 @@ public abstract class MixinClientProxy extends ClientProxyComponent {
      * @author iwolfking
      * @reason Disable ID Terminal Keybind in Vaults
      */
-    @Overwrite
+    @Overwrite @Override
     public void registerKeyBindings(IKeyRegistry keyRegistry) {
         ClientRegistry.registerKeyBinding(TERMINAL_TAB_NEXT);
         ClientRegistry.registerKeyBinding(TERMINAL_TAB_PREVIOUS);

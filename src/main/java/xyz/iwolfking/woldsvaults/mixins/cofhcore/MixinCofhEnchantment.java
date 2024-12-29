@@ -10,7 +10,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -22,13 +21,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = EnchantmentCoFH.class, remap = false)
 public class MixinCofhEnchantment extends Enchantment{
 
-    @Shadow protected boolean enable;
-    @Shadow protected boolean allowVillagerTrade;
-
-    @Shadow protected boolean allowOnBooks;
-
-    protected MixinCofhEnchantment(Rarity p_44676_, EnchantmentCategory p_44677_, EquipmentSlot[] p_44678_) {
-        super(p_44676_, p_44677_, p_44678_);
+    protected MixinCofhEnchantment(Enchantment.Rarity rarityIn, EnchantmentCategory typeIn, EquipmentSlot[] slots) {
+        super(rarityIn, typeIn, slots);
     }
 
     @Inject(
@@ -38,18 +32,16 @@ public class MixinCofhEnchantment extends Enchantment{
             remap = false
     )
     private void canGetAtEnchantingTable(ItemStack stack, CallbackInfoReturnable<Boolean> ci) {
-        Enchantment thisEnchantment = (EnchantmentCoFH)(Object)this;
-        if (EnchantmentUtil.isEnchantmentBlocked(thisEnchantment, stack)) {
+        if (EnchantmentUtil.isEnchantmentBlocked(this, stack)) {
             ci.setReturnValue(false);
         }
-
     }
 
     /**
      * @author iwolfking
      * @reason Always disallow trading for Ensorcellation enchants
      */
-    @Overwrite
+    @Overwrite @Override
     public boolean isTradeable() {
         return false;
     }
@@ -58,7 +50,7 @@ public class MixinCofhEnchantment extends Enchantment{
      * @author iwolfking
      * @reason Always disallow books for Ensorcellation enchants
      */
-    @Overwrite
+    @Overwrite @Override
     public boolean isAllowedOnBooks() {
         return false;
     }

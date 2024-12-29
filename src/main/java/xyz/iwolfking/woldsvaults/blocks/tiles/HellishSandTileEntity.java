@@ -15,7 +15,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import xyz.iwolfking.woldsvaults.init.ModBlocks;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,12 +39,8 @@ public class HellishSandTileEntity extends LootableTileEntity implements Templat
     private static void clientTick(Level level, BlockPos pos, BlockState state, HellishSandTileEntity tile) {
         if (rand.nextInt(14) == 0) {
             boolean hasEmptyBlockAround = false;
-            Direction[] var5 = Direction.values();
-            int var6 = var5.length;
 
-            int color;
-            for(color = 0; color < var6; ++color) {
-                Direction dir = var5[color];
+            for (Direction dir : Direction.values()) {
                 BlockPos offsetPos = pos.relative(dir);
                 if (level.isEmptyBlock(offsetPos)) {
                     hasEmptyBlockAround = true;
@@ -55,13 +50,13 @@ public class HellishSandTileEntity extends LootableTileEntity implements Templat
 
             if (hasEmptyBlockAround) {
                 ParticleEngine engine = Minecraft.getInstance().particleEngine;
-                float hueGold = 0.125F;
-                color = Color.HSBtoRGB(hueGold, 0.2F + rand.nextFloat() * 0.6F, 1.0F);
                 float r = 128;
                 float g = 0;
                 float b = 0;
-                SimpleAnimatedParticle particle = (SimpleAnimatedParticle)engine.createParticle(ParticleTypes.FIREWORK.getType(), (double)pos.getX() + 0.5 + (double)(rand.nextFloat() * (float)(rand.nextBoolean() ? 1 : -1)), (double)pos.getY() + 0.5 + (double)(rand.nextFloat() * (float)(rand.nextBoolean() ? 1 : -1)), (double)pos.getZ() + 0.5 + (double)(rand.nextFloat() * (float)(rand.nextBoolean() ? 1 : -1)), 0.0, (double)(rand.nextFloat() * 0.01F), 0.0);
-                particle.setColor(r, g, b);
+                SimpleAnimatedParticle particle = (SimpleAnimatedParticle)engine.createParticle(ParticleTypes.FIREWORK.getType(), pos.getX() + 0.5 + rand.nextFloat() * (rand.nextBoolean() ? 1 : -1), pos.getY() + 0.5 + rand.nextFloat() * (rand.nextBoolean() ? 1 : -1), pos.getZ() + 0.5 + rand.nextFloat() * (rand.nextBoolean() ? 1 : -1), 0.0, (rand.nextFloat() * 0.01F), 0.0);
+                if (particle != null) {
+                    particle.setColor(r, g, b);
+                }
             }
         }
     }
@@ -70,11 +65,13 @@ public class HellishSandTileEntity extends LootableTileEntity implements Templat
         return Collections.unmodifiableList(this.templateTags);
     }
 
+    @Override
     public void load(CompoundTag nbt) {
         super.load(nbt);
         this.templateTags.addAll(this.loadTemplateTags(nbt));
     }
 
+    @Override
     protected void saveAdditional(CompoundTag nbt) {
         super.saveAdditional(nbt);
         this.saveTemplateTags(nbt);

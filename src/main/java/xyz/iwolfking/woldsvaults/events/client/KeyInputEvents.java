@@ -20,7 +20,10 @@ public class KeyInputEvents {
             isFeatherFixEnabled = !isFeatherFixEnabled;
 
             String state = isFeatherFixEnabled ? "ON" : "OFF";
-            Minecraft.getInstance().player.displayClientMessage(new TextComponent("Toggled Feather Fix: " + state).withStyle(ChatFormatting.YELLOW), true);
+            var player = Minecraft.getInstance().player;
+            if (player != null){
+                player.displayClientMessage(new TextComponent("Toggled Feather Fix: " + state).withStyle(ChatFormatting.YELLOW), true);
+            }
         }
     }
 }

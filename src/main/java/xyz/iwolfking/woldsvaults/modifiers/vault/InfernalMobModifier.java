@@ -19,17 +19,16 @@ import java.util.Random;
 public class InfernalMobModifier extends VaultModifier<InfernalMobModifier.Properties> {
     public InfernalMobModifier(ResourceLocation id, Properties properties, Display display) {
         super(id, properties, display);
-        this.setDescriptionFormatter((t, p, s) -> {
-            return t.formatted((int)Math.abs(p.getChance() * (double)s * 100.0));
-        });
+        this.setDescriptionFormatter((t, p, s) -> t.formatted((int)Math.abs(p.getChance() * s * 100.0)));
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault, ModifierContext context) {
-        CommonEvents.ENTITY_SPAWN.register(context.getUUID(), EventPriority.HIGHEST, (event) -> {
+        CommonEvents.ENTITY_SPAWN.register(context.getUUID(), EventPriority.HIGHEST, event -> {
             if (event.getEntity().level == world) {
                 Entity spawnedEntity = event.getEntity();
                 if (spawnedEntity instanceof LivingEntity entity) {
-                    if (((InfernalMobModifier.Properties)this.properties).filter.test(entity)) {
+                    if ((this.properties).filter.test(entity)) {
                         Random random = entity.level.getRandom();
                        if(random.nextDouble() < this.properties.getChance()) {
                            InfernalMobsCore.instance().addEntityModifiersByString(entity, BrutalBossesRegistry.getRandomMobModifiers(this.properties.getAmount(), false));

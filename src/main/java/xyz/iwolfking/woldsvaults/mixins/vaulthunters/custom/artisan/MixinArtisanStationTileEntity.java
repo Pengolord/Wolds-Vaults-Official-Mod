@@ -22,8 +22,8 @@ public abstract class MixinArtisanStationTileEntity extends BlockEntity {
     @Shadow @Final @Mutable
     private OverSizedInventory inventory = new OverSizedInventory.FilteredInsert(17, this, this::canInsertInput);
 
-    public MixinArtisanStationTileEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
-        super(p_155228_, p_155229_, p_155230_);
+    public MixinArtisanStationTileEntity(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
+        super(pType, pPos, pBlockState);
     }
 
     @Inject(method = "canInsertInput", at = @At("HEAD"),cancellable = true)

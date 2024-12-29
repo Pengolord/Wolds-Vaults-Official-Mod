@@ -17,19 +17,19 @@ public class HauntedBraziersConfig extends Config {
     }
 
     public ResourceLocation getStackModifierPool(int level) {
-        return ((HauntedBraziersConfig.Entry)this.levels.getForLevel(level).orElseThrow()).stackModifierPool;
+        return this.levels.getForLevel(level).orElseThrow().stackModifierPool;
     }
 
     public ResourceLocation getOverStackModifierPool(int level) {
-        return ((HauntedBraziersConfig.Entry)this.levels.getForLevel(level).orElseThrow()).overStackModifierPool;
+        return this.levels.getForLevel(level).orElseThrow().overStackModifierPool;
     }
 
     public ResourceLocation getOverStackLootTable(int level) {
-        return ((HauntedBraziersConfig.Entry)this.levels.getForLevel(level).orElseThrow()).overStackLootTable;
+        return this.levels.getForLevel(level).orElseThrow().overStackLootTable;
     }
 
     protected void reset() {
-        this.levels = new LevelEntryList();
+        this.levels = new LevelEntryList<>();
     }
 
     private static class Entry implements LevelEntryList.ILevelEntry {

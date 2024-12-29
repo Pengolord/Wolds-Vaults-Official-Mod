@@ -4,7 +4,11 @@ import com.google.gson.annotations.SerializedName;
 import iskallia.vault.config.gear.VaultGearTierConfig;
 import iskallia.vault.gear.attribute.VaultGearModifier;
 import iskallia.vault.gear.data.VaultGearData;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import javax.annotation.Nullable;
@@ -17,6 +21,7 @@ public abstract class MixinModifierAffixTagGroupEnum {
     @Shadow
     @Final
     @Mutable
+    @SuppressWarnings("target")
     private static VaultGearTierConfig.ModifierAffixTagGroup[] $VALUES;
 
     @SerializedName("UNUSUAL_PREFIX")
@@ -31,7 +36,7 @@ public abstract class MixinModifierAffixTagGroupEnum {
 
     @Unique
     private static VaultGearTierConfig.ModifierAffixTagGroup enumExpansion$addVariant(String internalName, @Nullable VaultGearModifier.AffixType targetAffixType, BiPredicate apply) {
-        ArrayList<VaultGearTierConfig.ModifierAffixTagGroup> variants = new ArrayList<VaultGearTierConfig.ModifierAffixTagGroup >(Arrays.asList(MixinModifierAffixTagGroupEnum.$VALUES));
+        ArrayList<VaultGearTierConfig.ModifierAffixTagGroup> variants = new ArrayList<>(Arrays.asList(MixinModifierAffixTagGroupEnum.$VALUES));
         VaultGearTierConfig.ModifierAffixTagGroup  type = enumExpansion$invokeInit(internalName, variants.get(variants.size() - 1).ordinal() + 1, targetAffixType, apply);
         variants.add(type);
         MixinModifierAffixTagGroupEnum.$VALUES = variants.toArray(new VaultGearTierConfig.ModifierAffixTagGroup[0]);

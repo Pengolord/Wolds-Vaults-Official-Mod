@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 @Mixin(value = PlayerVaultStats.class, remap = false)
@@ -52,9 +51,8 @@ public abstract class MixinPlayerVaultStats {
             this.exp = Math.max(this.exp, 0);
             ExpertiseTree expertises = PlayerExpertisesData.get(player.getLevel()).getExpertises(player);
             float increase = 0.0F;
-            ExperiencedExpertise expertise;
-            for(Iterator var5 = expertises.getAll(ExperiencedExpertise.class, Skill::isUnlocked).iterator(); var5.hasNext(); increase += expertise.getIncreasedExpPercentage()) {
-                expertise = (ExperiencedExpertise)var5.next();
+            for (ExperiencedExpertise expertise1 : expertises.getAll(ExperiencedExpertise.class, Skill::isUnlocked)) {
+                increase += expertise1.getIncreasedExpPercentage();
             }
             float multipler = ModConfigs.LEVELS_META.getExpMultiplier();
             this.exp += (int) (exp * (1.0F + increase) * multipler);

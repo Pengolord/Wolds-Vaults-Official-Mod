@@ -82,7 +82,7 @@ public class SneakyGetawayAbility extends InstantManaAbility {
             Adapters.INT_SEGMENTED_7.writeNbt(this.durationTicks).ifPresent(tag -> nbt.put("durationTicks",tag));
             Adapters.FLOAT.writeNbt(this.size).ifPresent(tag -> nbt.put("size", tag));
             Adapters.FLOAT.writeNbt(this.speedPercentAdded).ifPresent(tag -> nbt.put("speedPercentAdded", tag));
-            return (CompoundTag)nbt;
+            return nbt;
         });
     }
 
@@ -100,7 +100,7 @@ public class SneakyGetawayAbility extends InstantManaAbility {
             Adapters.INT_SEGMENTED_7.writeJson(this.durationTicks).ifPresent(element -> json.add("durationTicks",element));
             Adapters.FLOAT.writeJson(this.size).ifPresent(element -> json.add("size", element));
             Adapters.FLOAT.writeJson(this.speedPercentAdded).ifPresent(element -> json.add("speedPercentAdded", element));
-            return (JsonObject)json;
+            return json;
         });
     }
 

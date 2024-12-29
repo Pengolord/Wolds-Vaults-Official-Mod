@@ -29,6 +29,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import xyz.iwolfking.woldsvaults.blocks.tiles.DungeonPedestalTileEntity;
 import xyz.iwolfking.woldsvaults.init.ModBlocks;
 
+import javax.annotation.Nullable;
+
 public class DungeonPedestalBlock extends Block implements EntityBlock, GameMasterBlock {
     public static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 
@@ -37,15 +39,18 @@ public class DungeonPedestalBlock extends Block implements EntityBlock, GameMast
     }
 
 
-    @javax.annotation.Nullable
+    @Nullable
+    @Override
     public <A extends BlockEntity> BlockEntityTicker<A> getTicker(Level world, BlockState state, BlockEntityType<A> type) {
         return BlockHelper.getTicker(type, ModBlocks.DUNGEON_PEDESTAL_TILE_ENTITY_BLOCK_ENTITY_TYPE, DungeonPedestalTileEntity::tick);
     }
 
+    @Override
     public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         return SHAPE;
     }
 
+    @Override
     public void attack(BlockState state, Level level, BlockPos pos, Player player) {
         if (!level.isClientSide()) {
             this.breakPedestal(state, level, pos);
@@ -53,6 +58,7 @@ public class DungeonPedestalBlock extends Block implements EntityBlock, GameMast
 
     }
 
+    @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             this.breakPedestal(state, level, pos);
@@ -64,15 +70,14 @@ public class DungeonPedestalBlock extends Block implements EntityBlock, GameMast
 
     private void breakPedestal(BlockState state, Level level, BlockPos pos) {
         if (level instanceof ServerLevel sWorld) {
-            BlockEntity var5 = sWorld.getBlockEntity(pos);
-            if (var5 instanceof DungeonPedestalTileEntity pedestal) {
+            if (sWorld.getBlockEntity(pos) instanceof DungeonPedestalTileEntity pedestal) {
                 if (!pedestal.getContained().isEmpty()) {
                     popResource(sWorld, pos, pedestal.getContained());
                     pedestal.setContained(ItemStack.EMPTY);
                 }
 
-                Vec3 vec3 = new Vec3((double)((float)pos.getX() + 0.5F), (double)((float)pos.getY() + 0.5F), (double)((float)pos.getZ() + 0.5F));
-                sWorld.playSound((Player)null, vec3.x, vec3.y, vec3.z, ModSounds.CRATE_OPEN, SoundSource.PLAYERS, 1.0F, 1.0F);
+                Vec3 vec3 = new Vec3(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F);
+                sWorld.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.CRATE_OPEN, SoundSource.PLAYERS, 1.0F, 1.0F);
                 sWorld.removeBlock(pos, false);
                 BlockParticleOption particle = new BlockParticleOption(ParticleTypes.BLOCK, state);
                 sWorld.sendParticles(particle, vec3.x, vec3.y, vec3.z, 300, 1.0, 1.0, 1.0, 0.5);

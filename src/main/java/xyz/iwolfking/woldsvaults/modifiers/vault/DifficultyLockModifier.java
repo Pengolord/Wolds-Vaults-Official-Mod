@@ -27,10 +27,11 @@ public class DifficultyLockModifier extends VaultModifier<DifficultyLockModifier
         super(id, properties, display);
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault, ModifierContext context) {
         CommonEvents.PLAYER_TICK.register(context.getUUID(), EventPriority.HIGHEST, (event) -> {
             if(event.side.isServer()) {
-                if(!((event.player.tickCount % 20) == 0)) {
+                if((event.player.tickCount % 20) != 0) {
                     return;
                 }
 
@@ -45,23 +46,22 @@ public class DifficultyLockModifier extends VaultModifier<DifficultyLockModifier
                 if(event.player.getUUID() != vault.get(Vault.OWNER)) {
                     return;
                 }
-                else {
-                    if(WorldSettings.get(world).getPlayerDifficulty(vault.get(Vault.OWNER)).equals(properties.getDifficulty())) {
-                        return;
-                    }
-
-                    if(!properties().shouldLockHigher() && isDifficultyHigher(world, vault)) {
-                        return;
-                    }
-                    RETURN_DIFFICULTY_MAP.put(vault.get(Vault.OWNER), WorldSettings.get(world).getPlayerDifficulty(vault.get(Vault.OWNER)));
-                    WorldSettings.get(world).setPlayerDifficulty(vault.get(Vault.OWNER), properties.getDifficulty());
+                if(WorldSettings.get(world).getPlayerDifficulty(vault.get(Vault.OWNER)).equals(properties.getDifficulty())) {
+                    return;
                 }
+
+                if(!properties().shouldLockHigher() && isDifficultyHigher(world, vault)) {
+                    return;
+                }
+                RETURN_DIFFICULTY_MAP.put(vault.get(Vault.OWNER), WorldSettings.get(world).getPlayerDifficulty(vault.get(Vault.OWNER)));
+                WorldSettings.get(world).setPlayerDifficulty(vault.get(Vault.OWNER), properties.getDifficulty());
             }
         });
     }
 
+    @Override
     public void onListenerRemove(VirtualWorld world, Vault vault, ModifierContext context, Listener listener) {
-        vault.ifPresent(Vault.OWNER, (owner) -> {
+        vault.ifPresent(Vault.OWNER, owner -> {
             if(listener.getPlayer().isPresent()) {
                 if(listener.getPlayer().get().getUUID().equals(owner)) {
                     if(RETURN_DIFFICULTY_MAP.containsKey(vault.get(Vault.OWNER))) {

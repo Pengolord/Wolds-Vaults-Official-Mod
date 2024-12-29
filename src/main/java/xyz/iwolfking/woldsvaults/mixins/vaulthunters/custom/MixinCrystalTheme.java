@@ -30,11 +30,11 @@ public abstract class MixinCrystalTheme {
      */
     @Overwrite
     public void addText(List<Component> tooltip, int minIndex, TooltipFlag flag, float time) {
-        ThemeKey theme = (ThemeKey) VaultRegistry.THEME.getKey(this.id);
+        ThemeKey theme = VaultRegistry.THEME.getKey(this.id);
         if (theme == null) {
             tooltip.add((new TextComponent("Theme: ")).append((new TextComponent("Unknown")).withStyle(ChatFormatting.RED)));
         } else {
-            tooltip.add((new TextComponent("Theme: ")).append((new TextComponent(theme.getName())).withStyle(Style.EMPTY.withColor((Integer) this.getColor().orElseThrow()))));
+            tooltip.add(new TextComponent("Theme: ").append(new TextComponent(theme.getName()).withStyle(Style.EMPTY.withColor(this.getColor().orElseThrow()))));
             if(Screen.hasShiftDown()) {
                 if(ModConfigs.THEME_TOOLTIPS.tooltips.containsKey(theme.getId()) && Screen.hasShiftDown()) {
                     tooltip.add(new TextComponent(ModConfigs.THEME_TOOLTIPS.tooltips.get(theme.getId())));

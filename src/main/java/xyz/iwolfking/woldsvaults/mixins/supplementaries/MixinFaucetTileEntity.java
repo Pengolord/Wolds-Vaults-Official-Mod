@@ -33,7 +33,7 @@ public abstract class MixinFaucetTileEntity {
      */
     @Inject(method = "tryExtract", at = @At("HEAD"), cancellable = true)
     private void tryExtract(Level level, BlockPos pos, BlockState state, boolean doTransfer, CallbackInfoReturnable<Boolean> cir) {
-        Direction dir = (Direction) state.getValue(FaucetBlock.FACING);
+        Direction dir = state.getValue(FaucetBlock.FACING);
         BlockPos behind = pos.relative(dir.getOpposite());
         BlockState backState = level.getBlockState(behind);
         Block backBlock = backState.getBlock();

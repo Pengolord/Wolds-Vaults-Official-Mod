@@ -26,23 +26,23 @@ public class ModConfigs {
     public static GreedVaultAltarIngredientsConfig GREED_VAULT_ALTAR_INGREDIENTS;
 
     public static void register() {
-        GEM_BOX = (GemBoxConfig) (new GemBoxConfig()).readConfig();
-        SUPPLY_BOX = (SupplyBoxConfig) (new SupplyBoxConfig()).readConfig();
-        AUGMENT_BOX = (AugmentBoxConfig) (new AugmentBoxConfig()).readConfig();
-        INSCRIPTION_BOX = (InscriptionBoxConfig) (new InscriptionBoxConfig()).readConfig();
-        OMEGA_BOX = (OmegaBoxConfig) (new OmegaBoxConfig()).readConfig();
-        CATALYST_BOX = (CatalystBoxConfig) (new CatalystBoxConfig()).readConfig();
-        ENIGMA_EGG = (EnigmaEggConfig) (new EnigmaEggConfig()).readConfig();
-        VAULTAR_BOX = (VaultarBoxConfig) (new VaultarBoxConfig()).readConfig();
-        UNHINGED_SCAVENGER = (UnhingedScavengerConfig) (new UnhingedScavengerConfig().readConfig());
-        BALLISTIC_BINGO_CONFIG = (BallisticBingoConfig) (new BallisticBingoConfig().readConfig());
-        HAUNTED_BRAZIERS = (HauntedBraziersConfig) (new HauntedBraziersConfig().readConfig());
-        ENCHANTED_ELIXIR = (EnchantedElixirConfig) (new EnchantedElixirConfig().readConfig());
-        AUGMENT_RECIPES = (AugmentRecipesConfig)(new AugmentRecipesConfig()).readConfig();
-        THEME_TOOLTIPS = (ThemeTooltipsConfig)(new ThemeTooltipsConfig()).readConfig();
-        CUSTOM_RECYCLER_CONFIG = (CustomVaultRecyclerConfig) (new CustomVaultRecyclerConfig()).readConfig();
+        GEM_BOX = new GemBoxConfig().readConfig();
+        SUPPLY_BOX = new SupplyBoxConfig().readConfig();
+        AUGMENT_BOX = new AugmentBoxConfig().readConfig();
+        INSCRIPTION_BOX = new InscriptionBoxConfig().readConfig();
+        OMEGA_BOX = new OmegaBoxConfig().readConfig();
+        CATALYST_BOX = new CatalystBoxConfig().readConfig();
+        ENIGMA_EGG = new EnigmaEggConfig().readConfig();
+        VAULTAR_BOX = new VaultarBoxConfig().readConfig();
+        UNHINGED_SCAVENGER = new UnhingedScavengerConfig().readConfig();
+        BALLISTIC_BINGO_CONFIG = new BallisticBingoConfig().readConfig();
+        HAUNTED_BRAZIERS = new HauntedBraziersConfig().readConfig();
+        ENCHANTED_ELIXIR = new EnchantedElixirConfig().readConfig();
+        AUGMENT_RECIPES = new AugmentRecipesConfig().readConfig();
+        THEME_TOOLTIPS = new ThemeTooltipsConfig().readConfig();
+        CUSTOM_RECYCLER_CONFIG = new CustomVaultRecyclerConfig().readConfig();
         CustomRecyclerOutputs.CUSTOM_OUTPUTS.putAll(CUSTOM_RECYCLER_CONFIG.getOutputs());
-        ETERNAL_ATTRIBUTES = (new EternalAttributesConfig()).readConfig();
-        GREED_VAULT_ALTAR_INGREDIENTS = (new GreedVaultAltarIngredientsConfig()).readConfig();
+        ETERNAL_ATTRIBUTES = new EternalAttributesConfig().readConfig();
+        GREED_VAULT_ALTAR_INGREDIENTS = new GreedVaultAltarIngredientsConfig().readConfig();
     }
 }

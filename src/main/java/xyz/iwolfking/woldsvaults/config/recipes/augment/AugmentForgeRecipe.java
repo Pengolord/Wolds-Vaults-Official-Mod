@@ -30,10 +30,12 @@ public class AugmentForgeRecipe extends VaultForgeRecipe {
         super(ForgeRecipeType.valueOf("AUGMENT"), (ResourceLocation) o, (ItemStack) o1);
     }
 
+    @Override
     public ItemStack createOutput(List<OverSizedItemStack> consumed, ServerPlayer crafter, int vaultLevel) {
         return super.createOutput(consumed, crafter, vaultLevel);
     }
 
+    @Override
     public void addCraftingDisplayTooltip(ItemStack result, List<Component> out) {
         Optional<ThemeKey> themeKey = AugmentItem.getTheme(result);
         themeKey.ifPresent(key -> out.add(new TextComponent("Theme: ").append(new TextComponent(key.getName()).withStyle(Style.EMPTY.withColor(key.getColor())))));

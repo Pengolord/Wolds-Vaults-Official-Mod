@@ -23,14 +23,13 @@ public class SurvivalMobBarrierRenderer implements BlockEntityRenderer<SurvivalM
         Level world = mobBarrierTile.getLevel();
         if (world != null) {
             if (this.mc.player != null && (this.mc.player.isCreative() || this.mc.player.isSpectator())) {
-                double position = (double)((this.mc.player.tickCount * 20 + (int)(partialTicks * 20.0F)) % 2000) / 2000.0;
-                boolean colorDuration = true;
+                double position = ((this.mc.player.tickCount * 20 + (int)(partialTicks * 20.0F)) % 2000) / 2000.0;
                 int red = (int)(Math.cos(position * Math.PI * 2.0) * 127.0 + 128.0);
                 int green = (int)(Math.cos((position + 0.3333333333333333) * Math.PI * 2.0) * 127.0 + 128.0);
                 int blue = (int)(Math.cos((position + 0.6666666666666666) * Math.PI * 2.0) * 127.0 + 128.0);
 
                 VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.lines());
-                LevelRenderer.renderLineBox(matrixStack, vertexconsumer, 0.10000000149011612, 0.10000000149011612, 0.10000000149011612, 0.8999999761581421, 0.8999999761581421, 0.8999999761581421, (float)red, (float)green, (float)blue, 1.0F, (float)red, (float)green, (float)blue);
+                LevelRenderer.renderLineBox(matrixStack, vertexconsumer, 0.10000000149011612, 0.10000000149011612, 0.10000000149011612, 0.8999999761581421, 0.8999999761581421, 0.8999999761581421, red, green, blue, 1.0F, red, green, blue);
             }
 
         }

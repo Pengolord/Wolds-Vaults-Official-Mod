@@ -19,7 +19,13 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import xyz.iwolfking.woldsvaults.data.BannedEnchantmentsData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.Supplier;
 
 @Mixin(value = EnchanterEnchantSelectorElement.EnchanterEnchantSelectorModel.class, remap = false)
@@ -38,7 +44,7 @@ public abstract class MixinEnchanterEnchantSelectorModel {
      */
     @Overwrite
     public List<EnchantmentEntry> getEntries() {
-        ItemStack input = (ItemStack) this.inputSupplier.get();
+        ItemStack input = this.inputSupplier.get();
         if (input.isEmpty()) {
             return Collections.emptyList();
         } else {
@@ -46,21 +52,18 @@ public abstract class MixinEnchanterEnchantSelectorModel {
             if (player == null) {
                 return Collections.emptyList();
             } else {
-                String searchTerm = ((String) this.searchFilter.get()).toLowerCase(Locale.ROOT);
+                String searchTerm = this.searchFilter.get().toLowerCase(Locale.ROOT);
                 Map<Enchantment, Integer> currentEnchantments = EnchantmentHelper.getEnchantments(input);
-                List<EnchantmentEntry> out = new ArrayList();
-                Iterator var6 = ForgeRegistries.ENCHANTMENTS.iterator();
+                List<EnchantmentEntry> out = new ArrayList<>();
 
-                while (var6.hasNext()) {
-                    Enchantment enchantment = (Enchantment) var6.next();
+                for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS) {
                     if (!enchantment.isCurse() && enchantment.canEnchant(input)) {
-                        if(input.getItem() instanceof VaultGearItem || input.getItem() instanceof ToolItem || input.getItem().getRegistryName().toString().equals("the_vault:tool")) {
-                            if(BannedEnchantmentsData.BANNED_ENCHANT_REGISTRY_NAMES.contains(enchantment.getRegistryName().toString())) {
+                        if (input.getItem() instanceof VaultGearItem || input.getItem() instanceof ToolItem || input.getItem().getRegistryName().toString().equals("the_vault:tool")) {
+                            if (BannedEnchantmentsData.BANNED_ENCHANT_REGISTRY_NAMES.contains(enchantment.getRegistryName().toString())) {
                                 continue;
                             }
-                        }
-                        else {
-                            if(BannedEnchantmentsData.BANNED_ENCHANT_REGISTRY_NAMES.contains(enchantment.getRegistryName().toString()) && !enchantment.getRegistryName().toString().equals("minecraft:mending")) {
+                        } else {
+                            if (BannedEnchantmentsData.BANNED_ENCHANT_REGISTRY_NAMES.contains(enchantment.getRegistryName().toString()) && !enchantment.getRegistryName().toString().equals("minecraft:mending")) {
                                 continue;
                             }
                         }
@@ -71,23 +74,15 @@ public abstract class MixinEnchanterEnchantSelectorModel {
                     }
                 }
 
-                Map<EnchantmentEntry, Boolean> canCraftLookup = new HashMap();
-                out.forEach((enchantmentEntry) -> {
-                    canCraftLookup.put(enchantmentEntry, canCraft(input, enchantmentEntry));
-                });
-                Map<EnchantmentEntry, Boolean> alreadyHasLookup = new HashMap();
-                out.forEach((enchantmentEntry) -> {
-                    alreadyHasLookup.put(enchantmentEntry, (Integer) currentEnchantments.getOrDefault(enchantmentEntry.getEnchantment(), 0) >= enchantmentEntry.getLevel());
-                });
-                out.sort(Comparator.comparing((o) -> {
-                    return o.getEnchantment().getRegistryName().toString();
-                }));
-                out.sort((c1, c2) -> {
-                    return -Boolean.compare((Boolean) canCraftLookup.get(c1), (Boolean) canCraftLookup.get(c2));
-                });
-                out.sort((c1, c2) -> {
-                    return Boolean.compare((Boolean) alreadyHasLookup.get(c1), (Boolean) alreadyHasLookup.get(c2));
-                });
+                Map<EnchantmentEntry, Boolean> canCraftLookup = new HashMap<>();
+                out.forEach(enchantmentEntry -> canCraftLookup.put(enchantmentEntry, canCraft(input, enchantmentEntry)));
+
+                Map<EnchantmentEntry, Boolean> alreadyHasLookup = new HashMap<>();
+                out.forEach(enchantmentEntry -> alreadyHasLookup.put(enchantmentEntry,  currentEnchantments.getOrDefault(enchantmentEntry.getEnchantment(), 0) >= enchantmentEntry.getLevel()));
+
+                out.sort(Comparator.comparing(o -> o.getEnchantment().getRegistryName().toString()));
+                out.sort((c1, c2) -> -Boolean.compare( canCraftLookup.get(c1),  canCraftLookup.get(c2)));
+                out.sort((c1, c2) -> Boolean.compare( alreadyHasLookup.get(c1), alreadyHasLookup.get(c2)));
                 return out;
             }
         }

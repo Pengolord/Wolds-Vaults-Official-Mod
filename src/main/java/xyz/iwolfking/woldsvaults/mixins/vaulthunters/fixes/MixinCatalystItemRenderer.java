@@ -17,13 +17,14 @@ public class MixinCatalystItemRenderer extends SpecialItemRenderer {
      * @author iwolfking
      * @reason Fix Infused Vault Catalyst with no model being invisible
      */
-    @Overwrite
-    public void m_108829_(@NotNull ItemStack stack, @NotNull ItemTransforms.@NotNull TransformType transformType, @NotNull PoseStack matrices, @NotNull MultiBufferSource buffer, int light, int overlay) {
+    @Overwrite(remap = true)
+    @Override
+    public void renderByItem(@NotNull ItemStack stack, @NotNull ItemTransforms.@NotNull TransformType transformType, @NotNull PoseStack matrices, @NotNull MultiBufferSource buffer, int light, int overlay) {
         int model = stack.getTag() == null ? -1 : stack.getTag().getInt("model");
         model = (model == -1) ? 0 : model;
         if (model >= 0) {
             ModelResourceLocation shape = new ModelResourceLocation("the_vault:catalyst/%d#inventory".formatted(model));
-            this.renderModel(shape, 16777215, stack, transformType, matrices, buffer, light, overlay, (Boolean) null);
+            this.renderModel(shape, 16777215, stack, transformType, matrices, buffer, light, overlay, null);
         }
     }
 }

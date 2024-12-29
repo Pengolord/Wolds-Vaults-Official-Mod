@@ -19,7 +19,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,58 +32,49 @@ public class MixinGlacialShatterEffect {
      */
     @Overwrite
     public static void on(LivingHurtEvent event) {
-        Entity var2 = event.getEntity();
-        if (var2 instanceof Mob mob) {
-            if (!ActiveFlags.IS_AOE_ATTACKING.isSet()) {
-                if (!ActiveFlags.IS_TOTEM_ATTACKING.isSet()) {
-                    if (!ActiveFlags.IS_CHARMED_ATTACKING.isSet()) {
-                        if (!ActiveFlags.IS_DOT_ATTACKING.isSet()) {
-                            if (!ActiveFlags.IS_REFLECT_ATTACKING.isSet()) {
-                                if (!ActiveFlags.IS_EFFECT_ATTACKING.isSet()) {
-                                    Entity var3 = event.getSource().getEntity();
-                                    if (var3 instanceof ServerPlayer) {
-                                        ServerPlayer player = (ServerPlayer) var3;
-                                        if (ActiveFlagsCheck.checkIfFullSwingAttack() && !ActiveFlags.IS_CHAINING_ATTACKING.isSet()) {
-                                            if (CritHelper.getCrit(player)) {
-                                                return;
-                                            }
+        if (event.getEntity() instanceof Mob mob) {
+            if (ActiveFlags.IS_AOE_ATTACKING.isSet()
+            || ActiveFlags.IS_TOTEM_ATTACKING.isSet()
+            || ActiveFlags.IS_CHARMED_ATTACKING.isSet()
+            || ActiveFlags.IS_DOT_ATTACKING.isSet()
+            || ActiveFlags.IS_REFLECT_ATTACKING.isSet()
+            || ActiveFlags.IS_EFFECT_ATTACKING.isSet()) {
+                return;
+            }
 
-                                            if (AttackScaleHelper.getLastAttackScale(player) < 1.0F) {
-                                                return;
-                                            }
-                                        }
-
-                                        MobEffectInstance effectInstance = mob.getEffect(ModEffects.GLACIAL_SHATTER);
-                                        if (effectInstance != null) {
-                                            ServerScheduler.INSTANCE.schedule(1, () -> {
-                                                Entity entity = event.getEntity();
-                                                if (event.getEntity() != null) {
-                                                    BlockParticleOption particle = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState());
-                                                    ((ServerLevel) event.getEntity().getLevel()).sendParticles(particle, entity.position().x, entity.position().y + (double) (mob.getBbHeight() / 2.0F), entity.position().z, 200, (double) (mob.getBbWidth() / 2.0F), (double) (mob.getBbHeight() / 2.0F), (double) (mob.getBbWidth() / 2.0F), 1.5);
-                                                    event.getEntity().getLevel().playSound((Player) null, event.getEntity(), SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 1.0F, 0.75F);
-                                                    if (ChampionLogic.isChampion(event.getEntity()) || InfernalMobsCore.getMobModifiers(event.getEntityLiving()) != null && InfernalMobsCore.getMobModifiers(event.getEntityLiving()).getModSize() != 0) {
-                                                        ActiveFlags.IS_GLACIAL_SHATTER_ATTACKING.runIfNotSet(() -> {
-                                                            event.getEntity().hurt(DamageSource.playerAttack(player), ((Mob) event.getEntity()).getMaxHealth() * 0.25F);
-                                                        });
-                                                        if (event.getEntity().isAlive()) {
-                                                            event.getEntityLiving().removeEffect(ModEffects.GLACIAL_SHATTER);
-                                                        }
-                                                    } else {
-                                                        ActiveFlags.IS_GLACIAL_SHATTER_ATTACKING.runIfNotSet(() -> {
-                                                            event.getEntity().hurt(DamageSource.playerAttack(player), ((Mob) event.getEntity()).getMaxHealth() * 1.5F);
-                                                        });
-                                                    }
-
-                                                }
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            if (event.getSource().getEntity() instanceof ServerPlayer player) {
+                if (ActiveFlagsCheck.checkIfFullSwingAttack() && !ActiveFlags.IS_CHAINING_ATTACKING.isSet()) {
+                    if (CritHelper.getCrit(player) || AttackScaleHelper.getLastAttackScale(player) < 1.0F) {
+                        return;
                     }
                 }
+
+                MobEffectInstance effectInstance = mob.getEffect(ModEffects.GLACIAL_SHATTER);
+                if (effectInstance != null) {
+                    ServerScheduler.INSTANCE.schedule(1, () -> {
+                        Entity entity = event.getEntity();
+                        if (event.getEntity() != null) {
+                            BlockParticleOption particle = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PACKED_ICE.defaultBlockState());
+                            ((ServerLevel) event.getEntity().getLevel()).sendParticles(particle, entity.position().x, entity.position().y + mob.getBbHeight() / 2.0F, entity.position().z, 200, mob.getBbWidth() / 2.0F, mob.getBbHeight() / 2.0F, mob.getBbWidth() / 2.0F, 1.5);
+                            event.getEntity().getLevel().playSound(null, event.getEntity(), SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 1.0F, 0.75F);
+                            if (ChampionLogic.isChampion(event.getEntity()) || InfernalMobsCore.getMobModifiers(event.getEntityLiving()) != null && InfernalMobsCore.getMobModifiers(event.getEntityLiving()).getModSize() != 0) {
+                                ActiveFlags.IS_GLACIAL_SHATTER_ATTACKING.runIfNotSet(() -> {
+                                    event.getEntity().hurt(DamageSource.playerAttack(player), ((Mob) event.getEntity()).getMaxHealth() * 0.25F);
+                                });
+                                if (event.getEntity().isAlive()) {
+                                    event.getEntityLiving().removeEffect(ModEffects.GLACIAL_SHATTER);
+                                }
+                            } else {
+                                ActiveFlags.IS_GLACIAL_SHATTER_ATTACKING.runIfNotSet(() -> {
+                                    event.getEntity().hurt(DamageSource.playerAttack(player), ((Mob) event.getEntity()).getMaxHealth() * 1.5F);
+                                });
+                            }
+
+                        }
+                    });
+                }
             }
+
         }
     }
 }

@@ -47,9 +47,7 @@ public class PlayerResearchesGUI extends SimpleGui {
                     .setName(new TextComponent(research).withStyle(ChatFormatting.GREEN))
                     .addLoreLine(new TextComponent("Unlocked.").withStyle(ChatFormatting.GOLD))
                     .hideFlags()
-                    .setCallback((x,y,z) -> {
-                        playClickSound(this.player);
-                    }));
+                    .setCallback((x,y,z) -> playClickSound(this.player)));
             this.setSlot(i, RESEARCH_ELEMENT.element);
             i += 1;
 

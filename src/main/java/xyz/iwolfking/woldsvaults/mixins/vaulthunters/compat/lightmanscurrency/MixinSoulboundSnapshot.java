@@ -26,6 +26,6 @@ public class MixinSoulboundSnapshot {
      */
     @Overwrite(remap = false)
     protected boolean shouldSnapshotItem(Player player, ItemStack stack) {
-        return !stack.isEmpty() && (((Boolean) AttributeGearData.read(stack).get(ModGearAttributes.SOULBOUND, VaultGearAttributeTypeMerger.anyTrue()) || stack.getItem() instanceof WalletItem || EnchantmentHelper.getEnchantments(stack).containsKey(EnsorcEnchantments.SOULBOUND.get())));
+        return !stack.isEmpty() && (AttributeGearData.read(stack).get(ModGearAttributes.SOULBOUND, VaultGearAttributeTypeMerger.anyTrue()) || stack.getItem() instanceof WalletItem || EnchantmentHelper.getEnchantments(stack).containsKey(EnsorcEnchantments.SOULBOUND.get()));
     }
 }

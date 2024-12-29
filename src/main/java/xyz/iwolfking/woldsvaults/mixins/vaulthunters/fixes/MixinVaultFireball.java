@@ -7,7 +7,6 @@ import iskallia.vault.skill.tree.AbilityTree;
 import iskallia.vault.util.calc.AreaOfEffectHelper;
 import iskallia.vault.world.data.PlayerAbilitiesData;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +22,8 @@ import java.util.Iterator;
 
 @Mixin(value = VaultFireball.class, remap = false)
 public abstract class MixinVaultFireball extends AbstractArrow {
-    protected MixinVaultFireball(EntityType<? extends AbstractArrow> p_36721_, Level p_36722_) {
-        super(p_36721_, p_36722_);
+    protected MixinVaultFireball(EntityType<? extends AbstractArrow> entityType, Level level) {
+        super(entityType, level);
     }
 
     @Shadow public abstract VaultFireball.FireballType getFireballType();
@@ -42,12 +41,11 @@ public abstract class MixinVaultFireball extends AbstractArrow {
 
     @Unique
     public float woldsVaults_Dev$getRadius() {
-        Entity var2 = this.getOwner();
-        if (var2 instanceof ServerPlayer serverPlayer) {
+        if (this.getOwner() instanceof ServerPlayer serverPlayer) {
             AbilityTree abilities = PlayerAbilitiesData.get(serverPlayer.getLevel()).getAbilities(serverPlayer);
-            Iterator var3 = abilities.getAll(AbstractFireballAbility.class, Skill::isUnlocked).iterator();
+            Iterator<AbstractFireballAbility> var3 = abilities.getAll(AbstractFireballAbility.class, Skill::isUnlocked).iterator();
             if (var3.hasNext()) {
-                AbstractFireballAbility ability = (AbstractFireballAbility)var3.next();
+                AbstractFireballAbility ability = var3.next();
                 return ability.getRadius();
             }
         }

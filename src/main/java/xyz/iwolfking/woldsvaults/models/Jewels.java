@@ -10,6 +10,6 @@ public class Jewels {
     public static final PlainItemModel STELLA;
 
     static {
-        STELLA = (PlainItemModel)REGISTRY.register((PlainItemModel)(new PlainItemModel(VaultMod.id("gear/jewel/stella"), "Eternal Stella")).properties((new DynamicModelProperties()).allowTransmogrification().discoverOnRoll()));
+        STELLA = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/jewel/stella"), "Eternal Stella")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
     }
 }

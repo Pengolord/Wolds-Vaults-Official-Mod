@@ -24,7 +24,7 @@ public class MotePurityCapstoneRecipe extends VanillaAnvilRecipe {
         if (primary.getItem() == ModItems.VAULT_CRYSTAL && secondary.getItem() == ModItems.MOTE_PURITY) {
             ItemStack output = primary.copy();
             CrystalData crystal = CrystalData.read(output);
-            VaultModifierRegistry.getOpt(VaultMod.id("purified")).ifPresent((modifier) -> {
+            VaultModifierRegistry.getOpt(VaultMod.id("purified")).ifPresent(modifier -> {
                 VaultModifierStack modifierStack = VaultModifierStack.of(modifier);
                 if (crystal.addModifierByCrafting(modifierStack, false, true)) {
                     crystal.addModifierByCrafting(modifierStack, false, false);

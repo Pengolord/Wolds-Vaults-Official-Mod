@@ -17,7 +17,7 @@ import xyz.iwolfking.woldsvaults.init.ModBlocks;
 public class AugmentCraftingTableTileEntity extends ForgeRecipeTileEntity implements MenuProvider {
 
     public AugmentCraftingTableTileEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(ModBlocks.AUGMENT_CRAFTING_TABLE_ENTITY, pWorldPosition, pBlockState, 6, new ForgeRecipeType[]{ForgeRecipeType.valueOf("AUGMENT")});
+        super(ModBlocks.AUGMENT_CRAFTING_TABLE_ENTITY, pWorldPosition, pBlockState, 6, ForgeRecipeType.valueOf("AUGMENT"));
     }
 
     @Override

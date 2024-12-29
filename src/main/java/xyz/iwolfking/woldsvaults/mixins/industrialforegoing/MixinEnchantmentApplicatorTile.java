@@ -33,7 +33,7 @@ public abstract class MixinEnchantmentApplicatorTile extends IndustrialProcessin
 
 
     @Redirect(method = "updateRepairOutput", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/enchantment/Enchantment;canEnchant(Lnet/minecraft/world/item/ItemStack;)Z"))
-    private boolean canEnchantInApplicator(Enchantment instance, ItemStack p_44689_) {
+    private boolean canEnchantInApplicator(Enchantment instance, ItemStack pStack) {
 
         return !BannedEnchantmentsData.BANNED_ENCHANT_REGISTRY_NAMES.contains(instance.getRegistryName().toString()) && !BannedEnchantmentsData.BANNED_APPLICATOR_ENCHANTMENTS.contains(instance.getRegistryName().toString());
     }

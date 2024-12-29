@@ -41,19 +41,19 @@ public abstract class MixinBetterCombatAttackRange {
         ItemStack offHand = player.getItemInHand(InteractionHand.OFF_HAND);
         if(mainHand.getItem() instanceof VaultGearItem) {
             VaultGearData data = VaultGearData.read(mainHand);
-            double reach = ((Double)data.get(ModGearAttributes.ATTACK_RANGE, VaultGearAttributeTypeMerger.doubleSum())).doubleValue();
+            double reach = data.get(ModGearAttributes.ATTACK_RANGE, VaultGearAttributeTypeMerger.doubleSum());
             attackRange += reach;
         }
         if(offHand.getItem() instanceof VaultGearItem){
             VaultGearData data = VaultGearData.read(offHand);
-            double reach = ((Double)data.get(ModGearAttributes.ATTACK_RANGE, VaultGearAttributeTypeMerger.doubleSum())).doubleValue();
+            double reach = data.get(ModGearAttributes.ATTACK_RANGE, VaultGearAttributeTypeMerger.doubleSum());
             attackRange += reach;
         }
 
         Vec3 origin = getInitialTracingPoint(player);
         List<Entity> entities = getInitialTargets(player, cursorTarget, attackRange);
         if (CompatibilityFlags.usePehkui) {
-            attackRange *= (double) PehkuiHelper.getScale(player);
+            attackRange *= PehkuiHelper.getScale(player);
         }
 
         boolean isSpinAttack = attack.angle() > 180.0;

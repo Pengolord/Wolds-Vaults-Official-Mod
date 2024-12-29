@@ -26,7 +26,6 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 @Mixin(value = MonolithRenderer.class, remap = false)
@@ -48,10 +47,10 @@ public class MixinMonolithRenderer {
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         matrixStack.translate(-65.0, -11.0, 0.0);
         RendererContext context = new RendererContext(matrixStack, partialTicks, MultiBufferSource.immediate(Tesselator.getInstance().getBuilder()), this.font);
-        MonolithBlock.State state = (MonolithBlock.State) tileEntity.getBlockState().getValue(MonolithBlock.STATE);
-        List<Component> lines = new ArrayList();
-        List<Component> description = new ArrayList();
-        List<VaultModifierStack> stack = new ArrayList();
+        MonolithBlock.State state =  tileEntity.getBlockState().getValue(MonolithBlock.STATE);
+        List<Component> lines = new ArrayList<>();
+        List<Component> description = new ArrayList<>();
+        List<VaultModifierStack> stack = new ArrayList<>();
         if (tileEntity.isOverStacking() && state == MonolithBlock.State.EXTINGUISHED) {
             lines.add((new TextComponent("Pillage for Loot")).withStyle(Style.EMPTY.withColor(ChatFormatting.WHITE)));
         }
@@ -68,35 +67,29 @@ public class MixinMonolithRenderer {
         });
         Collections.reverse(lines);
         Collections.reverse(stack);
-        Iterator var13 = description.iterator();
 
-        Component line;
-        MutableComponent shadow;
-        while (var13.hasNext()) {
-            line = (Component) var13.next();
-            shadow = (new TextComponent("")).append(line.getString()).withStyle(Style.EMPTY.withColor(ChatFormatting.BLACK));
+        for (Component line: description) {
+            MutableComponent shadow = (new TextComponent("")).append(line.getString()).withStyle(Style.EMPTY.withColor(ChatFormatting.BLACK));
             context.renderText(shadow, 66.0F, 68.0F, true, true);
             context.renderText(line, 65.0F, 67.0F, true, true);
             context.translate(0.0, -11.0, 0.0);
         }
 
-        var13 = lines.iterator();
 
-        while (var13.hasNext()) {
-            line = (Component) var13.next();
-            shadow = (new TextComponent("")).append(line.getString()).withStyle(Style.EMPTY.withColor(ChatFormatting.BLACK));
+        for (Component line: lines) {
+            MutableComponent shadow = (new TextComponent("")).append(line.getString()).withStyle(Style.EMPTY.withColor(ChatFormatting.BLACK));
             context.renderText(shadow, 66.0F, 66.0F, true, true);
             context.renderText(line, 65.0F, 65.0F, true, true);
             context.translate(0.0, -11.0, 0.0);
         }
 
         Minecraft minecraft = Minecraft.getInstance();
-        double xTranslation = stack.size() > 1 ? 82.5 + (double) (stack.size() * 5) : 82.5;
+        double xTranslation = stack.size() > 1 ? 82.5 + (stack.size() * 5) : 82.5;
         matrixStack.translate(xTranslation, 73.0, 0.0);
         matrixStack.pushPose();
         int right = minecraft.getWindow().getGuiScaledWidth();
         int bottom = minecraft.getWindow().getGuiScaledHeight();
-        matrixStack.translate((double) (-right), (double) (-bottom), 0.0);
+        matrixStack.translate(-right, -bottom, 0.0);
         ModifiersRenderer.renderVaultModifiersWithDepth(stack, matrixStack);
         matrixStack.popPose();
         matrixStack.popPose();

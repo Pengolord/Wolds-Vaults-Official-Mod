@@ -52,6 +52,7 @@ public class VaultPlushieItem extends BasicItem implements VaultGearItem {
 
     @NotNull
     @Override
+    @SuppressWarnings({"deprecation","removal"})
     public ProficiencyType getCraftingProficiencyType(ItemStack itemStack) {
         return ProficiencyType.FOCUS;
     }
@@ -70,6 +71,7 @@ public class VaultPlushieItem extends BasicItem implements VaultGearItem {
         return ModConfigs.GEAR_MODEL_ROLL_RARITIES.getRandomRoll(stack, gearData, intendedSlot, random);
     }
 
+    @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
             items.add(this.defaultItem());
@@ -77,38 +79,47 @@ public class VaultPlushieItem extends BasicItem implements VaultGearItem {
 
     }
 
+    @Override
     public int getDefaultTooltipHideFlags(@NotNull ItemStack stack) {
         return super.getDefaultTooltipHideFlags(stack) | ItemStack.TooltipPart.MODIFIERS.getMask();
     }
 
+    @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
         return VaultGearHelper.getModifiers(stack, slot);
     }
 
+    @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return VaultGearHelper.shouldPlayGearReequipAnimation(oldStack, newStack, slotChanged);
     }
 
+    @Override
     public boolean isRepairable(ItemStack stack) {
         return false;
     }
 
+    @Override
     public boolean isDamageable(ItemStack stack) {
         return GearDataCache.of(stack).getState() == VaultGearState.IDENTIFIED;
     }
 
+    @Override
     public int getMaxDamage(ItemStack stack) {
-        return (Integer)VaultGearData.read(stack).get(ModGearAttributes.DURABILITY, VaultGearAttributeTypeMerger.intSum());
+        return VaultGearData.read(stack).get(ModGearAttributes.DURABILITY, VaultGearAttributeTypeMerger.intSum());
     }
 
+    @Override
     public Component getName(ItemStack stack) {
         return VaultGearHelper.getDisplayName(stack, super.getName(stack));
     }
 
+    @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         return VaultGearHelper.rightClick(world, player, hand, super.use(world, player, hand));
     }
 
+    @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int itemSlot, boolean isSelected) {
         super.inventoryTick(stack, world, entity, itemSlot, isSelected);
         if (entity instanceof ServerPlayer player) {
@@ -117,6 +128,7 @@ public class VaultPlushieItem extends BasicItem implements VaultGearItem {
 
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);

@@ -20,7 +20,7 @@ public class MixinGearStackingTalent extends GearAttributeTalent {
      * @author iwolfking
      * @reason Holy shit why lol
      */
-    @Overwrite
+    @Overwrite @Override
     public void onTick(SkillContext context) {
         if (--this.timeLeft < 0 && this.isUnlocked() && this.stacks > 0) {
             this.timeLeft = 0;
@@ -30,7 +30,7 @@ public class MixinGearStackingTalent extends GearAttributeTalent {
 
         super.onTick(context);
         if (this.isUnlocked() && this.effect != null && this.timeLeft > 0 && this.stacks > 0) {
-            context.getSource().as(ServerPlayer.class).ifPresent((player) -> {
+            context.getSource().as(ServerPlayer.class).ifPresent(player -> {
                 player.removeEffect(this.effect);
                 player.addEffect(new MobEffectInstance(this.effect, this.timeLeft, this.stacks - 1, true, false, true));
             });

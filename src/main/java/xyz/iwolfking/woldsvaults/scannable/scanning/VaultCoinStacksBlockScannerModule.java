@@ -7,7 +7,6 @@ import li.cil.scannable.client.scanning.ScanResultProviders;
 import li.cil.scannable.client.scanning.filter.BlockCacheScanFilter;
 import li.cil.scannable.client.scanning.filter.BlockScanFilter;
 import li.cil.scannable.client.scanning.filter.BlockTagScanFilter;
-import li.cil.scannable.common.config.Constants;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -31,9 +30,7 @@ public enum VaultCoinStacksBlockScannerModule implements BlockScannerModule {
 
     private Predicate<BlockState> filter;
 
-    public static Set<ResourceLocation> vaultBlocks = (Set) Util.make(new HashSet(), (c) -> {
-        c.add(ModBlocks.COIN_PILE.getRegistryName());
-    });
+    public static Set<ResourceLocation> vaultBlocks = Util.make(new HashSet<>(), c -> c.add(ModBlocks.COIN_PILE.getRegistryName()));
 
     @Override
     public int getEnergyCost(final ItemStack module) {

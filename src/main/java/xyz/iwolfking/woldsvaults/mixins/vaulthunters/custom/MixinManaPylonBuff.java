@@ -19,31 +19,33 @@ public class MixinManaPylonBuff extends PylonBuff<ManaPylonBuff.Config> {
         super(config);
     }
 
+    @Override
     public boolean isDone() {
-        /* 20 */     return (super.isDone() || this.woldsVaults$tick >= 1200);
-        /*    */   }
+        return (super.isDone() || this.woldsVaults$tick >= 1200);
+    }
 
     @Override
     public void onTick(MinecraftServer server) {
         super.onTick(server);
         getPlayer(server).ifPresent(player -> {
-            /*    */           AttributeModifier modifier = new AttributeModifier(this.uuid, "Pylon Buff", 1.0, AttributeModifier.Operation.ADDITION);
-            /*    */           AttributeInstance attribute = player.getAttribute(ModAttributes.MANA_REGEN);
-            /*    */           if (attribute != null && !attribute.hasModifier(modifier)) {
-                /*    */             attribute.addTransientModifier(modifier);
-                /*    */           }
-            /*    */         });
+            AttributeModifier modifier = new AttributeModifier(this.uuid, "Pylon Buff", 1.0, AttributeModifier.Operation.ADDITION);
+            AttributeInstance attribute = player.getAttribute(ModAttributes.MANA_REGEN);
+            if (attribute != null && !attribute.hasModifier(modifier)) {
+                attribute.addTransientModifier(modifier);
+            }
+        });
         this.woldsVaults$tick++;
     }
 
+    @Override
     public void onRemove(MinecraftServer server) {
-        /* 39 */     getPlayer(server).ifPresent(player -> {
-            /*    */           AttributeInstance attribute = player.getAttribute(ModAttributes.MANA_REGEN);
-            /*    */           if (attribute != null) {
-                /*    */             attribute.removeModifier(this.uuid);
-                /*    */           }
-            /*    */         });
-        /*    */   }
+        getPlayer(server).ifPresent(player -> {
+            AttributeInstance attribute = player.getAttribute(ModAttributes.MANA_REGEN);
+            if (attribute != null) {
+                attribute.removeModifier(this.uuid);
+            }
+        });
+    }
 
 
     @Override

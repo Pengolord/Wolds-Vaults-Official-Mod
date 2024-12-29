@@ -44,7 +44,7 @@ public class MixinMenuItemLocator {
                 }
 
                 if (menuHost != null) {
-                    AELog.warn("Item in slot %d of %s did not create a compatible menu of type %s: %s", new Object[]{this.itemIndex, player, hostInterface, menuHost});
+                    AELog.warn("Item in slot %d of %s did not create a compatible menu of type %s: %s", this.itemIndex, player, hostInterface, menuHost);
                 }
 
                 return null;
@@ -53,16 +53,14 @@ public class MixinMenuItemLocator {
 
         ItemStack it = player.getInventory().getItem(this.itemIndex);
         if (!it.isEmpty()) {
-            Item var5 = it.getItem();
-            if (var5 instanceof IMenuItem) {
-                IMenuItem guiItem = (IMenuItem) var5;
+            if (it.getItem() instanceof IMenuItem guiItem) {
                 ItemMenuHost menuHost = guiItem.getMenuHost(player, this.itemIndex, it, this.blockPos);
                 if (hostInterface.isInstance(menuHost)) {
                     return hostInterface.cast(menuHost);
                 }
 
                 if (menuHost != null) {
-                    AELog.warn("Item in slot %d of %s did not create a compatible menu of type %s: %s", new Object[]{this.itemIndex, player, hostInterface, menuHost});
+                    AELog.warn("Item in slot %d of %s did not create a compatible menu of type %s: %s", this.itemIndex, player, hostInterface, menuHost);
                 }
 
                 return null;
@@ -70,7 +68,7 @@ public class MixinMenuItemLocator {
         }
 
 
-        AELog.warn("Item in slot %d of %s is not an IMenuItem: %s", new Object[]{this.itemIndex, player, it});
+        AELog.warn("Item in slot %d of %s is not an IMenuItem: %s", this.itemIndex, player, it);
         return null;
     }
 }

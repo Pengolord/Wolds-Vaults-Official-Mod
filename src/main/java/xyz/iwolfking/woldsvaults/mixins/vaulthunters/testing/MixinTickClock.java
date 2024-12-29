@@ -56,17 +56,17 @@ public abstract class MixinTickClock extends DataObject<TickClock> implements IS
         if(this.has(VISIBLE) || isOfferingBoss) {
             int hourglassWidth = 12;
             int hourglassHeight = 16;
-            int color = this.getTextColor((Integer) this.get(DISPLAY_TIME));
-            String text = UIHelper.formatTimeString((long) Math.abs((Integer) this.get(DISPLAY_TIME)));
+            int color = this.getTextColor(this.get(DISPLAY_TIME));
+            String text = UIHelper.formatTimeString(Math.abs(this.get(DISPLAY_TIME)));
             FontHelper.drawStringWithBorder(matrixStack, text, -12.0F, 13.0F, color, -16777216);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, VaultOverlay.VAULT_HUD);
-            float rotationTime = this.getRotationTime((Integer) this.get(DISPLAY_TIME));
-            float degrees = (float) (Integer) this.get(DISPLAY_TIME) % rotationTime * 360.0F / rotationTime;
+            float rotationTime = this.getRotationTime(this.get(DISPLAY_TIME));
+            float degrees = (float) this.get(DISPLAY_TIME) % rotationTime * 360.0F / rotationTime;
             matrixStack.mulPose(Vector3f.ZP.rotationDegrees(degrees));
-            matrixStack.translate((double) ((float) (-hourglassWidth) / 2.0F), (double) ((float) (-hourglassHeight) / 2.0F), 0.0);
-            ScreenDrawHelper.drawTexturedQuads((buf) -> {
-                ScreenDrawHelper.rect(buf, matrixStack).dim((float) hourglassWidth, (float) hourglassHeight).texVanilla(1.0F, 36.0F, (float) hourglassWidth, (float) hourglassHeight).draw();
+            matrixStack.translate(-hourglassWidth / 2.0F, -hourglassHeight / 2.0F, 0.0);
+            ScreenDrawHelper.drawTexturedQuads(buf -> {
+                ScreenDrawHelper.rect(buf, matrixStack).dim(hourglassWidth, hourglassHeight).texVanilla(1.0F, 36.0F, hourglassWidth, hourglassHeight).draw();
             });
             RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
         }
@@ -78,10 +78,8 @@ public abstract class MixinTickClock extends DataObject<TickClock> implements IS
      */
     @Overwrite
     public final void tickServer(ServerLevel world) {
-        this.set(GLOBAL_TIME, (Integer) this.get(GLOBAL_TIME) + 1);
-        this.get(MODIFIERS).forEach((modifier) -> {
-            modifier.tick(world, (TickClock) (Object)this);
-        });
+        this.set(GLOBAL_TIME, this.get(GLOBAL_TIME) + 1);
+        this.get(MODIFIERS).forEach(modifier -> modifier.tick(world, (TickClock) (Object)this));
         if (!this.has(PAUSED) || isOfferingBoss) {
             this.tickTime();
         }

@@ -22,13 +22,13 @@ public class FireballModification extends FloatRangeModification {
 
     @Nullable
     public MutableComponent getDisplay(SpecialAbilityGearAttribute<?, FloatValue> instance, Style style, VaultGearModifier.AffixType type) {
-        MutableComponent valueDisplay = this.getValueDisplay((FloatValue)instance.getValue());
+        MutableComponent valueDisplay = this.getValueDisplay(instance.getValue());
         return valueDisplay == null ? null : (new TextComponent("")).append(type.getAffixPrefixComponent(true)).append("Fireball has ").append(getPercentageValue(instance).withStyle(instance.getHighlightStyle())).setStyle(instance.getTextStyle()).append("% chance to fire twice");
     }
 
 
     public void serializeTextElements(JsonArray out, SpecialAbilityGearAttribute<?, FloatValue> instance, VaultGearModifier.AffixType type) {
-        MutableComponent valueDisplay = this.getValueDisplay((FloatValue)instance.getValue());
+        MutableComponent valueDisplay = this.getValueDisplay(instance.getValue());
         if (valueDisplay != null) {
             out.add(type.getAffixPrefix(true));
             out.add("Fireball has ");

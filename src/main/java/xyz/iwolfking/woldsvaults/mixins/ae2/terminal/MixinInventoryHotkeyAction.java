@@ -35,7 +35,7 @@ public abstract class MixinInventoryHotkeyAction {
         NonNullList<ItemStack> items = player.getInventory().items;
 
         for (int i = 0; i < items.size(); ++i) {
-            if (this.locatable.test((ItemStack) items.get(i)) && this.opener.open(player, i)) {
+            if (this.locatable.test(items.get(i)) && this.opener.open(player, i)) {
                 return true;
             }
         }

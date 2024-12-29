@@ -63,12 +63,12 @@ public class VaultarBoxRecipeCategory implements IRecipeCategory<VaultarBoxConfi
         return this.RECIPE_TYPE;
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public ResourceLocation getUid() {
         return this.getRecipeType().getUid();
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public Class<? extends VaultarBoxConfig> getRecipeClass() {
         return this.getRecipeType().getRecipeClass();
     }
@@ -87,7 +87,7 @@ public class VaultarBoxRecipeCategory implements IRecipeCategory<VaultarBoxConfi
 
 
         for(int i = 0; i < count; ++i) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip((ItemStack)itemList.get(i), amounts.get(i)));
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip(itemList.get(i), amounts.get(i)));
         }
 
     }

@@ -14,7 +14,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 import xyz.iwolfking.woldsvaults.lib.VaultAltarTileEntityInterface;
 
@@ -32,8 +31,7 @@ public class AltarResetItem extends BasicItem {
         if(level.isClientSide) {
             return InteractionResult.PASS;
         }
-        BlockEntity clickedBLock = level.getBlockEntity(context.getClickedPos());
-        if(clickedBLock instanceof VaultAltarTileEntity altar && stackInHand.getItem() instanceof AltarResetItem item) {
+        if( level.getBlockEntity(context.getClickedPos()) instanceof VaultAltarTileEntity altar && stackInHand.getItem() instanceof AltarResetItem) {
             if(altar.getAltarState().equals(VaultAltarTileEntity.AltarState.ACCEPTING)) {
                 if(AltarResetItem.resetAltar((ServerPlayer) context.getPlayer())) {
                     stackInHand.shrink(1);
@@ -52,17 +50,13 @@ public class AltarResetItem extends BasicItem {
         ServerLevel level = player.getLevel();
         PlayerVaultAltarData data = PlayerVaultAltarData.get(level);
         List<BlockPos> altars = data.getAltars(player.getUUID());
-        altars.stream().filter((pos) -> {
-           return level.isLoaded(pos);
-        }).map((pos) -> {
-            return player.getLevel().getBlockEntity(pos);
-        }).filter((te) -> {
-            return te instanceof VaultAltarTileEntity;
-        }).map((te) -> {
-            return (VaultAltarTileEntity)te;
-        }).filter((altar) -> {
-            return altar.getAltarState() == VaultAltarTileEntity.AltarState.ACCEPTING;
-        }).forEach((altar) -> {
+        altars.stream()
+            .filter(level::isLoaded)
+            .map(pos -> player.getLevel().getBlockEntity(pos))
+            .filter(te -> te instanceof VaultAltarTileEntity)
+            .map(te -> (VaultAltarTileEntity)te)
+            .filter(altar -> altar.getAltarState() == VaultAltarTileEntity.AltarState.ACCEPTING)
+            .forEach(altar -> {
             // ((VaultAltarTileEntityInterface)altar).invokeResetAltar(level);
         });
         data.removeRecipe(player.getUUID());

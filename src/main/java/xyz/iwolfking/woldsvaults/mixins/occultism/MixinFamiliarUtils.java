@@ -13,8 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = FamiliarEntity.class, remap = false)
 public abstract class MixinFamiliarUtils extends PathfinderMob implements IFamiliar {
-    protected MixinFamiliarUtils(EntityType<? extends PathfinderMob> p_21683_, Level p_21684_) {
-        super(p_21683_, p_21684_);
+
+    protected MixinFamiliarUtils(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
+        super(pEntityType, pLevel);
     }
 
     @Inject(method = "getOwner", at= @At("HEAD"), cancellable = true)

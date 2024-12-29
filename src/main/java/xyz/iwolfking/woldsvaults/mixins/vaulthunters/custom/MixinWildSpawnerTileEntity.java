@@ -5,7 +5,6 @@ import iskallia.vault.block.entity.BaseSpawnerTileEntity;
 import iskallia.vault.block.entity.WildSpawnerTileEntity;
 import iskallia.vault.config.WildSpawnerConfig;
 import iskallia.vault.core.vault.Vault;
-import iskallia.vault.core.vault.VaultLevel;
 import iskallia.vault.core.vault.objective.Objectives;
 import iskallia.vault.init.ModConfigs;
 import iskallia.vault.world.data.ServerVaults;
@@ -19,8 +18,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -31,7 +28,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
 
 @Mixin(value = WildSpawnerTileEntity.class, remap = false)
 public class MixinWildSpawnerTileEntity extends BaseSpawnerTileEntity {
@@ -70,20 +66,19 @@ public class MixinWildSpawnerTileEntity extends BaseSpawnerTileEntity {
     @Unique
     @Nullable
     private static Entity spawnBuffedWraith(BlockPos blockPos, ServerLevel serverLevel, ResourceLocation entityName, @Nullable CompoundTag entityNbt, boolean isPersistent, Runnable logEntityTypeMissing) {
-        EntityType<?> entityType = (EntityType) ForgeRegistries.ENTITIES.getValue(entityName);
+        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(entityName);
         if (entityType == null) {
             logEntityTypeMissing.run();
             return null;
         } else {
-            Entity entity = entityType.spawn(serverLevel, (ItemStack)null, (Player)null, blockPos, MobSpawnType.SPAWNER, false, false);
+            Entity entity = entityType.spawn(serverLevel, null, null, blockPos, MobSpawnType.SPAWNER, false, false);
             if (entityNbt != null) {
                 CompoundTag entityTag = entity.saveWithoutId(new CompoundTag());
                 entityTag.merge(entityNbt.copy());
                 entity.load(entityTag);
             }
 
-            if (entity instanceof Mob) {
-                Mob mob = (Mob)entity;
+            if (entity instanceof Mob mob) {
                 if (isPersistent) {
                     mob.setPersistenceRequired();
                 }
@@ -103,44 +98,26 @@ public class MixinWildSpawnerTileEntity extends BaseSpawnerTileEntity {
     @Overwrite
     private void initSpawnerGroup() {
         if (this.spawnerGroup == null) {
-            int vaultLevel = (Integer) ServerVaults.get(this.level).map((vault) -> {
-                return ((VaultLevel) vault.get(Vault.LEVEL)).get();
-            }).orElse(0);
-            Iterator var2 = ModConfigs.WILD_SPAWNER.spawnerGroups.iterator();
+            int vaultLevel = ServerVaults.get(this.level).map(vault -> (vault.get(Vault.LEVEL)).get()).orElse(0);
 
             Vault vaultObj = ServerVaults.get(this.level).get();
             String objective = vaultObj.get(Vault.OBJECTIVES).get(Objectives.KEY);
             boolean hasSpooky = false;
 
-            while (true) {
-                WildSpawnerConfig.SpawnerGroup sg;
-                do {
-                    do {
-                        if (!var2.hasNext()) {
-                            if (this.spawnerGroup != null) {
-                                this.playerCheckCooldown = Math.min(this.spawnerGroup.blockCheckRadius / 4, 10);
-                            }
-
-                            return;
-                        }
-
-                        sg = (WildSpawnerConfig.SpawnerGroup) var2.next();
-                    } while (sg.minLevel > vaultLevel);
-                } while (this.spawnerGroup != null && sg.minLevel <= this.spawnerGroup.minLevel);
-
-                if(!objective.equals("haunted_braziers")) {
-                    hasSpooky = vaultObj.get(Vault.MODIFIERS).getModifiers().stream().anyMatch(vaultModifier -> (
+            for (WildSpawnerConfig.SpawnerGroup sg: ModConfigs.WILD_SPAWNER.spawnerGroups) {
+                if (sg.minLevel <= vaultLevel && (this.spawnerGroup == null || sg.minLevel > this.spawnerGroup.minLevel)) {
+                    if (!objective.equals("haunted_braziers")) {
+                        hasSpooky = (vaultObj.get(Vault.MODIFIERS)).getModifiers().stream().anyMatch(vaultModifier ->
                             vaultModifier.getId().toString().equals("the_vault:spooky")
-                    ));
-                }
+                        );
+                    }
 
-                if(objective.equals("haunted_braziers") || hasSpooky ) {
-                    this.spawnerGroup = ModConfigs.WILD_SPAWNER.spawnerGroups.get(3);
+                    if(objective.equals("haunted_braziers") || hasSpooky ) {
+                        this.spawnerGroup = ModConfigs.WILD_SPAWNER.spawnerGroups.get(3);
+                    } else {
+                        this.spawnerGroup = sg;
+                    }
                 }
-                else {
-                    this.spawnerGroup = sg;
-                }
-
             }
         }
     }

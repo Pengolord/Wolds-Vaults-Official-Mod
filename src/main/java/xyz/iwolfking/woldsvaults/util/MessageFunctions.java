@@ -133,15 +133,15 @@ public class MessageFunctions {
         }
 
         for (Entity around : world.getEntities(null, new AABB(p.getX() - radius, p.getY() - radius, p.getZ() - radius, p.getX() + radius, p.getY() + radius, p.getZ() + radius))) {
-            if (around instanceof Player) {
-                sendMessage((Player) around, message, colour);
+            if (around instanceof Player player) {
+                sendMessage(player, message, colour);
             }
         }
     }
     public static void sendMessageToPlayersAround(Level world, BlockPos p, int radius, MutableComponent message) {
         for (Entity around : world.getEntities(null, new AABB(p.getX() - radius, p.getY() - radius, p.getZ() - radius, p.getX() + radius, p.getY() + radius, p.getZ() + radius))) {
-            if (around instanceof Player) {
-                sendMessage((Player) around, message);
+            if (around instanceof Player player) {
+                sendMessage(player, message);
             }
         }
     }

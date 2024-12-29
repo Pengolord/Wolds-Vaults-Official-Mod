@@ -26,9 +26,8 @@ public class DecoObeliskTileEntity extends BlockEntity {
 
     public static void tick(Level level, BlockPos pos, BlockState state, DecoObeliskTileEntity tile) {
         if (!level.isClientSide()) {
-            BlockState up = level.getBlockState(pos.above());
-            if (!(up.getBlock() instanceof DecoObeliskBlock)) {
-                level.setBlockAndUpdate(pos.above(), (BlockState) ModBlocks.DECO_OBELISK_BLOCK.defaultBlockState().setValue(ObeliskBlock.HALF, DoubleBlockHalf.UPPER));
+            if (!(level.getBlockState(pos.above()).getBlock() instanceof DecoObeliskBlock)) {
+                level.setBlockAndUpdate(pos.above(), ModBlocks.DECO_OBELISK_BLOCK.defaultBlockState().setValue(ObeliskBlock.HALF, DoubleBlockHalf.UPPER));
             }
         } else {
             tile.playEffects();
@@ -48,11 +47,11 @@ public class DecoObeliskTileEntity extends BlockEntity {
                 double y;
                 double z;
                 Particle fwParticle;
-                if ((Boolean)state.getValue(ObeliskBlock.FILLED)) {
+                if (state.getValue(ObeliskBlock.FILLED)) {
                     for(count = 0; count < 3; ++count) {
-                        x = (double)pos.getX() - 0.25 + (double)rand.nextFloat() * 1.5;
-                        y = (double)((float)pos.getY() + rand.nextFloat() * 3.0F);
-                        z = (double)pos.getZ() - 0.25 + (double)rand.nextFloat() * 1.5;
+                        x = pos.getX() - 0.25 + rand.nextFloat() * 1.5;
+                        y = pos.getY() + rand.nextFloat() * 3.0F;
+                        z = pos.getZ() - 0.25 + rand.nextFloat() * 1.5;
                         fwParticle = mgr.createParticle(ParticleTypes.FIREWORK, x, y, z, 0.0, 0.0, 0.0);
                         if (fwParticle == null) {
                             return;
@@ -62,15 +61,15 @@ public class DecoObeliskTileEntity extends BlockEntity {
                     }
                 } else {
                     for(count = 0; count < 5; ++count) {
-                        x = (double)((float)pos.getX() + rand.nextFloat());
-                        y = (double)((float)pos.getY() + rand.nextFloat() * 10.0F);
-                        z = (double)((float)pos.getZ() + rand.nextFloat());
+                        x = pos.getX() + rand.nextFloat();
+                        y = pos.getY() + (rand.nextFloat() * 10.0F);
+                        z = pos.getZ() + rand.nextFloat();
                         fwParticle = mgr.createParticle(ParticleTypes.FIREWORK, x, y, z, 0.0, 0.0, 0.0);
                         if (fwParticle == null) {
                             return;
                         }
 
-                        fwParticle.setLifetime((int)((float)fwParticle.getLifetime() * 1.5F));
+                        fwParticle.setLifetime((int)(fwParticle.getLifetime() * 1.5F));
                     }
                 }
 

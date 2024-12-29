@@ -1,27 +1,19 @@
 package xyz.iwolfking.woldsvaults.gui.server;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementBuilderInterface;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
-import io.github.lightman314.lightmanscurrency.Config;
-import io.github.lightman314.lightmanscurrency.LightmansCurrency;
-import io.github.lightman314.lightmanscurrency.common.easy.EasyText;
 import io.github.lightman314.lightmanscurrency.common.money.CoinValue;
 import io.github.lightman314.lightmanscurrency.common.money.MoneyUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -42,11 +34,9 @@ import xaero.pac.common.server.parties.party.IServerParty;
 import xaero.pac.common.server.player.config.IPlayerConfig;
 import xaero.pac.common.server.player.config.IPlayerConfigManager;
 import xaero.pac.common.server.player.config.api.PlayerConfigOptions;
-import xaero.pac.common.server.player.localization.AdaptiveLocalizer;
 import xyz.iwolfking.woldsvaults.util.MessageFunctions;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 public class ClaimBlockCategoryGui extends SimpleGui {
     private int ticker = 0;
@@ -147,9 +137,8 @@ public class ClaimBlockCategoryGui extends SimpleGui {
 
 
     private static void tryBuyClaim(ServerPlayer player, int count, CoinValue price) throws CommandSyntaxException {
-            if (!MoneyUtil.ProcessPayment((Container) null, player, price)) {
+            if (!MoneyUtil.ProcessPayment(null, player, price)) {
                 MessageFunctions.sendMessage(player, new TextComponent("You don't have enough money to buy that!").withStyle(ChatFormatting.RED));
-                return;
             }
             else {
                 IServerData<IServerClaimsManager<IPlayerChunkClaim, IServerPlayerClaimInfo<IPlayerDimensionClaims<IPlayerClaimPosList>>, IServerDimensionClaimsManager<IServerRegionClaims>>, IServerParty<IPartyMember, IPartyPlayerInfo, IPartyAlly>>

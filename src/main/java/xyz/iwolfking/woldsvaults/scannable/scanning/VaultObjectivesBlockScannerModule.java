@@ -30,7 +30,7 @@ public enum VaultObjectivesBlockScannerModule implements BlockScannerModule {
 
     private Predicate<BlockState> filter;
 
-    public static Set<ResourceLocation> vaultBlocks = (Set) Util.make(new HashSet(), (c) -> {
+    public static Set<ResourceLocation> vaultBlocks = Util.make(new HashSet<>(), c -> {
         c.add(ModBlocks.MONOLITH.getRegistryName());
         c.add(ModBlocks.GOD_ALTAR.getRegistryName());
         c.add(ModBlocks.LODESTONE.getRegistryName());

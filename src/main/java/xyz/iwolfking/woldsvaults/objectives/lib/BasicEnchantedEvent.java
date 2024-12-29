@@ -3,14 +3,17 @@ package xyz.iwolfking.woldsvaults.objectives.lib;
 import com.google.gson.annotations.Expose;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.player.Listener;
-import iskallia.vault.core.vault.player.Listeners;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.player.Player;
 import xyz.iwolfking.woldsvaults.objectives.data.EnchantedEventsRegistry;
 
 import java.util.Iterator;
@@ -59,12 +62,9 @@ public abstract class BasicEnchantedEvent {
         eventMessage.append(new TextComponent(" encountered a ").withStyle(ChatFormatting.GRAY));
         eventMessage.append(getEventMessage());
 
-        Iterator listeners = ((Listeners)vault.get(Vault.LISTENERS)).getAll().iterator();
-
-        while(listeners.hasNext()) {
-            Listener listener = (Listener)listeners.next();
+        for(Listener listener: vault.get(Vault.LISTENERS).getAll()) {
             listener.getPlayer().ifPresent((other) -> {
-                originator.level.playSound((Player)null, other.getX(), other.getY(), other.getZ(), SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.9F, 1.2F);
+                originator.level.playSound(null, other.getX(), other.getY(), other.getZ(), SoundEvents.NOTE_BLOCK_BELL, SoundSource.PLAYERS, 0.9F, 1.2F);
                 other.displayClientMessage(eventMessage, false);
             });
         }
@@ -72,18 +72,16 @@ public abstract class BasicEnchantedEvent {
     }
 
     public void targetOthers(Vault vault, ServerPlayer originator) {
-        Iterator listeners = ((Listeners)vault.get(Vault.LISTENERS)).getAll().iterator();
         Random random = new Random();
-        while(listeners.hasNext()) {
-            Listener listener = (Listener) listeners.next();
+        for( Listener listener: vault.get(Vault.LISTENERS).getAll()) {
             if((random.nextInt(0, 100) >= cascadingValue)) {
-                listener.getPlayer().ifPresent((other) -> {
+                listener.getPlayer().ifPresent(other -> {
                     if(originator.equals(other)) {
                         if(!((random.nextInt(100 - 1) + 1) >= cascadingValue)) {
                             return;
                         }
                     }
-                    other.level.playSound((Player)null, other.getX(), other.getY(), other.getZ(), SoundEvents.GUARDIAN_ATTACK, SoundSource.PLAYERS, 0.9F, 1.2F);
+                    other.level.playSound(null, other.getX(), other.getY(), other.getZ(), SoundEvents.GUARDIAN_ATTACK, SoundSource.PLAYERS, 0.9F, 1.2F);
                     other.displayClientMessage(getCascadingEventMessage(originator), false);
                     cascadingValue = cascadingValue+3;
                     if(!cascadingRandomly) {

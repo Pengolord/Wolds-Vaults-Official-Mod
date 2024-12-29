@@ -12,12 +12,8 @@ public class IsRottenOfferingAttribute extends BooleanAttribute {
     public Boolean getValue(ItemStack itemStack) {
         if (!(itemStack.getItem() instanceof OfferingItem)) {
             return null;
-        } else {
-            if(itemStack.getOrCreateTag().contains("rotten")) {
-                return true;
-            }
         }
-        return false;
+        return itemStack.getOrCreateTag().contains("rotten");
     }
 
     public String getTranslationKey() {

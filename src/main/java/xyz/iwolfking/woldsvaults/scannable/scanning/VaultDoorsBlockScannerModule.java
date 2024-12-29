@@ -30,7 +30,7 @@ public enum VaultDoorsBlockScannerModule implements BlockScannerModule {
 
     private Predicate<BlockState> filter;
 
-    public static Set<ResourceLocation> vaultDoorBlocks = (Set) Util.make(new HashSet(), (c) -> {
+    public static Set<ResourceLocation> vaultDoorBlocks = Util.make(new HashSet<>(), c -> {
         c.add(ModBlocks.TREASURE_DOOR.getRegistryName());
         c.add(ModBlocks.DUNGEON_DOOR.getRegistryName());
         c.add(ModBlocks.VENDOR_DOOR.getRegistryName());

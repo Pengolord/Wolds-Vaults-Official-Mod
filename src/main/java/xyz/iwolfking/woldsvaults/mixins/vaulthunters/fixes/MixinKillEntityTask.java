@@ -9,7 +9,6 @@ import iskallia.vault.task.ProgressConfiguredTask;
 import iskallia.vault.task.TaskContext;
 import iskallia.vault.task.counter.TaskCounter;
 import iskallia.vault.task.source.EntityTaskSource;
-import iskallia.vault.task.source.TaskSource;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -26,15 +25,13 @@ public abstract class MixinKillEntityTask extends ProgressConfiguredTask<Integer
      * @author iwolfking
      * @reason Fix channeling not counting as player kill for bingo. I can't view bytecode at the moment but we can target lambda when I can
      */
-    @Overwrite
-    public void onAttach(TaskContext context) {
-        CommonEvents.ENTITY_DROPS.register(this, EventPriority.HIGHEST, (event) -> {
+    @Overwrite @Override
+    public void  onAttach(TaskContext context) {
+        CommonEvents.ENTITY_DROPS.register(this, EventPriority.HIGHEST, event -> {
             if (this.parent == null || this.parent.hasActiveChildren()) {
                 Entity attacker = event.getSource().getEntity();
                 if (attacker != null && !attacker.getLevel().isClientSide()) {
-                    TaskSource patt1256$temp = context.getSource();
-                    if (patt1256$temp instanceof EntityTaskSource) {
-                        EntityTaskSource entitySource = (EntityTaskSource)patt1256$temp;
+                    if (context.getSource() instanceof EntityTaskSource entitySource) {
                         if (attacker.getLevel() == event.getEntity().getLevel()) {
                             if (entitySource.matches(attacker)) {
                                 if (((KillEntityTask.Config)this.getConfig()).filter.test(event.getEntity())) {

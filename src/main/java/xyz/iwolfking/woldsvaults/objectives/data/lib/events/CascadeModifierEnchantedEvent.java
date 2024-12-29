@@ -14,7 +14,7 @@ public class CascadeModifierEnchantedEvent extends BasicEnchantedEvent {
 
     @Override
     public void triggerEvent(BlockPos pos, ServerPlayer player, Vault vault) {
-        Objectives objectives = (Objectives)vault.get(Vault.OBJECTIVES);
+        Objectives objectives = vault.get(Vault.OBJECTIVES);
         objectives.forEach(EnchantedElixirObjective.class, enchantedElixirObjective -> {
             enchantedElixirObjective.setShouldCascadeRandomly(true);
             return true;

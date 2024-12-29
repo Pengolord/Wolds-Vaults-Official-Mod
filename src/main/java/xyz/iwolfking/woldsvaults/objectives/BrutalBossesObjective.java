@@ -7,19 +7,16 @@ import iskallia.vault.VaultMod;
 import iskallia.vault.block.ObeliskBlock;
 import iskallia.vault.block.PlaceholderBlock;
 import iskallia.vault.core.Version;
-import iskallia.vault.core.data.compound.UUIDList;
 import iskallia.vault.core.data.key.SupplierKey;
 import iskallia.vault.core.event.CommonEvents;
 import iskallia.vault.core.event.common.BlockSetEvent;
 import iskallia.vault.core.event.common.BlockUseEvent;
 import iskallia.vault.core.random.JavaRandom;
 import iskallia.vault.core.random.RandomSource;
-import iskallia.vault.core.vault.Modifiers;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.modifier.spi.VaultModifier;
 import iskallia.vault.core.vault.objective.ObeliskObjective;
 import iskallia.vault.core.vault.objective.Objective;
-import iskallia.vault.core.vault.player.Listeners;
 import iskallia.vault.core.world.data.entity.PartialCompoundNbt;
 import iskallia.vault.core.world.data.tile.PartialBlockState;
 import iskallia.vault.core.world.data.tile.PartialTile;
@@ -44,13 +41,16 @@ import xyz.iwolfking.woldsvaults.objectives.data.bosses.WoldBoss;
 import xyz.iwolfking.woldsvaults.util.VaultModifierUtils;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.function.IntSupplier;
 
 public class BrutalBossesObjective extends ObeliskObjective {
 
     private final Random random = new Random();
-    public static final SupplierKey<Objective> E_KEY = (SupplierKey)SupplierKey.of("brutal_bosses", Objective.class).with(Version.v1_12, BrutalBossesObjective::new);
+    public static final SupplierKey<Objective> E_KEY = SupplierKey.of("brutal_bosses", Objective.class).with(Version.v1_12, BrutalBossesObjective::new);
 
     public BrutalBossesObjective(int target, IntSupplier wave, float objectiveProbability) {
         super(target, wave, objectiveProbability);
@@ -81,54 +81,46 @@ public class BrutalBossesObjective extends ObeliskObjective {
         }
 
 
-        CommonEvents.OBJECTIVE_PIECE_GENERATION.register(this, (data) -> {
-            this.ifPresent(OBJECTIVE_PROBABILITY, (probability) -> {
-                data.setProbability((double)probability);
-            });
-        });
-        CommonEvents.BLOCK_USE.in(world).at(BlockUseEvent.Phase.HEAD).of(ModBlocks.OBELISK).register(this, (data) -> {
+        CommonEvents.OBJECTIVE_PIECE_GENERATION.register(this, data -> this.ifPresent(OBJECTIVE_PROBABILITY, probability -> data.setProbability(probability)));
+        CommonEvents.BLOCK_USE.in(world).at(BlockUseEvent.Phase.HEAD).of(ModBlocks.OBELISK).register(this, data -> {
             if (data.getHand() != InteractionHand.MAIN_HAND) {
                 data.setResult(InteractionResult.SUCCESS);
             } else if (this.hasObelisksLeft()) {
                 BlockPos pos = data.getPos();
-                if ((Boolean)data.getState().getValue(ObeliskBlock.FILLED)) {
+                if (data.getState().getValue(ObeliskBlock.FILLED)) {
                     data.setResult(InteractionResult.SUCCESS);
                 } else if (data.getState().getValue(ObeliskBlock.HALF) == DoubleBlockHalf.UPPER && world.getBlockState(pos = pos.below()).getBlock() != ModBlocks.OBELISK) {
                     data.setResult(InteractionResult.SUCCESS);
-                } else if (((Listeners)vault.get(Vault.LISTENERS)).getObjectivePriority(data.getPlayer().getUUID(), this) != 0) {
+                } else if (vault.get(Vault.LISTENERS).getObjectivePriority(data.getPlayer().getUUID(), this) != 0) {
                     data.setResult(InteractionResult.SUCCESS);
                 } else {
-                    world.setBlock(pos, (BlockState)world.getBlockState(pos).setValue(ObeliskBlock.FILLED, true), 3);
-                    world.setBlock(pos.above(), (BlockState)world.getBlockState(pos.above()).setValue(ObeliskBlock.FILLED, true), 3);
+                    world.setBlock(pos, world.getBlockState(pos).setValue(ObeliskBlock.FILLED, true), 3);
+                    world.setBlock(pos.above(), world.getBlockState(pos.above()).setValue(ObeliskBlock.FILLED, true), 3);
                     this.onObeliskActivated(world, vault, pos);
                     data.setResult(InteractionResult.SUCCESS);
                 }
             }
         });
         if(LoadingModList.get().getModFileById("vaultfaster") != null) {
-            ObjectiveTemplateEvent.INSTANCE.registerObjectiveTemplate((Objective)this, vault);
+            ObjectiveTemplateEvent.INSTANCE.registerObjectiveTemplate(this, vault);
         }
         else {
-            CommonEvents.BLOCK_SET.at(BlockSetEvent.Type.RETURN).in(world).register(this, (data) -> {
+            CommonEvents.BLOCK_SET.at(BlockSetEvent.Type.RETURN).in(world).register(this, data -> {
                 PartialTile target = PartialTile.of(PartialBlockState.of(ModBlocks.PLACEHOLDER), PartialCompoundNbt.empty());
                 target.getState().set(PlaceholderBlock.TYPE, iskallia.vault.block.PlaceholderBlock.Type.OBJECTIVE);
                 if (target.isSubsetOf(PartialTile.of(data.getState()))) {
-                    BlockState lower = (BlockState)((BlockState)ModBlocks.OBELISK.defaultBlockState().setValue(ObeliskBlock.HALF, DoubleBlockHalf.LOWER)).setValue(ObeliskBlock.FILLED, false);
-                    BlockState upper = (BlockState)((BlockState)ModBlocks.OBELISK.defaultBlockState().setValue(ObeliskBlock.HALF, DoubleBlockHalf.UPPER)).setValue(ObeliskBlock.FILLED, false);
+                    BlockState lower = ModBlocks.OBELISK.defaultBlockState().setValue(ObeliskBlock.HALF, DoubleBlockHalf.LOWER).setValue(ObeliskBlock.FILLED, false);
+                    BlockState upper = ModBlocks.OBELISK.defaultBlockState().setValue(ObeliskBlock.HALF, DoubleBlockHalf.UPPER).setValue(ObeliskBlock.FILLED, false);
                     data.getWorld().setBlock(data.getPos(), lower, 3);
                     data.getWorld().setBlock(data.getPos().above(), upper, 3);
                 }
 
             });
         }
-        CommonEvents.ENTITY_DEATH.register(this, (event) -> {
+        CommonEvents.ENTITY_DEATH.register(this, event -> {
             if (event.getEntity().level == world) {
-                Wave[] var3 = (Wave[])this.get(WAVES);
-                int var4 = var3.length;
-
-                for(int var5 = 0; var5 < var4; ++var5) {
-                    Wave wave = var3[var5];
-                    if (((UUIDList)wave.get(BrutalBossesObjective.Wave.MOBS)).remove(event.getEntity().getUUID())) {
+                for (Wave wave : this.get(WAVES)) {
+                    if (wave.get(BrutalBossesObjective.Wave.MOBS).remove(event.getEntity().getUUID())) {
                         if(random.nextBoolean()) {
                             event.getEntity().spawnAtLocation(ModItems.ENIGMA_EGG);
                         }
@@ -137,50 +129,37 @@ public class BrutalBossesObjective extends ObeliskObjective {
                             String modNames = modifier.getLinkedModNameUntranslated().trim();
                             List<VaultModifier<?>> modifiersForMsg = new ArrayList<>();
                             for (String modName : modNames.split("\\s+")) {
-                                List<VaultModifier<?>> modifiers = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id("bb_" + modName.toLowerCase()), 0, (RandomSource) JavaRandom.ofNanoTime());
-                                if (!modifiers.isEmpty()) {
-                                    Iterator modIter = modifiers.iterator();
-
-                                    while (modIter.hasNext()) {
-                                        VaultModifier<?> mod = (VaultModifier<?>) modIter.next();
-                                        modifiersForMsg.add(mod);
-                                        ((Modifiers) vault.get(Vault.MODIFIERS)).addModifier(mod, 1, true, (RandomSource) JavaRandom.ofNanoTime());
-                                    }
+                                List<VaultModifier<?>> modifiers = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id("bb_" + modName.toLowerCase()), 0, JavaRandom.ofNanoTime());
+                                for (VaultModifier<?> mod: modifiers) {
+                                    modifiersForMsg.add(mod);
+                                    (vault.get(Vault.MODIFIERS)).addModifier(mod, 1, true, JavaRandom.ofNanoTime());
                                 }
                             }
                             vault.get(Vault.LISTENERS).getAll().forEach(listener -> {
                                 if(listener.getPlayer().isPresent()) {
-                                    modifiersForMsg.forEach(mod -> {
-                                        listener.getPlayer().get().displayClientMessage(mod.getChatDisplayNameComponent(1).copy().append(" was added to The Vault!"), false);
-                                    });
+                                    modifiersForMsg.forEach(mod -> listener.getPlayer().get().displayClientMessage(mod.getChatDisplayNameComponent(1).copy().append(" was added to The Vault!"), false));
                                 }
                             });
                         }
 
 
-                        wave.modify(BrutalBossesObjective.Wave.COUNT, (x) -> {
-                            return x + 1;
-                        });
+                        wave.modify(BrutalBossesObjective.Wave.COUNT, x -> x + 1);
                     }
                 }
 
             }
         });
-        ((ObjList)this.get(CHILDREN)).forEach((child) -> {
-            child.initServer(world, vault);
-        });
+        this.get(CHILDREN).forEach(child -> child.initServer(world, vault));
     }
 
     private void onObeliskActivated(VirtualWorld world, Vault vault, BlockPos pos) {
         this.playActivationEffects(world, pos);
-        Wave wave = (Wave) Arrays.stream((Wave[])this.get(WAVES)).filter((w) -> {
-            return !w.has(BrutalBossesObjective.Wave.ACTIVE);
-        }).findFirst().orElseThrow();
+        Wave wave = Arrays.stream(this.get(WAVES)).filter(w -> !w.has(Wave.ACTIVE)).findFirst().orElseThrow();
         wave.set(BrutalBossesObjective.Wave.ACTIVE);
         RandomSource random = JavaRandom.ofNanoTime();
 
-        for(int i = 0; i < (Integer)wave.get(ObeliskObjective.Wave.TARGET); ++i) {
-            ((UUIDList)wave.get(BrutalBossesObjective.Wave.MOBS)).add(this.doSpawn(world, vault, pos, random).getUUID());
+        for(int i = 0; i < wave.get(ObeliskObjective.Wave.TARGET); ++i) {
+            (wave.get(BrutalBossesObjective.Wave.MOBS)).add(this.doSpawn(world, vault, pos, random).getUUID());
         }
 
     }
@@ -195,11 +174,11 @@ public class BrutalBossesObjective extends ObeliskObjective {
         int z;
         int y;
         for(spawned = null; spawned == null; spawned = spawnMob(world, vault, pos.getX() + x, pos.getY() + y, pos.getZ() + z, random)) {
-            double angle = 6.283185307179586 * random.nextDouble();
+            double angle = 2 * Math.PI * random.nextDouble();
             double distance = Math.sqrt(random.nextDouble() * (max * max - min * min) + min * min);
             x = (int)Math.ceil(distance * Math.cos(angle));
             z = (int)Math.ceil(distance * Math.sin(angle));
-            double xzRadius = Math.sqrt((double)(x * x + z * z));
+            double xzRadius = Math.sqrt((x * x + z * z));
             double yRange = Math.sqrt(max * max - xzRadius * xzRadius);
             y = random.nextInt((int)Math.ceil(yRange) * 2 + 1) - (int)Math.ceil(yRange);
         }
@@ -228,11 +207,11 @@ public class BrutalBossesObjective extends ObeliskObjective {
         if (!state.isValidSpawn(world, new BlockPos(x, y - 1, z), entity.getType())) {
             return null;
         } else {
-            AABB entityBox = entity.getType().getAABB((double)x + 0.5, (double)y, (double)z + 0.5);
+            AABB entityBox = entity.getType().getAABB(x + 0.5, y, z + 0.5);
             if (!world.noCollision(entityBox)) {
                 return null;
             } else {
-                entity.moveTo((double)((float)x + 0.5F), (double)((float)y + 0.2F), (double)((float)z + 0.5F), (float)(random.nextDouble() * 2.0 * Math.PI), 0.0F);
+                entity.moveTo(x + 0.5F, y + 0.2F, z + 0.5F, (float)(random.nextDouble() * 2.0 * Math.PI), 0.0F);
                 world.addWithUUID(entity);
                 return entity;
             }

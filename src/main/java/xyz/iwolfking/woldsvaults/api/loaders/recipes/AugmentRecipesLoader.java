@@ -14,6 +14,7 @@ public class AugmentRecipesLoader extends VaultConfigProcessor<AugmentRecipesCon
         super(new AugmentRecipesConfig(), "vault_recipes/augment");
     }
 
+    @Override
     public void afterConfigsLoad(VaultConfigEvent.End event) {
 
         for (ResourceLocation key : this.CUSTOM_CONFIGS.keySet()) {
@@ -32,9 +33,7 @@ public class AugmentRecipesLoader extends VaultConfigProcessor<AugmentRecipesCon
     public void syncRecipes() {
         MinecraftServer srv = ServerLifecycleHooks.getCurrentServer();
         if (srv != null) {
-            srv.getPlayerList().getPlayers().forEach((player) -> {
-                ModConfigs.AUGMENT_RECIPES.syncTo(ModConfigs.AUGMENT_RECIPES, player);
-            });
+            srv.getPlayerList().getPlayers().forEach(player -> ModConfigs.AUGMENT_RECIPES.syncTo(ModConfigs.AUGMENT_RECIPES, player));
         }
     }
 }

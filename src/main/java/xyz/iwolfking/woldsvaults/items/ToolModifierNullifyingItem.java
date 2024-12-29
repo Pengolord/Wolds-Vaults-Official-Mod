@@ -69,6 +69,7 @@ public class ToolModifierNullifyingItem extends BasicItem {
         }
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, tooltip, flag);

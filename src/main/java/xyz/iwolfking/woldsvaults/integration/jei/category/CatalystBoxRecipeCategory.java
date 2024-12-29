@@ -58,20 +58,22 @@ public class CatalystBoxRecipeCategory implements IRecipeCategory<CatalystBoxCon
     }
 
     @Nonnull
+    @Override
     public RecipeType<CatalystBoxConfig> getRecipeType() {
         return this.RECIPE_TYPE;
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public ResourceLocation getUid() {
         return this.getRecipeType().getUid();
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public Class<? extends CatalystBoxConfig> getRecipeClass() {
         return this.getRecipeType().getRecipeClass();
     }
 
+    @Override
     @ParametersAreNonnullByDefault
     public void setRecipe(IRecipeLayoutBuilder builder, CatalystBoxConfig recipe, IFocusGroup focuses) {
         List<ItemStack> itemList = new ArrayList<>();
@@ -80,7 +82,7 @@ public class CatalystBoxRecipeCategory implements IRecipeCategory<CatalystBoxCon
         int count = itemList.size();
 
         for(int i = 0; i < count; ++i) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip((ItemStack)itemList.get(i)));
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip(itemList.get(i)));
         }
 
     }
@@ -95,7 +97,7 @@ public class CatalystBoxRecipeCategory implements IRecipeCategory<CatalystBoxCon
                 CompoundTag nbt = stack.getOrCreateTagElement("display");
                 ListTag list = nbt.getList("Lore", 8);
                 MutableComponent component = new TextComponent("Chance: ");
-                double chance = ((double) entry.weight / totalWeight) * 100;
+                double chance = (entry.weight / totalWeight) * 100;
                 component.append(String.format("%.2f", chance));
                 component.append("%");
                 list.add(StringTag.valueOf(Component.Serializer.toJson(component.withStyle(ChatFormatting.YELLOW))));

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(value = OfferingItemRenderer.class)
 public abstract class MixinOfferingItemRenderer extends SpecialItemRenderer {
 
-    @Redirect(method = "renderByItem", at = @At(value = "INVOKE", target = "Liskallia/vault/item/OfferingItem;getModifier(Lnet/minecraft/world/item/ItemStack;)Ljava/lang/String;"))
+    @Redirect(method = "renderByItem", at = @At(value = "INVOKE", target = "Liskallia/vault/item/OfferingItem;getModifier(Lnet/minecraft/world/item/ItemStack;)Ljava/lang/String;", remap = false))
     public String renderByItem(ItemStack tag) {
         String modifier = OfferingItem.getModifier(tag);
         if(modifier.isEmpty()) {

@@ -22,7 +22,7 @@ public class ToolModifierNullifierRecipe extends VanillaAnvilRecipe {
 
         ItemStack primary = context.getInput()[0];
         ItemStack secondary = context.getInput()[1];
-        if (primary.getItem() instanceof ToolItem tool && secondary.getItem() instanceof ToolModifierNullifyingItem nullifyingItem) {
+        if (primary.getItem() instanceof ToolItem && secondary.getItem() instanceof ToolModifierNullifyingItem) {
             ItemStack output = primary.copy();
             ItemStack input = secondary.copy();
             VaultGearAttribute<?> attributeToRemove = ToolModifierNullifyingItem.getModifierTag(input);

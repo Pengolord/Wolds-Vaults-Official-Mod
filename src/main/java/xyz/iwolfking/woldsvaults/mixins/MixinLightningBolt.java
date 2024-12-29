@@ -12,12 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = LightningBolt.class)
 public abstract class MixinLightningBolt extends Entity {
 
-    public MixinLightningBolt(EntityType<?> p_19870_, Level p_19871_) {
-        super(p_19870_, p_19871_);
+    public MixinLightningBolt(EntityType<?> pEntityType, Level pLevel) {
+        super(pEntityType, pLevel);
     }
 
     @Inject(method = "spawnFire", at = @At("HEAD"), cancellable = true)
-    private void spawnFire(int p_20871_, CallbackInfo ci) {
+    private void spawnFire(int pExtraIgnitions, CallbackInfo ci) {
         if(this.level.dimension().location().getNamespace().equals("the_vault")) {
             ci.cancel();
         }

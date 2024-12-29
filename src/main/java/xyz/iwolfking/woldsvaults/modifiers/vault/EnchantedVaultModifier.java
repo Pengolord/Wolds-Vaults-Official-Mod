@@ -18,6 +18,7 @@ public class EnchantedVaultModifier extends VaultModifier<EnchantedVaultModifier
         super(id, properties, display);
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault, ModifierContext context) {
         CommonEvents.PLAYER_TICK.register(context.getUUID(), EventPriority.HIGHEST, (event) -> {
             if(event.side.isServer()) {

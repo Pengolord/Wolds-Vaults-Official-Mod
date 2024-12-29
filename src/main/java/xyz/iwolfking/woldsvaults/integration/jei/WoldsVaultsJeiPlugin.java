@@ -25,6 +25,7 @@ public class WoldsVaultsJeiPlugin implements IModPlugin {
         return WoldsVaults.id("wolds_jei_integration");
     }
 
+    @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(xyz.iwolfking.woldsvaults.init.ModItems.ENIGMA_EGG), EnigmaEggRecipeCategory.RECIPE_TYPE);
         registration.addRecipeCatalyst(new ItemStack(xyz.iwolfking.woldsvaults.init.ModItems.OMEGA_BOX), OmegaBoxRecipeCategory.RECIPE_TYPE);

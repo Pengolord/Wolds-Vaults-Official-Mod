@@ -5,7 +5,6 @@ import net.joseph.vaultfilters.attributes.abstracts.StringListAttribute;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -24,15 +23,15 @@ public class OfferingItemAttribute extends StringListAttribute {
         return "";
     }
 
+    @Override
     public Object[] getTranslationParameters() {
-        String modifiedItemName = ((String)this.value).replace("[", "").replace("]", "").trim();
+        String modifiedItemName = (this.value).replace("[", "").replace("]", "").trim();
         return new Object[]{modifiedItemName};
     }
 
     public static List<String> getOfferingItems(ItemStack stack) {
         List<String> itemNamesList = new ArrayList<>();
-        Item var3 = stack.getItem();
-        if (var3 instanceof OfferingItem) {
+        if (stack.getItem() instanceof OfferingItem) {
             if(!stack.getOrCreateTag().contains("Items")) {
                 return List.of();
             }

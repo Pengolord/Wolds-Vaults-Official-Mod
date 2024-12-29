@@ -19,8 +19,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.IndirectEntityDamageSource;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -168,7 +176,7 @@ public class VaultRangEntity extends Projectile {
 
     @Nullable
     protected EntityHitResult raycastEntities(Vec3 from, Vec3 to) {
-        return ProjectileUtil.getEntityHitResult(level, this, from, to, getBoundingBox().expandTowards(getDeltaMovement()).inflate(1.0D), (entity) ->
+        return ProjectileUtil.getEntityHitResult(level, this, from, to, getBoundingBox().expandTowards(getDeltaMovement()).inflate(1.0D), entity ->
                 !entity.isSpectator()
                         && entity.isAlive()
                         && (entity.isPickable() || entity instanceof VaultRangEntity)
@@ -179,8 +187,8 @@ public class VaultRangEntity extends Projectile {
     @Override
     protected void onHit(@Nonnull HitResult result) {
         LivingEntity owner = getThrower();
-        if(result.getType() == HitResult.Type.BLOCK && result instanceof BlockHitResult) {
-            BlockPos hit = ((BlockHitResult) result).getBlockPos();
+        if(result.getType() == HitResult.Type.BLOCK && result instanceof BlockHitResult hitResult) {
+            BlockPos hit = hitResult.getBlockPos();
             BlockState state = level.getBlockState(hit);
 
             if(getPiercingModifier() == 0 || state.getMaterial().isSolidBlocking())
@@ -192,13 +200,13 @@ public class VaultRangEntity extends Projectile {
             clank();
 
 
-        } else if(result.getType() == HitResult.Type.ENTITY && result instanceof EntityHitResult) {
-            Entity hit = ((EntityHitResult) result).getEntity();
+        } else if(result.getType() == HitResult.Type.ENTITY && result instanceof EntityHitResult hitResult) {
+            Entity hit = hitResult.getEntity();
 
             if(hit != owner) {
                 addHit(hit);
-                if (hit instanceof VaultRangEntity) {
-                    ((VaultRangEntity) hit).setReturning();
+                if (hit instanceof VaultRangEntity rang) {
+                    rang.setReturning();
                     clank();
                 } else {
                     ItemStack rang = getStack();
@@ -212,7 +220,7 @@ public class VaultRangEntity extends Projectile {
                         int ticksSinceLastSwing = owner.attackStrengthTicker;
                         owner.attackStrengthTicker = (int) (1.0 / owner.getAttributeValue(Attributes.ATTACK_SPEED) * 20.0) + 1;
 
-                        float prevHealth = hit instanceof LivingEntity ? ((LivingEntity) hit).getHealth() : 0;
+                        float prevHealth = hit instanceof LivingEntity le ? le.getHealth() : 0;
 
 
                         VaultRangLogic.setActiveRang(this);
@@ -230,7 +238,7 @@ public class VaultRangEntity extends Projectile {
                         else
                             owner.doHurtTarget(hit);
 
-                        if (hit instanceof LivingEntity && ((LivingEntity) hit).getHealth() == prevHealth)
+                        if (hit instanceof LivingEntity le && le.getHealth() == prevHealth)
                             clank();
 
 
@@ -415,8 +423,8 @@ public class VaultRangEntity extends Projectile {
                             if (!riding.isAlive())
                                 continue;
 
-                            if (riding instanceof ItemEntity)
-                                giveItemToPlayer(player, (ItemEntity) riding);
+                            if (riding instanceof ItemEntity itemEntity)
+                                giveItemToPlayer(player, itemEntity);
                             else if (riding instanceof ExperienceOrb)
                                 riding.playerTouch(player);
                         }
@@ -443,10 +451,10 @@ public class VaultRangEntity extends Projectile {
 
     @Nullable
     public LivingEntity getThrower() {
-        if (this.owner == null && this.ownerId != null && this.level instanceof ServerLevel) {
-            Entity entity = ((ServerLevel)this.level).getEntity(this.ownerId);
-            if (entity instanceof LivingEntity) {
-                this.owner = (LivingEntity)entity;
+        if (this.owner == null && this.ownerId != null && this.level instanceof ServerLevel sWorld) {
+            Entity entity = sWorld.getEntity(this.ownerId);
+            if (entity instanceof LivingEntity livingEntity) {
+                this.owner = livingEntity;
             } else {
                 this.ownerId = null;
             }

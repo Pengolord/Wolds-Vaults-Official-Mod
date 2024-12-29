@@ -29,7 +29,7 @@ public class EternalAttributesConfig extends EternalAttributeConfig {
         this.initialAttributes.forEach((attrKey, valueRange) -> {
             Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(new ResourceLocation(attrKey));
             if(attribute != null) {
-                selectedAttributes.put(attribute, Float.valueOf(valueRange.getRandom()));
+                selectedAttributes.put(attribute, valueRange.getRandom());
             }
         });
         return selectedAttributes;

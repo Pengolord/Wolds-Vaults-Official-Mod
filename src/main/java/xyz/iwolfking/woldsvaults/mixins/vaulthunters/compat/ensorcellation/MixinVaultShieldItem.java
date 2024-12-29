@@ -18,10 +18,9 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(value = VaultShieldItem.class, remap = false)
 public abstract class MixinVaultShieldItem   extends ShieldItem implements VaultGearItem {
 
-    public MixinVaultShieldItem(Properties p_43089_) {
-        super(p_43089_);
+    public MixinVaultShieldItem(Properties pProperties) {
+        super(pProperties);
     }
-
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {

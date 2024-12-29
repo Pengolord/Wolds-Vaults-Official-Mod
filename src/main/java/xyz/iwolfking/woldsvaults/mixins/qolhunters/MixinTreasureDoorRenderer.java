@@ -24,10 +24,10 @@ public class MixinTreasureDoorRenderer {
      */
     @Overwrite
     public void render(TreasureDoorTileEntity tileEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, int combinedOverlay) {
-        if ((Boolean) QOLHuntersClientConfigs.TREASURE_DOOR_NAMES.get()) {
+        if (QOLHuntersClientConfigs.TREASURE_DOOR_NAMES.get()) {
             if (tileEntity.getBlockState().getValue(TreasureDoorBlock.HALF) != DoubleBlockHalf.LOWER) {
                 poseStack.pushPose();
-                Direction facing = (Direction) tileEntity.getBlockState().getValue(TreasureDoorBlock.FACING);
+                Direction facing = tileEntity.getBlockState().getValue(TreasureDoorBlock.FACING);
                 switch (facing) {
                     case NORTH:
                         poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
@@ -47,7 +47,7 @@ public class MixinTreasureDoorRenderer {
                 poseStack.translate(0.5, 0.75, 0.3);
                 float scale = 0.014F;
                 poseStack.scale(scale, -scale, scale);
-                String text = ((TreasureDoorBlock.Type) tileEntity.getBlockState().getValue(TreasureDoorBlock.TYPE)).toString();
+                String text = tileEntity.getBlockState().getValue(TreasureDoorBlock.TYPE).toString();
                 text = text.equals("PETZANITE") ? "PETEZANITE" : text;
                 if (this.playerName == null) {
                     this.playerName = Minecraft.getInstance().player.getName().getString();
@@ -55,7 +55,7 @@ public class MixinTreasureDoorRenderer {
 
                 text = text.equals("ISKALLIUM") ? "WOLDIUM" : text;
                 int xOffset = Minecraft.getInstance().font.width(text);
-                Minecraft.getInstance().font.drawInBatch(text, (float) (-xOffset) / 2.0F, 0.0F, 16777215, true, poseStack.last().pose(), bufferSource, false, 0, combinedLight);
+                Minecraft.getInstance().font.drawInBatch(text, -xOffset / 2.0F, 0.0F, 16777215, true, poseStack.last().pose(), bufferSource, false, 0, combinedLight);
                 poseStack.popPose();
             }
         }

@@ -20,7 +20,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,8 +32,9 @@ import java.util.Optional;
 
 @Mixin(value = MagnetItem.class, remap = false)
 public abstract class MixinMagnetItem extends Item implements VaultGearItem, CuriosGearItem, ICurioItem {
-    public MixinMagnetItem(Properties p_41383_) {
-        super(p_41383_);
+
+    public MixinMagnetItem(Properties pProperties) {
+        super(pProperties);
     }
 
     @Shadow
@@ -59,48 +59,37 @@ public abstract class MixinMagnetItem extends Item implements VaultGearItem, Cur
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
-            Player var3 = event.player;
-            if (var3 instanceof ServerPlayer) {
-                ServerPlayer player = (ServerPlayer) var3;
-                Level var4 = player.level;
-                if (var4 instanceof ServerLevel) {
-                    ServerLevel world = (ServerLevel) var4;
-                    getMagnet(event.player).ifPresent((stack) -> {
-                        Item patt7601$temp = stack.getItem();
-                        if (patt7601$temp instanceof VaultGearItem gearItem) {
-                            if (gearItem.isBroken(stack)) {
-                                return;
-                            }
-                        }
+            if (event.player instanceof ServerPlayer player && player.level instanceof ServerLevel world) {
+                getMagnet(event.player).ifPresent(stack -> {
+                    if (stack.getItem() instanceof VaultGearItem gearItem && gearItem.isBroken(stack)) {
+                        return;
+                    }
 
-                        if (!DemagnetizerTileEntity.hasDemagnetizerAround(event.player)) {
-                            VaultGearData data = VaultGearData.read(stack);
-                            float range = (Float) data.get(ModGearAttributes.RANGE, VaultGearAttributeTypeMerger.floatSum());
-                            float speed = (Float) data.get(ModGearAttributes.VELOCITY, VaultGearAttributeTypeMerger.floatSum());
-                            List<ItemEntity> items = world.getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate((double) range), (entity) -> {
-                                return entity.distanceToSqr(player) <= (double) (range * range) && !entity.getTags().contains("PreventMagnetMovement");
-                            });
-                            List<ExperienceOrb> orbs = world.getEntitiesOfClass(ExperienceOrb.class, player.getBoundingBox().inflate((double) range), (entity) -> {
-                                return entity.distanceToSqr(player) <= (double) (range * range) && !entity.getTags().contains("PreventMagnetMovement");
-                            });
-                            TrinketHelper.getTrinkets(player, EnderAnchorTrinket.class).forEach((enderTrinket) -> {
-                                if (enderTrinket.isUsable(player)) {
-                                    teleportToPlayer(player, items);
-                                    teleportToPlayer(player, orbs);
-                                }
-                            });
-                            if(AttributeGearData.read(stack).get(xyz.iwolfking.woldsvaults.init.ModGearAttributes.MAGNET_ENDERGIZED, VaultGearAttributeTypeMerger.anyTrue())) {
+                    if (!DemagnetizerTileEntity.hasDemagnetizerAround(event.player)) {
+                        VaultGearData data = VaultGearData.read(stack);
+                        float range = data.get(ModGearAttributes.RANGE, VaultGearAttributeTypeMerger.floatSum());
+                        float speed = data.get(ModGearAttributes.VELOCITY, VaultGearAttributeTypeMerger.floatSum());
+                        List<ItemEntity> items = world.getEntitiesOfClass(ItemEntity.class, player.getBoundingBox().inflate(range), (entity) -> {
+                            return entity.distanceToSqr(player) <= range * range && !entity.getTags().contains("PreventMagnetMovement");
+                        });
+                        List<ExperienceOrb> orbs = world.getEntitiesOfClass(ExperienceOrb.class, player.getBoundingBox().inflate(range), (entity) -> {
+                            return entity.distanceToSqr(player) <= range * range  && !entity.getTags().contains("PreventMagnetMovement");
+                        });
+                        TrinketHelper.getTrinkets(player, EnderAnchorTrinket.class).forEach((enderTrinket) -> {
+                            if (enderTrinket.isUsable(player)) {
                                 teleportToPlayer(player, items);
                                 teleportToPlayer(player, orbs);
                             }
-                            moveToPlayer(player, items, speed);
-                            moveToPlayer(player, orbs, speed);
+                        });
+                        if(AttributeGearData.read(stack).get(xyz.iwolfking.woldsvaults.init.ModGearAttributes.MAGNET_ENDERGIZED, VaultGearAttributeTypeMerger.anyTrue())) {
+                            teleportToPlayer(player, items);
+                            teleportToPlayer(player, orbs);
                         }
-                    });
-                    return;
-                }
+                        moveToPlayer(player, items, speed);
+                        moveToPlayer(player, orbs, speed);
+                    }
+                });
             }
-
         }
     }
 

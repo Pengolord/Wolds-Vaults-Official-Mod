@@ -9,15 +9,15 @@ import net.minecraft.world.item.Items;
 public class VaultarBoxConfig extends Config {
     @Expose
     public WeightedList<ProductEntry> POOL = new WeightedList();
-    /*    */
-    /*    */
-    /*    */   public String getName() {
-        /* 14 */     return "vaultar_box";
-        /*    */   }
-    /*    */
-    /*    */
-    /*    */   protected void reset() {
-        /* 19 */     this.POOL.add(new ProductEntry(Items.APPLE, 8, null), 3);
-        /* 20 */     this.POOL.add(new ProductEntry(Items.GOLDEN_APPLE, 1, null), 1);
-        /*    */   }
+
+
+    public String getName() {
+        return "vaultar_box";
+    }
+
+
+    protected void reset() {
+        this.POOL.add(new ProductEntry(Items.APPLE, 8, null), 3);
+        this.POOL.add(new ProductEntry(Items.GOLDEN_APPLE, 1, null), 1);
+    }
 }

@@ -21,6 +21,7 @@ public class HellishSandBlock extends LootableBlock {
     }
 
     @Nullable
+    @Override
     public <A extends BlockEntity> BlockEntityTicker<A> getTicker(Level world, BlockState state, BlockEntityType<A> type) {
         return !world.isClientSide() ? null : BlockHelper.getTicker(type, ModBlocks.HELLISH_SAND_TILE_ENTITY_BLOCK_ENTITY_TYPE, HellishSandTileEntity::tick);
     }

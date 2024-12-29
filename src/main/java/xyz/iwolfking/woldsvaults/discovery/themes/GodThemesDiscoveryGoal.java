@@ -20,9 +20,8 @@ public class GodThemesDiscoveryGoal extends InVaultDiscoveryGoal<GodThemesDiscov
 
     @Override
     public void initServer(DiscoveryGoalsManager discoveryGoalsManager, VirtualWorld virtualWorld, Vault vault) {
-        VaultEvents.GOD_ALTAR_COMPLETED.register(discoveryGoalsManager, (event) -> {
-            Player player = event.getPlayer();
-            if(player instanceof ServerPlayer sPlayer) {
+        VaultEvents.GOD_ALTAR_COMPLETED.register(discoveryGoalsManager, event -> {
+            if(event.getPlayer() instanceof ServerPlayer sPlayer) {
                 if(sPlayer.getLevel() == virtualWorld) {
                     if(event.getGod().equals(god)) {
                         this.progress(sPlayer, 1.0F);

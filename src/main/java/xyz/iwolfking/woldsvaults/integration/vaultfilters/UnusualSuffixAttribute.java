@@ -12,18 +12,21 @@ public class UnusualSuffixAttribute extends AffixAttribute {
         return VaultGearModifier.AffixType.SUFFIX;
     }
 
+    @Override
     public boolean shouldList(VaultGearModifier<?> modifier) {
         return modifier.hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL"));
     }
 
+    @Override
     public boolean checkModifier(VaultGearModifier<?> modifier) {
-        return modifier.hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL")) && ((String)this.value).equals(getName(modifier));
+        return modifier.hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL")) && this.value.equals(getName(modifier));
     }
 
     public String getTranslationKey() {
         return "unusual_suffix";
     }
 
+    @Override
     public String getLegacyKey() {
         return "unusualSuffix";
     }

@@ -21,7 +21,7 @@ public class AllSeeingEyeCapstoneRecipe extends VanillaAnvilRecipe {
         if (primary.getItem() == ModItems.VAULT_CRYSTAL && secondary.getItem() == xyz.iwolfking.woldsvaults.init.ModItems.ALL_SEEING_EYE_CAPSTONE) {
             ItemStack output = primary.copy();
             CrystalData crystal = CrystalData.read(output);
-            VaultModifierRegistry.getOpt(VaultMod.id("all_seeing_eye")).ifPresent((modifier) -> {
+            VaultModifierRegistry.getOpt(VaultMod.id("all_seeing_eye")).ifPresent(modifier -> {
                 VaultModifierStack modifierStack = VaultModifierStack.of(modifier);
                 if (crystal.addModifierByCrafting(modifierStack, false, true)) {
                     crystal.addModifierByCrafting(modifierStack, false, false);

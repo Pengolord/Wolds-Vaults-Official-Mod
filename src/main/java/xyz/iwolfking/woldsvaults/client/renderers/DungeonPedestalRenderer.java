@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import xyz.iwolfking.woldsvaults.blocks.tiles.DungeonPedestalTileEntity;
 
@@ -28,13 +27,13 @@ public class DungeonPedestalRenderer implements BlockEntityRenderer<DungeonPedes
         if (this.minecraft.level != null) {
             ItemStack contained = tile.getContained();
             if (!contained.isEmpty()) {
-                BakedModel bakedmodel = this.itemRenderer.getModel(contained, this.minecraft.level, (LivingEntity)null, 0);
+                BakedModel bakedmodel = this.itemRenderer.getModel(contained, this.minecraft.level, null, 0);
                 int tickPart = (int) ClientScheduler.INSTANCE.getTick();
-                float angle = ((float)tickPart + pTicks) / 20.0F;
-                float yOffset = Mth.sin(((float)tickPart + pTicks) / 10.0F) * 0.1F + 0.1F;
+                float angle = (tickPart + pTicks) / 20.0F;
+                float yOffset = Mth.sin((tickPart + pTicks) / 10.0F) * 0.1F + 0.1F;
                 yOffset += 0.25F * bakedmodel.getTransforms().getTransform(ItemTransforms.TransformType.GROUND).scale.y();
                 pose.pushPose();
-                pose.translate(0.5, 1.0 + (double)yOffset, 0.5);
+                pose.translate(0.5, 1.0 + yOffset, 0.5);
                 pose.mulPose(Vector3f.YP.rotation(angle));
                 this.itemRenderer.render(contained, ItemTransforms.TransformType.GROUND, false, pose, buffer, combinedLightIn, OverlayTexture.NO_OVERLAY, bakedmodel);
                 pose.popPose();

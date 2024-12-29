@@ -15,6 +15,7 @@ public class BowHandheldModel extends DynamicModel<HandHeldModel> {
         super(id, displayName);
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public BlockModel generateItemModel(Map<String, ResourceLocation> textures) {
         String jsonPattern = """

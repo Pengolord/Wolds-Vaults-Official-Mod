@@ -9,7 +9,14 @@ import iskallia.vault.core.event.CommonEvents;
 import iskallia.vault.entity.VaultBoss;
 import iskallia.vault.entity.boss.VaultBossEntity;
 import iskallia.vault.entity.champion.ChampionLogic;
-import iskallia.vault.entity.entity.elite.*;
+import iskallia.vault.entity.entity.elite.EliteDrownedEntity;
+import iskallia.vault.entity.entity.elite.EliteEndermanEntity;
+import iskallia.vault.entity.entity.elite.EliteHuskEntity;
+import iskallia.vault.entity.entity.elite.EliteSpiderEntity;
+import iskallia.vault.entity.entity.elite.EliteStrayEntity;
+import iskallia.vault.entity.entity.elite.EliteWitchEntity;
+import iskallia.vault.entity.entity.elite.EliteWitherSkeleton;
+import iskallia.vault.entity.entity.elite.EliteZombieEntity;
 import iskallia.vault.gear.attribute.type.VaultGearAttributeTypeMerger;
 import iskallia.vault.gear.data.VaultGearData;
 import iskallia.vault.gear.item.VaultGearItem;
@@ -138,9 +145,7 @@ public class LivingEntityEvents {
     public static void onDamageTotem(LivingHurtEvent event) {
         Level world = event.getEntity().getCommandSenderWorld();
         if (!world.isClientSide() && world instanceof ServerLevel) {
-            LivingEntity var3 = event.getEntityLiving();
-            if (var3 instanceof Player) {
-                Player player = (Player)var3;
+            if (event.getEntityLiving() instanceof Player player) {
                 if (!event.getSource().isBypassArmor()) {
                     ItemStack offHand = event.getEntityLiving().getOffhandItem();
                     if (!ServerVaults.get(world).isEmpty() || !(offHand.getItem() instanceof VaultGearItem)) {
@@ -150,9 +155,7 @@ public class LivingEntityEvents {
                                 damage = 1;
                             }
 
-                            offHand.hurtAndBreak(damage, event.getEntityLiving(), (entity) -> {
-                                entity.broadcastBreakEvent(EquipmentSlot.OFFHAND);
-                            });
+                            offHand.hurtAndBreak(damage, event.getEntityLiving(), entity -> entity.broadcastBreakEvent(EquipmentSlot.OFFHAND));
                         }
                     }
                 }
@@ -167,30 +170,24 @@ public class LivingEntityEvents {
 
         Level world = event.getPlayer().getCommandSenderWorld();
         if (!world.isClientSide() && world instanceof ServerLevel) {
-            LivingEntity var3 = event.getPlayer();
-            if (var3 instanceof Player player) {
-                if (event.getState().getBlock() instanceof VaultChestBlock || event.getState().getBlock() instanceof CoinPileBlock || event.getState().getBlock() instanceof VaultOreBlock) {
-                    ItemStack offHand = event.getPlayer().getOffhandItem();
-                    if (!ServerVaults.get(world).isEmpty() || !(offHand.getItem() instanceof VaultGearItem)) {
-                        if (offHand.getItem() instanceof VaultLootSackItem) {
-
-                            if(event.getState().getBlock() instanceof VaultChestBlock chestBlock) {
-                                if(chestBlock.hasStepBreaking()) {
-                                    if(random.nextFloat() < 0.75F) {
-                                        return;
-                                    }
+            if (event.getState().getBlock() instanceof VaultChestBlock || event.getState().getBlock() instanceof CoinPileBlock || event.getState().getBlock() instanceof VaultOreBlock) {
+                ItemStack offHand = event.getPlayer().getOffhandItem();
+                if (!ServerVaults.get(world).isEmpty() || !(offHand.getItem() instanceof VaultGearItem)) {
+                    if (offHand.getItem() instanceof VaultLootSackItem) {
+                        if(event.getState().getBlock() instanceof VaultChestBlock chestBlock) {
+                            if(chestBlock.hasStepBreaking()) {
+                                if(random.nextFloat() < 0.75F) {
+                                    return;
                                 }
                             }
-
-                            int damage = (int)CommonEvents.PLAYER_STAT.invoke(PlayerStat.DURABILITY_DAMAGE, player, 1.0F).getValue();
-                            if (damage <= 1) {
-                                damage = 1;
-                            }
-
-                            offHand.hurtAndBreak(damage, event.getPlayer(), (entity) -> {
-                                entity.broadcastBreakEvent(EquipmentSlot.OFFHAND);
-                            });
                         }
+
+                        int damage = (int)CommonEvents.PLAYER_STAT.invoke(PlayerStat.DURABILITY_DAMAGE, event.getPlayer(), 1.0F).getValue();
+                        if (damage <= 1) {
+                            damage = 1;
+                        }
+
+                        offHand.hurtAndBreak(damage, event.getPlayer(), entity -> entity.broadcastBreakEvent(EquipmentSlot.OFFHAND));
                     }
                 }
             }
@@ -209,7 +206,7 @@ public class LivingEntityEvents {
     @SubscribeEvent
     public static void multiJumpTrinketFallReductionEvent(LivingFallEvent event) {
         if(event.getEntityLiving() instanceof ServerPlayer player) {
-            if (!TrinketHelper.getTrinkets(player, MultiJumpTrinket.class).stream().noneMatch((trinket) -> trinket.isUsable(player))) {
+            if (TrinketHelper.getTrinkets(player, MultiJumpTrinket.class).stream().anyMatch(trinket -> trinket.isUsable(player))) {
                 if(event.getDistance() < 5.0F) {
                     event.setCanceled(true);
                 } else {

@@ -26,7 +26,7 @@ public class DecoLodestoneRenderer implements BlockEntityRenderer<DecoLodestoneT
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Vector3f.ZP.rotation(3.1415927F));
         this.crystalModel.setupAnimations();
-        this.crystalModel.renderToBuffer(poseStack, vertexConsumer, packetLight, packetOverlay, 1.0F, 1.0F, 1.0F, (float)a / 255.0F);
+        this.crystalModel.renderToBuffer(poseStack, vertexConsumer, packetLight, packetOverlay, 1.0F, 1.0F, 1.0F, a / 255.0F);
         poseStack.popPose();
     }
 }

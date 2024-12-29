@@ -42,17 +42,19 @@ public class PrismaticAngelRing extends AngelRingItem {
         }
     }
 
+    @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag unused) {
         return ExternalMods.CURIOS.isLoaded() ? PrismaticAngelRingInteraction.initCapabilities() : super.initCapabilities(stack, unused);
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack itemStack, @Nullable Level world, List<Component> tooltip, TooltipFlag tooltipFlag) {
         if (!Screen.hasShiftDown()) {
             tooltip.add((new TranslatableComponent("item.angelring.itemring.tooltip")).withStyle(ChatFormatting.GRAY));
         }
 
-        if (Screen.hasShiftDown() && (Integer) Configuration.XPCost.get() != 0) {
+        if (Screen.hasShiftDown() && Configuration.XPCost.get() != 0) {
             tooltip.add(new TextComponent("Prismatic Angel Ring costs nothing to fly!").withStyle(ChatFormatting.GREEN));
         }
 

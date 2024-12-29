@@ -37,5 +37,9 @@ public abstract class MixinAbilityLabelFactory {
                 "size",
                 context -> label("\n Size: ",binding(context.config(), "size"),"amplifier")
         );
+        FACTORY_MAP.put(
+                "levitateSpeed",
+                context -> label("\n Float Speed: ",binding(context.config(), "levitateSpeed"),"amplifier")
+        );
     }
 }

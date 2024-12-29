@@ -28,10 +28,11 @@ public class RetroSpawnVaultModifier extends VaultModifier<RetroSpawnVaultModifi
         super(id, properties, display);
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault, ModifierContext context) {
-        CommonEvents.PLAYER_TICK.register(context.getUUID(), EventPriority.HIGHEST, (event) -> {
+        CommonEvents.PLAYER_TICK.register(context.getUUID(), EventPriority.HIGHEST, event -> {
             if(event.side.isServer()) {
-                if(!((event.player.tickCount % this.properties.getTicksPerCheck()) == 0)) {
+                if((event.player.tickCount % this.properties.getTicksPerCheck()) != 0) {
                     return;
                 }
 
@@ -51,7 +52,7 @@ public class RetroSpawnVaultModifier extends VaultModifier<RetroSpawnVaultModifi
                             return;
                         }
 
-                        doSpawn((VirtualWorld) event.player.level, event.player.getOnPos(), (Random) event.player.getRandom());
+                        doSpawn((VirtualWorld) event.player.level, event.player.getOnPos(), event.player.getRandom());
                     }
                 }
             }
@@ -111,11 +112,11 @@ public class RetroSpawnVaultModifier extends VaultModifier<RetroSpawnVaultModifi
         int y;
 
         for(spawned = null; spawned == null; spawned = spawnMob(world, pos.getX() + x, pos.getY() + y, pos.getZ() + z, random)) {
-            double angle = 6.283185307179586 * random.nextDouble();
+            double angle = 2 * Math.PI * random.nextDouble();
             double distance = Math.sqrt(random.nextDouble() * (max * max - min * min) + min * min);
             x = (int)Math.ceil(distance * Math.cos(angle));
             z = (int)Math.ceil(distance * Math.sin(angle));
-            double xzRadius = Math.sqrt((double)(x * x + z * z));
+            double xzRadius = Math.sqrt(x * x + z * z);
             double yRange = Math.sqrt(max * max - xzRadius * xzRadius);
             y = random.nextInt((int)Math.ceil(yRange) * 2 + 1) - (int)Math.ceil(yRange);
         }
@@ -136,17 +137,16 @@ public class RetroSpawnVaultModifier extends VaultModifier<RetroSpawnVaultModifi
         }
 
         BlockState state = world.getBlockState(new BlockPos(x, y - 1, z));
-        if (!state.isValidSpawn(world, new BlockPos(x, y - 1, z), entity.getType())) {
+        if (entity == null || !state.isValidSpawn(world, new BlockPos(x, y - 1, z), entity.getType())) {
             return null;
-        } else {
-            AABB entityBox = entity.getType().getAABB((double)x + 0.5, (double)y, (double)z + 0.5);
-            if (!world.noCollision(entityBox)) {
-                return null;
-            } else {
-                entity.moveTo((double)((float)x + 0.5F), (double)((float)y + 0.2F), (double)((float)z + 0.5F), (float)(random.nextDouble() * 2.0 * Math.PI), 0.0F);
-                world.addWithUUID(entity);
-                return (LivingEntity) entity;
-            }
         }
+        AABB entityBox = entity.getType().getAABB(x + 0.5, y, z + 0.5);
+        if (!world.noCollision(entityBox)) {
+            return null;
+        }
+        entity.moveTo(x + 0.5F, y + 0.2F, z + 0.5F, (float)(random.nextDouble() * 2.0 * Math.PI), 0.0F);
+        world.addWithUUID(entity);
+        return (LivingEntity) entity;
+
     }
 }

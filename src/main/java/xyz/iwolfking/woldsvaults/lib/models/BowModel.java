@@ -19,133 +19,134 @@ public class BowModel extends DynamicModel<BowModel> {
     @OnlyIn(Dist.CLIENT)
     @Override
     public BlockModel generateItemModel(Map<String, ResourceLocation> textures) {
-        String jsonPattern = "{\n" +
-                "  \"parent\": \"item/generated\",\n" +
-                "  \"textures\": {\n" +
-                "    \"layer0\": \"minecraft:item/bow\"\n" +
-                "  },\n" +
-                "  \"display\": {\n" +
-                "    \"thirdperson_righthand\": {\n" +
-                "      \"rotation\": [\n" +
-                "        -80,\n" +
-                "        260,\n" +
-                "        -40\n" +
-                "      ],\n" +
-                "      \"translation\": [\n" +
-                "        -1,\n" +
-                "        -2,\n" +
-                "        2.5\n" +
-                "      ],\n" +
-                "      \"scale\": [\n" +
-                "        0.9,\n" +
-                "        0.9,\n" +
-                "        0.9\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    \"thirdperson_lefthand\": {\n" +
-                "      \"rotation\": [\n" +
-                "        -80,\n" +
-                "        -280,\n" +
-                "        40\n" +
-                "      ],\n" +
-                "      \"translation\": [\n" +
-                "        -1,\n" +
-                "        -2,\n" +
-                "        2.5\n" +
-                "      ],\n" +
-                "      \"scale\": [\n" +
-                "        0.9,\n" +
-                "        0.9,\n" +
-                "        0.9\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    \"firstperson_righthand\": {\n" +
-                "      \"rotation\": [\n" +
-                "        0,\n" +
-                "        -90,\n" +
-                "        25\n" +
-                "      ],\n" +
-                "      \"translation\": [\n" +
-                "        1.13,\n" +
-                "        3.2,\n" +
-                "        1.13\n" +
-                "      ],\n" +
-                "      \"scale\": [\n" +
-                "        0.68,\n" +
-                "        0.68,\n" +
-                "        0.68\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    \"firstperson_lefthand\": {\n" +
-                "      \"rotation\": [\n" +
-                "        0,\n" +
-                "        90,\n" +
-                "        -25\n" +
-                "      ],\n" +
-                "      \"translation\": [\n" +
-                "        1.13,\n" +
-                "        3.2,\n" +
-                "        1.13\n" +
-                "      ],\n" +
-                "      \"scale\": [\n" +
-                "        0.68,\n" +
-                "        0.68,\n" +
-                "        0.68\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"overrides\": [\n" +
-                "    {\n" +
-                "      \"predicate\": {\n" +
-                "        \"pulling\": 1\n" +
-                "      },\n" +
-                "      \"model\": \"minecraft:item/bow_pulling_0\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"predicate\": {\n" +
-                "        \"pulling\": 1,\n" +
-                "        \"pull\": 0.65\n" +
-                "      },\n" +
-                "      \"model\": \"minecraft:item/bow_pulling_1\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"predicate\": {\n" +
-                "        \"pulling\": 1,\n" +
-                "        \"pull\": 0.9\n" +
-                "      },\n" +
-                "      \"model\": \"minecraft:item/bow_pulling_2\"\n" +
-                "    },\n" +
-                "{\n" +
-                "            \"predicate\": {\n" +
-                "                \"custom_model_data\": 1\n" +
-                "            },\n" +
-                "            \"model\": \"item/custom_bow\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"predicate\": {\n" +
-                "                \"custom_model_data\": 1,\n" +
-                "                \"pulling\": 1\n" +
-                "            },\n" +
-                "            \"model\": \"item/custom_bow_pulling_0\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"predicate\": {\n" +
-                "                \"custom_model_data\": 1,\n" +
-                "                \"pulling\": 1,\n" +
-                "                \"pull\": 0.65\n" +
-                "            },\n" +
-                "            \"model\": \"item/custom_bow_pulling_1\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"predicate\": {\n" +
-                "                \"custom_model_data\": 1,\n" +
-                "                \"pulling\": 1,\n" +
-                "                \"pull\": 0.9\n" +
-                "            },\n" +
-                "            \"model\": \"item/custom_bow_pulling_2\"\n" +
-                "        }" +
-                "  ]\n" +
-                "}";
+        String jsonPattern = """
+            {
+              "parent": "item/generated",
+              "textures": {
+                "layer0": "minecraft:item/bow"
+              },
+              "display": {
+                "thirdperson_righthand": {
+                  "rotation": [
+                    -80,
+                    260,
+                    -40
+                  ],
+                  "translation": [
+                    -1,
+                    -2,
+                    2.5
+                  ],
+                  "scale": [
+                    0.9,
+                    0.9,
+                    0.9
+                  ]
+                },
+                "thirdperson_lefthand": {
+                  "rotation": [
+                    -80,
+                    -280,
+                    40
+                  ],
+                  "translation": [
+                    -1,
+                    -2,
+                    2.5
+                  ],
+                  "scale": [
+                    0.9,
+                    0.9,
+                    0.9
+                  ]
+                },
+                "firstperson_righthand": {
+                  "rotation": [
+                    0,
+                    -90,
+                    25
+                  ],
+                  "translation": [
+                    1.13,
+                    3.2,
+                    1.13
+                  ],
+                  "scale": [
+                    0.68,
+                    0.68,
+                    0.68
+                  ]
+                },
+                "firstperson_lefthand": {
+                  "rotation": [
+                    0,
+                    90,
+                    -25
+                  ],
+                  "translation": [
+                    1.13,
+                    3.2,
+                    1.13
+                  ],
+                  "scale": [
+                    0.68,
+                    0.68,
+                    0.68
+                  ]
+                }
+              },
+              "overrides": [
+                {
+                  "predicate": {
+                    "pulling": 1
+                  },
+                  "model": "minecraft:item/bow_pulling_0"
+                },
+                {
+                  "predicate": {
+                    "pulling": 1,
+                    "pull": 0.65
+                  },
+                  "model": "minecraft:item/bow_pulling_1"
+                },
+                {
+                  "predicate": {
+                    "pulling": 1,
+                    "pull": 0.9
+                  },
+                  "model": "minecraft:item/bow_pulling_2"
+                },
+            {
+                        "predicate": {
+                            "custom_model_data": 1
+                        },
+                        "model": "item/custom_bow"
+                    },
+                    {
+                        "predicate": {
+                            "custom_model_data": 1,
+                            "pulling": 1
+                        },
+                        "model": "item/custom_bow_pulling_0"
+                    },
+                    {
+                        "predicate": {
+                            "custom_model_data": 1,
+                            "pulling": 1,
+                            "pull": 0.65
+                        },
+                        "model": "item/custom_bow_pulling_1"
+                    },
+                    {
+                        "predicate": {
+                            "custom_model_data": 1,
+                            "pulling": 1,
+                            "pull": 0.9
+                        },
+                        "model": "item/custom_bow_pulling_2"
+                    }\
+              ]
+            }""";
         return this.createUnbakedModel(jsonPattern, textures);
     }
 

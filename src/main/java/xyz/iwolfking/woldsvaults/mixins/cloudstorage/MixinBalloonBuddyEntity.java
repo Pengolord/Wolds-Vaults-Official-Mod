@@ -22,8 +22,8 @@ public abstract class MixinBalloonBuddyEntity extends TamableAnimal implements L
 
     @Shadow public abstract BalloonFace getPersonality();
 
-    protected MixinBalloonBuddyEntity(EntityType<? extends TamableAnimal> p_21803_, Level p_21804_) {
-        super(p_21803_, p_21804_);
+    protected MixinBalloonBuddyEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
+        super(pEntityType, pLevel);
     }
 
 
@@ -32,9 +32,6 @@ public abstract class MixinBalloonBuddyEntity extends TamableAnimal implements L
         if(ServerVaults.get(this.getUUID()).isPresent() && this.getPersonality() == BalloonFace.SCARY) {
             return;
         }
-        else {
-            super.tick();
-        }
-
+        super.tick();
     }
 }

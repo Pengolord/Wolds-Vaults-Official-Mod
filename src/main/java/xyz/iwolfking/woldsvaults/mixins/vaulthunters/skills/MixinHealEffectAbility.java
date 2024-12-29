@@ -17,7 +17,7 @@ public class MixinHealEffectAbility extends AbstractHealAbility {
      * @author iwolfking
      * @reason Cleanse still heals for a quarter of the normal value.
      */
-    @Overwrite
+    @Overwrite @Override
     protected Ability.ActionResult doAction(SkillContext context) {
         return context.getSource().as(ServerPlayer.class).map((player) -> {
             float healed = this.getFlatLifeHealed();

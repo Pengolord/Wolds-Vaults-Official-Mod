@@ -23,8 +23,9 @@ public class MobDeathBombModifier  extends VaultModifier<MobDeathBombModifier.Pr
         super(id, properties, display);
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault, ModifierContext context) {
-        CommonEvents.ENTITY_DEATH.register(context.getUUID(), EventPriority.HIGHEST, (event) -> {
+        CommonEvents.ENTITY_DEATH.register(context.getUUID(), EventPriority.HIGHEST, event -> {
             if (event.getEntity().level == world) {
                 Entity spawnedEntity = event.getEntity();
                 if (spawnedEntity instanceof LivingEntity entity) {

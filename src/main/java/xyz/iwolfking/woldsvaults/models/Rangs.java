@@ -18,14 +18,14 @@ public class Rangs {
     public static final PlainItemModel TRIRANG;
 
     static {
-        WOODEN_RANG = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/wooden"), "Wooden Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        AMETHYST = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/amethyst"), "Amethyst Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        CRIMSON = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/crimson"), "Crimson Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        DIAMOND = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/diamond"), "Diamond Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        EMERALD = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/emerald"), "Emerald Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        GOLD = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/gold"), "Golden Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        OURORANGOS = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/ourorangos"), "Ourorangos")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        STONE = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/stone"), "Stone Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll()));
-        TRIRANG = (PlainItemModel)REGISTRY.register((new PlainItemModel(VaultMod.id("gear/rang/trirang"), "Tri-Rang")).properties(new DynamicModelProperties()));
+        WOODEN_RANG = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/wooden"), "Wooden Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        AMETHYST = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/amethyst"), "Amethyst Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        CRIMSON = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/crimson"), "Crimson Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        DIAMOND = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/diamond"), "Diamond Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        EMERALD = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/emerald"), "Emerald Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        GOLD = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/gold"), "Golden Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        OURORANGOS = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/ourorangos"), "Ourorangos")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        STONE = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/stone"), "Stone Rang")).properties(new DynamicModelProperties().allowTransmogrification().discoverOnRoll());
+        TRIRANG = REGISTRY.register(new PlainItemModel(VaultMod.id("gear/rang/trirang"), "Tri-Rang")).properties(new DynamicModelProperties());
     }
 }

@@ -4,7 +4,7 @@ import iskallia.vault.dynamodel.registry.DynamicModelRegistry;
 import xyz.iwolfking.woldsvaults.lib.models.BowModel;
 
 public class Bows {
-    public static final DynamicModelRegistry<BowModel> REGISTRY = new DynamicModelRegistry();
+    public static final DynamicModelRegistry<BowModel> REGISTRY = new DynamicModelRegistry<>();
     //public static final BowModel BOW_0;
 
 

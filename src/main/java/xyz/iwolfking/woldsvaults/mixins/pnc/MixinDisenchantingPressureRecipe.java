@@ -1,6 +1,5 @@
 package xyz.iwolfking.woldsvaults.mixins.pnc;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import iskallia.vault.init.ModItems;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
@@ -15,14 +14,17 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.items.IItemHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 @Restriction(
         require = {
@@ -41,7 +43,7 @@ public abstract class MixinDisenchantingPressureRecipe extends PressureChamberRe
      * @author iwolfking
      * @reason Add Omega Pog to recipe
      */
-    @Overwrite
+    @Overwrite @Override
     public Collection<Integer> findIngredients(@Nonnull IItemHandler chamberHandler) {
         int bookSlot = -1;
         int itemSlot = -1;
@@ -62,7 +64,7 @@ public abstract class MixinDisenchantingPressureRecipe extends PressureChamberRe
             }
 
             if (bookSlot >= 0 && itemSlot >= 0 && pogSlot >= 0) {
-                return ImmutableList.of(bookSlot, itemSlot, pogSlot);
+                return List.of(bookSlot, itemSlot, pogSlot);
             }
         }
 
@@ -73,16 +75,16 @@ public abstract class MixinDisenchantingPressureRecipe extends PressureChamberRe
      * @author iwolfking
      * @reason Add Omega Pog to recipe
      */
-    @Overwrite
+    @Overwrite @Override
     public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
-        ItemStack book = chamberHandler.extractItem((Integer) ingredientSlots.get(0), 1, simulate);
-        ItemStack enchantedStack = chamberHandler.extractItem((Integer) ingredientSlots.get(1), 1, simulate);
-        ItemStack pog = chamberHandler.extractItem((Integer) ingredientSlots.get(2), 1, simulate);
+        ItemStack book = chamberHandler.extractItem(ingredientSlots.get(0), 1, simulate);
+        ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.get(1), 1, simulate);
+        ItemStack pog = chamberHandler.extractItem(ingredientSlots.get(2), 1, simulate);
         if (!book.isEmpty() && !enchantedStack.isEmpty() && !pog.isEmpty()) {
             Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(enchantedStack);
-            List<Enchantment> l = new ArrayList(enchantments.keySet());
-            Enchantment strippedEnchantment = (Enchantment) l.get(ThreadLocalRandom.current().nextInt(l.size()));
-            int level = (Integer) enchantments.get(strippedEnchantment);
+            List<Enchantment> l = new ArrayList<>(enchantments.keySet());
+            Enchantment strippedEnchantment = l.get(ThreadLocalRandom.current().nextInt(l.size()));
+            int level = enchantments.get(strippedEnchantment);
             enchantments.remove(strippedEnchantment);
             if (enchantedStack.getItem() == Items.ENCHANTED_BOOK) {
                 enchantedStack = new ItemStack(Items.ENCHANTED_BOOK);
@@ -91,7 +93,7 @@ public abstract class MixinDisenchantingPressureRecipe extends PressureChamberRe
             EnchantmentHelper.setEnchantments(enchantments, enchantedStack);
             ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
             EnchantmentHelper.setEnchantments(ImmutableMap.of(strippedEnchantment, level), enchantedBook);
-            return NonNullList.of(ItemStack.EMPTY, new ItemStack[]{enchantedBook, enchantedStack});
+            return NonNullList.of(ItemStack.EMPTY, enchantedBook, enchantedStack);
         } else {
             return NonNullList.create();
         }
@@ -102,37 +104,37 @@ public abstract class MixinDisenchantingPressureRecipe extends PressureChamberRe
      * @author iwolfking
      * @reason Add Omega Pog to recipe
      */
-    @Overwrite
+    @Overwrite @Override
     public List<Ingredient> getInputsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         pick.enchant(Enchantments.BLOCK_FORTUNE, 1);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
         enchantedBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
         enchantedBook.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
-        return ImmutableList.of(Ingredient.of(new ItemStack[]{pick, enchantedBook}), Ingredient.of(new ItemLike[]{Items.BOOK}), Ingredient.of(ModItems.ECHO_POG));
+        return List.of(Ingredient.of(pick, enchantedBook), Ingredient.of(Items.BOOK), Ingredient.of(ModItems.ECHO_POG));
     }
 
     /**
      * @author iwolfking
      * @reason Add Omega Pog to recipe
      */
-    @Overwrite
+    @Overwrite @Override
     public List<List<ItemStack>> getResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
         enchantedBook.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
         ItemStack resultBook = new ItemStack(Items.ENCHANTED_BOOK);
         resultBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
-        return ImmutableList.of(ImmutableList.of(pick, enchantedBook), ImmutableList.of(resultBook));
+        return List.of(List.of(pick, enchantedBook), List.of(resultBook));
     }
 
     /**
      * @author iwolfking
      * @reason Add Omega Pog to recipe
      */
-    @Overwrite
+    @Overwrite @Override
     public boolean isValidInputItem(ItemStack stack) {
-        return stack.getItem() == ModItems.ECHO_POG || stack.getItem() == Items.BOOK || stack.getItem() != Items.ENCHANTED_BOOK && EnchantmentHelper.getEnchantments(stack).size() > 0;
+        return stack.getItem() == ModItems.ECHO_POG || stack.getItem() == Items.BOOK || stack.getItem() != Items.ENCHANTED_BOOK && !EnchantmentHelper.getEnchantments(stack).isEmpty();
     }
 
 

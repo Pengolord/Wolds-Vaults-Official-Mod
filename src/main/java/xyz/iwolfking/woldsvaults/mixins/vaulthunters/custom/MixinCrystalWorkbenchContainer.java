@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import xyz.iwolfking.woldsvaults.items.LayoutModificationItem;
 
-@Mixin(value = CrystalWorkbenchContainer.class)
+@Mixin(value = CrystalWorkbenchContainer.class, remap = false)
 public abstract class MixinCrystalWorkbenchContainer  extends OverSizedSlotContainer {
 
     @Shadow @Final private CrystalWorkbenchTileEntity entity;
@@ -28,9 +28,10 @@ public abstract class MixinCrystalWorkbenchContainer  extends OverSizedSlotConta
         super(menuType, id, player);
     }
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Liskallia/vault/container/CrystalWorkbenchContainer;addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", ordinal = 3))
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Liskallia/vault/container/CrystalWorkbenchContainer;addSlot(Lnet/minecraft/world/inventory/Slot;)Lnet/minecraft/world/inventory/Slot;", ordinal = 3, remap = true))
     private Slot addManipulator(CrystalWorkbenchContainer instance, Slot slot, @Local(ordinal = 1) int slotIndex, @Local(ordinal = 0) int finalSlotIndex) {
         return this.addSlot(new TabSlot(this.entity.getIngredients(), slotIndex * 3 + finalSlotIndex, -999 + finalSlotIndex * 18, 50 + slotIndex * 18) {
+            @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.getItem() instanceof InfusedCatalystItem || stack.getItem() instanceof InscriptionItem || stack.getItem() instanceof CharmItem || stack.getItem() instanceof LayoutModificationItem;
             }

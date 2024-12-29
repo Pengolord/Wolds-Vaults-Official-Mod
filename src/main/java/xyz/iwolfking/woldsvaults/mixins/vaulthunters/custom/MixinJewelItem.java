@@ -34,13 +34,13 @@ public abstract class MixinJewelItem extends Item implements VaultGearItem, Data
     @Unique
     private static final VaultRecyclerConfig.RecyclerOutput woldsVaults$jewelOutput = new VaultRecyclerConfig.RecyclerOutput(new ChanceItemStackEntry(new ItemStack(ModItems.SILVER_SCRAP), 5, 8, 1.0F), new ChanceItemStackEntry(new ItemStack(ModItems.GEMSTONE), 1, 1, 1.0F), new ChanceItemStackEntry(ItemStack.EMPTY, 1, 1, 0.0F));
 
-    public MixinJewelItem(Properties p_41383_) {
-        super(p_41383_);
+    public MixinJewelItem(Properties pProperties) {
+        super(pProperties);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level p_41405_, Entity entity, int p_41407_, boolean p_41408_) {
-        if(this.player == null && entity instanceof ServerPlayer player) {
+    public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
+        if(this.player == null && pEntity instanceof ServerPlayer player) {
             this.player = player;
         }
     }
@@ -49,7 +49,7 @@ public abstract class MixinJewelItem extends Item implements VaultGearItem, Data
      * @author iwolfking
      * @reason Return a gemstone always when a jewel has a legendary
      */
-    @Overwrite
+    @Overwrite @Override
     public VaultRecyclerConfig.RecyclerOutput getOutput(ItemStack input) {
         VaultGearData data = VaultGearData.read(input);
         AtomicBoolean hasLegendary = new AtomicBoolean(false);

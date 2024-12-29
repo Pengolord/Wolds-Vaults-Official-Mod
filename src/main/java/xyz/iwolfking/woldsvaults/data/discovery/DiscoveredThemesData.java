@@ -10,7 +10,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -22,7 +26,12 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import xyz.iwolfking.woldsvaults.init.ModConfigs;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class DiscoveredThemesData extends SavedData
 {
@@ -102,6 +111,7 @@ public class DiscoveredThemesData extends SavedData
         return true;
     }
 
+    @Override
     public void setDirty(boolean dirty) {
         super.setDirty(dirty);
         if (dirty) {
@@ -150,7 +160,7 @@ public class DiscoveredThemesData extends SavedData
     }
 
     public static DiscoveredThemesData get(MinecraftServer server) {
-        return (DiscoveredThemesData)server.overworld()
+        return server.overworld()
                 .getDataStorage()
                 .computeIfAbsent(DiscoveredThemesData::new, DiscoveredThemesData::new, "the_vault_DiscoveredThemes");
     }

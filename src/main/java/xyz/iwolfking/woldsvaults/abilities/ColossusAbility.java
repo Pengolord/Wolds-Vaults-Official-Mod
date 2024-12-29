@@ -16,10 +16,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -28,7 +25,6 @@ import virtuoel.pehkui.api.ScaleType;
 import xyz.iwolfking.woldsvaults.init.ModEffects;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public class ColossusAbility extends InstantManaAbility {
     private int durationTicks;
@@ -84,7 +80,7 @@ public class ColossusAbility extends InstantManaAbility {
             Adapters.INT_SEGMENTED_7.writeNbt(this.durationTicks).ifPresent(tag -> nbt.put("durationTicks",tag));
             Adapters.FLOAT.writeNbt(this.size).ifPresent(tag -> nbt.put("size", tag));
             Adapters.FLOAT.writeNbt(this.additionalResistance).ifPresent(tag -> nbt.put("additionalResistance", tag));
-            return (CompoundTag)nbt;
+            return nbt;
         });
     }
 
@@ -102,7 +98,7 @@ public class ColossusAbility extends InstantManaAbility {
             Adapters.INT_SEGMENTED_7.writeJson(this.durationTicks).ifPresent(element -> json.add("durationTicks",element));
             Adapters.FLOAT.writeJson(this.size).ifPresent(element -> json.add("size", element));
             Adapters.FLOAT.writeJson(this.additionalResistance).ifPresent(element -> json.add("additionalResistance", element));
-            return (JsonObject)json;
+            return json;
         });
     }
 

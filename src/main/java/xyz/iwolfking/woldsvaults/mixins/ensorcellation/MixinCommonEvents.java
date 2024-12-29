@@ -13,7 +13,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -38,12 +37,12 @@ public class MixinCommonEvents {
     public static void handleLivingEquipmentChangeEvent(LivingEquipmentChangeEvent event) {
         LivingEntity entity = event.getEntityLiving();
 
-        int encVitality = Utils.getMaxEquippedEnchantmentLevel(entity, (Enchantment) EnsorcEnchantments.VITALITY.get());
+        int encVitality = Utils.getMaxEquippedEnchantmentLevel(entity, EnsorcEnchantments.VITALITY.get());
         AttributeInstance healthAttr = entity.getAttribute(Attributes.MAX_HEALTH);
         if (healthAttr != null) {
             healthAttr.removeModifier(Constants.UUID_ENCH_VITALITY_HEALTH);
             if (encVitality > 0) {
-                healthAttr.addTransientModifier(new AttributeModifier(Constants.UUID_ENCH_VITALITY_HEALTH, "vitality", (double) (Math.min(encVitality, 3) * VitalityEnchantment.health), AttributeModifier.Operation.ADDITION));
+                healthAttr.addTransientModifier(new AttributeModifier(Constants.UUID_ENCH_VITALITY_HEALTH, "vitality", (Math.min(encVitality, 3) * VitalityEnchantment.health), AttributeModifier.Operation.ADDITION));
             }
         }
 
@@ -59,11 +58,10 @@ public class MixinCommonEvents {
         if (!event.isCanceled()) {
             Player player = event.getAttackingPlayer();
             if (player != null) {
-                int encFool = Utils.getMaxEquippedEnchantmentLevel(player, (Enchantment) EnsorcEnchantments.CURSE_FOOL.get());
+                int encFool = Utils.getMaxEquippedEnchantmentLevel(player, EnsorcEnchantments.CURSE_FOOL.get());
                 if (encFool > 0) {
                     event.setDroppedExperience(0);
                     event.setCanceled(true);
-                    return;
                 }
             }
 
@@ -79,7 +77,7 @@ public class MixinCommonEvents {
     public static void handleBreakSpeedEvent(PlayerEvent.BreakSpeed event) {
         if (!event.isCanceled()) {
             Player player = event.getPlayer();
-            int encAirAffinity = Utils.getMaxEquippedEnchantmentLevel(player, (Enchantment) EnsorcEnchantments.AIR_AFFINITY.get());
+            int encAirAffinity = Utils.getMaxEquippedEnchantmentLevel(player, EnsorcEnchantments.AIR_AFFINITY.get());
             if (encAirAffinity > 0 && !player.isOnGround()) {
                 if(event.getState().getBlock() instanceof VaultChestBlock) {
                     return;

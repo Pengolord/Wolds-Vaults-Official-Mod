@@ -4,7 +4,11 @@ import iskallia.vault.core.random.JavaRandom;
 import iskallia.vault.core.random.RandomSource;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.init.ModConfigs;
-import iskallia.vault.item.crystal.layout.*;
+import iskallia.vault.item.crystal.layout.ClassicCircleCrystalLayout;
+import iskallia.vault.item.crystal.layout.ClassicInfiniteCrystalLayout;
+import iskallia.vault.item.crystal.layout.ClassicPolygonCrystalLayout;
+import iskallia.vault.item.crystal.layout.ClassicSpiralCrystalLayout;
+import iskallia.vault.item.crystal.layout.CrystalLayout;
 import iskallia.vault.item.gear.DataTransferItem;
 import iskallia.vault.item.gear.VaultLevelItem;
 import net.minecraft.ChatFormatting;
@@ -39,10 +43,10 @@ public class LayoutModificationItem extends Item implements VaultLevelItem, Data
         this.setRegistryName(id);
     }
 
-
+    @Override
     public void appendHoverText(@Nonnull ItemStack stack, @Nullable Level world, @Nonnull List<Component> tooltip, @Nonnull TooltipFlag advanced) {
         super.appendHoverText(stack, world, tooltip, advanced);
-        getLayout(stack).ifPresent((key) -> {
+        getLayout(stack).ifPresent(key -> {
 
             if(key instanceof ClassicCircleCrystalLayout crystalLayout) {
                 tooltip.add((new TextComponent("Layout: ")).append((new TextComponent("Circle")).withStyle(Style.EMPTY.withColor(3191506))));
@@ -107,18 +111,18 @@ public class LayoutModificationItem extends Item implements VaultLevelItem, Data
     }
 
     private String getLayoutType(CrystalLayout key) {
-        if(key instanceof ClassicCircleCrystalLayout crystalLayout) {
+        if(key instanceof ClassicCircleCrystalLayout) {
            return "circle";
         }
 
-        else if(key instanceof ClassicPolygonCrystalLayout crystalLayout) {
+        else if(key instanceof ClassicPolygonCrystalLayout) {
            return "polygon";
         }
 
-        else if(key instanceof ClassicSpiralCrystalLayout crystalLayout) {
+        else if(key instanceof ClassicSpiralCrystalLayout) {
           return "spiral";
         }
-        else if(key instanceof ClassicInfiniteCrystalLayout crystalLayout) {
+        else if(key instanceof ClassicInfiniteCrystalLayout) {
             return "infinite";
         }
 

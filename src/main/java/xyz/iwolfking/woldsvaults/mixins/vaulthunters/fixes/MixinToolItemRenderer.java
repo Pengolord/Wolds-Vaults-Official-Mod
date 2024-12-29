@@ -24,18 +24,14 @@ public abstract class MixinToolItemRenderer extends SpecialItemRenderer {
      * @author iwolfking
      * @reason Display Reaping correctly.
      */
-    @Overwrite
-    public void m_108829_(@NotNull ItemStack stack, @NotNull ItemTransforms.TransformType transformType, @NotNull PoseStack matrices, @NotNull MultiBufferSource buffer, int light, int overlay) {
+    @Overwrite(remap = true) @Override
+    public void renderByItem(@NotNull ItemStack stack, @NotNull ItemTransforms.TransformType transformType, @NotNull PoseStack matrices, @NotNull MultiBufferSource buffer, int light, int overlay) {
         ToolType type = ToolType.of(stack);
         VaultGearData data = VaultGearData.read(stack);
-        ToolMaterial material = (ToolMaterial) data.get(ModGearAttributes.TOOL_MATERIAL, VaultGearAttributeTypeMerger.of(() -> {
-            return null;
-        }, (a, b) -> {
-            return b;
-        }));
+        ToolMaterial material = data.get(ModGearAttributes.TOOL_MATERIAL, VaultGearAttributeTypeMerger.of(() -> null, (a, b) -> b));
         if (material == null) {
             int total = type == null ? 16 * ToolType.values().length : 16;
-            material = ToolMaterial.values()[(int) (ClientScheduler.INSTANCE.getTick() / (long) total) % ToolMaterial.values().length];
+            material = ToolMaterial.values()[(int) (ClientScheduler.INSTANCE.getTick() / total) % ToolMaterial.values().length];
         }
 
         if ((type == null && ExtendedToolType.of(stack) == null) || data.hasAttribute(xyz.iwolfking.woldsvaults.init.ModGearAttributes.ROTATING_TOOL)) {
@@ -45,14 +41,14 @@ public abstract class MixinToolItemRenderer extends SpecialItemRenderer {
             ExtendedToolType extendedToolType = ExtendedToolType.of(stack);
             ModelResourceLocation head = new ModelResourceLocation("the_vault:tool/%s/head/%s#inventory".formatted(extendedToolType.getId(), material.getId()));
             ModelResourceLocation handle = new ModelResourceLocation("the_vault:tool/pick/handle#inventory");
-            this.renderModel(handle, 16777215, stack, transformType, matrices, buffer, light, overlay, (Boolean) null);
-            this.renderModel(head, 16777215, stack, transformType, matrices, buffer, light, overlay, (Boolean) null);
+            this.renderModel(handle, 16777215, stack, transformType, matrices, buffer, light, overlay, null);
+            this.renderModel(head, 16777215, stack, transformType, matrices, buffer, light, overlay, null);
             return;
         }
 
         ModelResourceLocation head = new ModelResourceLocation("the_vault:tool/%s/head/%s#inventory".formatted(type.getId(), material.getId()));
         ModelResourceLocation handle = new ModelResourceLocation("the_vault:tool/%s/handle#inventory".formatted(type.getId()));
-        this.renderModel(handle, 16777215, stack, transformType, matrices, buffer, light, overlay, (Boolean) null);
-        this.renderModel(head, 16777215, stack, transformType, matrices, buffer, light, overlay, (Boolean) null);
+        this.renderModel(handle, 16777215, stack, transformType, matrices, buffer, light, overlay, null);
+        this.renderModel(head, 16777215, stack, transformType, matrices, buffer, light, overlay, null);
     }
 }

@@ -24,7 +24,7 @@ public class ModContainers {
             BlockPos pos = buffer.readBlockPos();
             return new AugmentCraftingTableContainer(windowId, world, pos, inventory);
         });
-        event.getRegistry().registerAll(new MenuType[]{(MenuType)VAULT_SALVAGER_CONTAINER.setRegistryName("vault_salvager_container"), AUGMENT_CRAFTING_TABLE_CONTAINER.setRegistryName("augment_crafting_table")});
+        event.getRegistry().registerAll(VAULT_SALVAGER_CONTAINER.setRegistryName("vault_salvager_container"), AUGMENT_CRAFTING_TABLE_CONTAINER.setRegistryName("augment_crafting_table"));
 
 
     }

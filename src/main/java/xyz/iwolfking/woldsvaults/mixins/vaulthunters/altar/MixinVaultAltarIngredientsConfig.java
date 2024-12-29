@@ -19,7 +19,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Mixin(value = VaultAltarIngredientsConfig.class, remap = false)
 public class MixinVaultAltarIngredientsConfig {
@@ -36,24 +42,24 @@ public class MixinVaultAltarIngredientsConfig {
     private ServerPlayer woldsVaults$capturedPlayer;
 
     private static Map<String, String> namespaceToModNameMap = Map.ofEntries(
-            new AbstractMap.SimpleEntry<String, String>("powah", "Powah"),
-            new AbstractMap.SimpleEntry<String, String>("refinedstorage", "Refined Storage"),
-            new AbstractMap.SimpleEntry<String, String>("ae2", "Applied Energistics"),
-            new AbstractMap.SimpleEntry<String, String>("botania", "Botania"),
-            new AbstractMap.SimpleEntry<String, String>("integrateddynamics", "Integrated Dynamics"),
-            new AbstractMap.SimpleEntry<String, String>("mekanism", "Mekanism"),
-            new AbstractMap.SimpleEntry<String, String>("moremekanismprocessing", "Mekanism"),
-            new AbstractMap.SimpleEntry<String, String>("immersiveengineering", "Immersive Engineering"),
-            new AbstractMap.SimpleEntry<String, String>("thermal", "Thermal Expansion"),
-            new AbstractMap.SimpleEntry<String, String>("create", "Create"),
-            new AbstractMap.SimpleEntry<String, String>("occultism", "Occultism"),
-            new AbstractMap.SimpleEntry<String, String>("ars_nouveau", "Ars Nouveau"),
-            new AbstractMap.SimpleEntry<String, String>("createaddition", "Create Crafts and Additions"),
-            new AbstractMap.SimpleEntry<String, String>("industrialforegoing", "Industrial Foregoing"),
-            new AbstractMap.SimpleEntry<String, String>("hostilenetworks", "Hostile Neural Networks"),
-            new AbstractMap.SimpleEntry<String, String>("mysticalagriculture", "Mystical Agriculture"),
-            new AbstractMap.SimpleEntry<String, String>("fluxnetworks", "Flux Networks"),
-            new AbstractMap.SimpleEntry<String, String>("botanicalmachinery", "Botanical Machinery")
+        new AbstractMap.SimpleEntry<>("powah", "Powah"),
+        new AbstractMap.SimpleEntry<>("refinedstorage", "Refined Storage"),
+        new AbstractMap.SimpleEntry<>("ae2", "Applied Energistics"),
+        new AbstractMap.SimpleEntry<>("botania", "Botania"),
+        new AbstractMap.SimpleEntry<>("integrateddynamics", "Integrated Dynamics"),
+        new AbstractMap.SimpleEntry<>("mekanism", "Mekanism"),
+        new AbstractMap.SimpleEntry<>("moremekanismprocessing", "Mekanism"),
+        new AbstractMap.SimpleEntry<>("immersiveengineering", "Immersive Engineering"),
+        new AbstractMap.SimpleEntry<>("thermal", "Thermal Expansion"),
+        new AbstractMap.SimpleEntry<>("create", "Create"),
+        new AbstractMap.SimpleEntry<>("occultism", "Occultism"),
+        new AbstractMap.SimpleEntry<>("ars_nouveau", "Ars Nouveau"),
+        new AbstractMap.SimpleEntry<>("createaddition", "Create Crafts and Additions"),
+        new AbstractMap.SimpleEntry<>("industrialforegoing", "Industrial Foregoing"),
+        new AbstractMap.SimpleEntry<>("hostilenetworks", "Hostile Neural Networks"),
+        new AbstractMap.SimpleEntry<>("mysticalagriculture", "Mystical Agriculture"),
+        new AbstractMap.SimpleEntry<>("fluxnetworks", "Flux Networks"),
+        new AbstractMap.SimpleEntry<>("botanicalmachinery", "Botanical Machinery")
 
 
     );
@@ -65,8 +71,8 @@ public class MixinVaultAltarIngredientsConfig {
         if (pool.isEmpty()) {
             throw new IllegalArgumentException("No entry found for the given level: " + vaultLevel);
         } else {
-            Map<String, WeightedList<AltarIngredientEntry>> map = (Map) pool.get();
-            Map<String, AltarIngredientEntry> recipe = new HashMap();
+            Map<String, WeightedList<AltarIngredientEntry>> map = pool.get();
+            Map<String, AltarIngredientEntry> recipe = new HashMap<>();
             PlayerResearchesData researchData = PlayerResearchesData.get(player.getLevel());
             ResearchTree playerResearchTree = researchData.getResearches(player);
             map.forEach((k, v) -> {
@@ -89,7 +95,7 @@ public class MixinVaultAltarIngredientsConfig {
                     }
                 } );
                 entriesToRemove.forEach(v::removeEntry);
-                recipe.put(k, (AltarIngredientEntry) v.getRandom(Config.rand));
+                recipe.put(k, v.getRandom(Config.rand));
             });
             return recipe;
         }

@@ -26,10 +26,8 @@ public abstract class MixinBingoTask extends ConfiguredTask<ConfiguredTask.Confi
             return;
         }
 
-        Iterator<Listener> listenerIterator = vault.get(Vault.LISTENERS).getAll().iterator();
         BallisticBingoObjective obj = null;
-        while(listenerIterator.hasNext()) {
-            Listener listener = listenerIterator.next();
+        for(Listener listener:  vault.get(Vault.LISTENERS).getAll()) {
             Iterator<Objective> objIterator = listener.getObjectives(vault);
             while(objIterator.hasNext()) {
                 if(objIterator.next() instanceof BallisticBingoObjective ballisticBingoObjective) {

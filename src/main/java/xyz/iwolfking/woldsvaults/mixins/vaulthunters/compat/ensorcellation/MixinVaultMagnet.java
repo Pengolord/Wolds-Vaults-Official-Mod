@@ -20,10 +20,10 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 )
 @Mixin(value = MagnetItem.class, remap = false)
 public abstract class MixinVaultMagnet extends Item implements VaultGearItem, CuriosGearItem, ICurioItem {
-    public MixinVaultMagnet(Properties p_41383_) {
-        super(p_41383_);
-    }
 
+    public MixinVaultMagnet(Properties pProperties) {
+        super(pProperties);
+    }
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {

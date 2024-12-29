@@ -35,7 +35,7 @@ public class DecoLodestoneBlock extends Block implements EntityBlock {
 
     public DecoLodestoneBlock() {
         super(Properties.of(Material.STONE).sound(SoundType.METAL).strength(2.0F, 3600000.0F));
-        this.registerDefaultState((BlockState)this.stateDefinition.any());
+        this.registerDefaultState(this.stateDefinition.any());
     }
 
     @Override
@@ -53,8 +53,7 @@ public class DecoLodestoneBlock extends Block implements EntityBlock {
     @NotNull
     @Override
     public InteractionResult use(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
-        BlockEntity be = world.getBlockEntity(pos);
-        if(be instanceof DecoLodestoneTileEntity le) {
+        if(world.getBlockEntity(pos) instanceof DecoLodestoneTileEntity le) {
             if (le.isConsumed()) {
                 if (!world.isClientSide) {
                     le.setConsumed(false);
@@ -74,7 +73,7 @@ public class DecoLodestoneBlock extends Block implements EntityBlock {
                 }
                 if(!world.isClientSide) {
                     le.setConsumed(true);
-                    world.playSound((Player)null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 2.0F);
+                    world.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0F, 2.0F);
                 }
 
                 return InteractionResult.SUCCESS;
@@ -88,11 +87,13 @@ public class DecoLodestoneBlock extends Block implements EntityBlock {
 
 
     @Nonnull
+    @Override
     public VoxelShape getShape(@Nonnull BlockState state, @Nonnull BlockGetter world, @Nonnull BlockPos pos, @Nonnull CollisionContext context) {
         return SHAPE;
     }
 
     @Nonnull
+    @Override
     public RenderShape getRenderShape(@Nonnull BlockState state) {
         return RenderShape.MODEL;
     }

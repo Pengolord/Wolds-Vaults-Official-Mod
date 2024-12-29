@@ -31,12 +31,12 @@ public class UnusualModifierLib {
 
     //Jewel Suffixes
     public static VaultGearTierConfig.ModifierTierGroup COOLDOWN_REDUCTION_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("cooldown_reduction"), "ModCooldownReduction", VaultMod.id("mod_cooldown_unusual"));
-    public static VaultGearTierConfig.ModifierTierGroup MANA_REGEN_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("cooldown_reduction"), "ModCooldownReduction", VaultMod.id("mod_cooldown_unusual"));
-    public static VaultGearTierConfig.ModifierTierGroup RESISTANCE_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("cooldown_reduction"), "ModCooldownReduction", VaultMod.id("mod_cooldown_unusual"));
-    public static VaultGearTierConfig.ModifierTierGroup MOVEMENT_SPEED_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("cooldown_reduction"), "ModCooldownReduction", VaultMod.id("mod_cooldown_unusual"));
-    public static VaultGearTierConfig.ModifierTierGroup KNOCKBACK_RESISTANCE_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("cooldown_reduction"), "ModCooldownReduction", VaultMod.id("mod_cooldown_unusual"));
-    public static VaultGearTierConfig.ModifierTierGroup HEALING_EFFECTIVENESS_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("cooldown_reduction"), "ModCooldownReduction", VaultMod.id("mod_cooldown_unusual"));
-    public static VaultGearTierConfig.ModifierTierGroup DURABILITY_WEAR_REDUCTION_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("cooldown_reduction"), "ModCooldownReduction", VaultMod.id("mod_cooldown_unusual"));
+    public static VaultGearTierConfig.ModifierTierGroup MANA_REGEN_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("mana_regen"), "ModManaRegen", VaultMod.id("mod_mana_regen_unusual"));
+    public static VaultGearTierConfig.ModifierTierGroup RESISTANCE_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("resistance"), "ModResistance", VaultMod.id("mod_resistance_unusual"));
+    public static VaultGearTierConfig.ModifierTierGroup MOVEMENT_SPEED_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("movement_speed"), "ModSpeed", VaultMod.id("mod_movement_unusual"));
+    public static VaultGearTierConfig.ModifierTierGroup KNOCKBACK_RESISTANCE_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("knockback_resistance"), "ModKBR", VaultMod.id("mod_kbr_unusual"));
+    public static VaultGearTierConfig.ModifierTierGroup HEALING_EFFECTIVENESS_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("healing_effectiveness"), "ModHealing", VaultMod.id("mod_healing_unusual"));
+    public static VaultGearTierConfig.ModifierTierGroup DURABILITY_WEAR_REDUCTION_JEWEL = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("durability_wear_reduction"), "ModDurabilityReduction", VaultMod.id("mod_dura_unusual"));
 
     //Suffixes
     public static VaultGearTierConfig.ModifierTierGroup AXE_BLEED_CLOUD = new VaultGearTierConfig.ModifierTierGroup(VaultMod.id("effect_cloud"), "ModOnHitAddition", VaultMod.id("mod_bleed_cloud_unusual"));

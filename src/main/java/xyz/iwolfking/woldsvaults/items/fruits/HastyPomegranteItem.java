@@ -17,7 +17,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -35,7 +34,7 @@ public class HastyPomegranteItem extends ItemVaultFruit {
 
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag tooltipFlag) {
-        int seconds = Mth.floor((float)this.extraVaultTicks / 20.0F);
+        int seconds = Mth.floor(this.extraVaultTicks / 20.0F);
         String timeText = String.format("%d seconds", seconds);
         if (seconds > 90) {
             int minutes = seconds / 60;
@@ -77,7 +76,7 @@ public class HastyPomegranteItem extends ItemVaultFruit {
                 }
             }
 
-            level.playSound((Player)null, player.getX(), player.getY(), player.getZ(), SoundEvents.CONDUIT_ACTIVATE, SoundSource.MASTER, 1.0F, 1.0F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CONDUIT_ACTIVATE, SoundSource.MASTER, 1.0F, 1.0F);
         }
 
         return entityLiving.eat(level, stack);

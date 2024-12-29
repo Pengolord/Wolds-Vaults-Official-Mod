@@ -15,11 +15,19 @@ import java.util.Map;
 public abstract class MixinKeyRegistry<K extends VersionedKey<? extends K, ? extends T>, T> {
     @Shadow protected List<K> keys;
 
+    /**
+     * @author
+     * @reason
+     */
     @Overwrite
     public int getIndex(ResourceLocation id, Version version) {
         return this.getIndex(this.getKey(id), version);
     }
 
+    /**
+     * @author
+     * @reason
+     */
     @Overwrite
     public int getIndex(K key, Version version) {
         keys.forEach(k -> {
@@ -32,7 +40,7 @@ public abstract class MixinKeyRegistry<K extends VersionedKey<? extends K, ? ext
             }
         }
         this.ensureCacheIsPresent(version);
-        return (Integer) ((Map) this.indexCache.get(version)).getOrDefault(key.getId(), -1);
+        return this.indexCache.get(version).getOrDefault(key.getId(), -1);
     }
 
     @Shadow public abstract K getKey(ResourceLocation id);

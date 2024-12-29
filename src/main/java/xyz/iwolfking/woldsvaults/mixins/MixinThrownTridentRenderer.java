@@ -19,8 +19,8 @@ public abstract class MixinThrownTridentRenderer extends EntityRenderer<ThrownTr
     private static final ResourceLocation trident0 = VaultMod.id("gear/trident/trident_0");
 
 
-    protected MixinThrownTridentRenderer(EntityRendererProvider.Context p_174008_) {
-        super(p_174008_);
+    protected MixinThrownTridentRenderer(EntityRendererProvider.Context pContext) {
+        super(pContext);
     }
 
     @Inject(at = @At("HEAD"), method = "getTextureLocation(Lnet/minecraft/world/entity/projectile/ThrownTrident;)Lnet/minecraft/resources/ResourceLocation;", cancellable = true)

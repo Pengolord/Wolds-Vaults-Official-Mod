@@ -1,6 +1,5 @@
 package xyz.iwolfking.woldsvaults.init;
 
-import com.mojang.datafixers.types.Type;
 import iskallia.vault.VaultMod;
 import iskallia.vault.block.CoinPileDecorBlock;
 import iskallia.vault.block.render.ScavengerAltarRenderer;
@@ -71,23 +70,23 @@ public class ModBlocks {
         HELLISH_SAND_BLOCK = new HellishSandBlock();
         DUNGEON_PEDESTAL_BLOCK = new DungeonPedestalBlock();
         DECO_SCAVENGER_ALTAR_BLOCK = new DecoScavengerAltarBlock();
-        DECO_OBELISK_BLOCK = (DecoObeliskBlock) new DecoObeliskBlock();
-        DECO_LODESTONE_BLOCK = (DecoLodestoneBlock) new DecoLodestoneBlock();
-        DECO_MONOLITH_BLOCK = (DecoMonolithBlock) new DecoMonolithBlock();
-        SURVIVAL_MOB_BARRIER = (SurvivalMobBarrier) new SurvivalMobBarrier();
+        DECO_OBELISK_BLOCK = new DecoObeliskBlock();
+        DECO_LODESTONE_BLOCK = new DecoLodestoneBlock();
+        DECO_MONOLITH_BLOCK = new DecoMonolithBlock();
+        SURVIVAL_MOB_BARRIER = new SurvivalMobBarrier();
         XL_BACKPACK = new BackpackBlock(12000);
         AUGMENT_CRAFTING_TABLE = new AugmentCraftingTableBlock();
-        VAULT_SALVAGER_ENTITY = BlockEntityType.Builder.of(VaultSalvagerTileEntity::new, new Block[]{VAULT_SALVAGER_BLOCK}).build((Type)null);
-        ISKALLIAN_LEAVES_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(IskallianLeavesTileEntity::new, new Block[]{ISKALLIAN_LEAVES_BLOCK}).build((Type)null);
-        HELLISH_SAND_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(HellishSandTileEntity::new, new Block[]{HELLISH_SAND_BLOCK}).build((Type)null);
-        DUNGEON_PEDESTAL_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DungeonPedestalTileEntity::new, new Block[]{DUNGEON_PEDESTAL_BLOCK}).build((Type)null);
-        DECO_SCAVENGER_ALTAR_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoScavengerAltarEntity::new, new Block[]{DECO_SCAVENGER_ALTAR_BLOCK}).build((Type)null);
-        DECO_OBELISK_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoObeliskTileEntity::new, new Block[]{DECO_OBELISK_BLOCK}).build((Type)null);
-        DECO_LODESTONE_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoLodestoneTileEntity::new, new Block[]{DECO_LODESTONE_BLOCK}).build((Type)null);
-        DECO_MONOLITH_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoMonolithTileEntity::new, new Block[]{DECO_MONOLITH_BLOCK}).build((Type)null);
-        SURVIVAL_MOB_BARRIER_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(SurvivalMobBarrierTileEntity::new, new Block[]{SURVIVAL_MOB_BARRIER}).build((Type)null);
-        SOPHISTICATED_BACKPACK = BlockEntityType.Builder.of(BackpackBlockEntity::new, new Block[]{XL_BACKPACK}).build((Type)null);
-        AUGMENT_CRAFTING_TABLE_ENTITY = BlockEntityType.Builder.of(AugmentCraftingTableTileEntity::new, new Block[]{AUGMENT_CRAFTING_TABLE}).build(null);
+        VAULT_SALVAGER_ENTITY = BlockEntityType.Builder.of(VaultSalvagerTileEntity::new, VAULT_SALVAGER_BLOCK).build(null);
+        ISKALLIAN_LEAVES_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(IskallianLeavesTileEntity::new, ISKALLIAN_LEAVES_BLOCK).build(null);
+        HELLISH_SAND_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(HellishSandTileEntity::new, HELLISH_SAND_BLOCK).build(null);
+        DUNGEON_PEDESTAL_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DungeonPedestalTileEntity::new, DUNGEON_PEDESTAL_BLOCK).build(null);
+        DECO_SCAVENGER_ALTAR_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoScavengerAltarEntity::new, DECO_SCAVENGER_ALTAR_BLOCK).build(null);
+        DECO_OBELISK_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoObeliskTileEntity::new, DECO_OBELISK_BLOCK).build(null);
+        DECO_LODESTONE_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoLodestoneTileEntity::new, DECO_LODESTONE_BLOCK).build(null);
+        DECO_MONOLITH_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(DecoMonolithTileEntity::new, DECO_MONOLITH_BLOCK).build(null);
+        SURVIVAL_MOB_BARRIER_TILE_ENTITY_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.of(SurvivalMobBarrierTileEntity::new, SURVIVAL_MOB_BARRIER).build(null);
+        SOPHISTICATED_BACKPACK = BlockEntityType.Builder.of(BackpackBlockEntity::new, XL_BACKPACK).build(null);
+        AUGMENT_CRAFTING_TABLE_ENTITY = BlockEntityType.Builder.of(AugmentCraftingTableTileEntity::new, AUGMENT_CRAFTING_TABLE).build(null);
     }
 
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
@@ -159,6 +158,7 @@ public class ModBlocks {
         Item.Properties properties = (new Item.Properties()).tab(ModItems.VAULT_MOD_GROUP).stacksTo(maxStackSize);
         adjustProperties.accept(properties);
         BlockItem blockItem = new BlockItem(block, properties) {
+            @Override
             public boolean isFoil(ItemStack stack) {
                 return true;
             }
@@ -171,8 +171,7 @@ public class ModBlocks {
     }
 
     private static void registerBlockItem(RegistryEvent.Register<Item> event, Block block, int maxStackSize) {
-        registerBlockItem(event, block, maxStackSize, (properties) -> {
-        });
+        registerBlockItem(event, block, maxStackSize, properties -> {});
     }
 
     private static void registerBlockItem(RegistryEvent.Register<Item> event, Block block, int maxStackSize, Consumer<Item.Properties> adjustProperties) {

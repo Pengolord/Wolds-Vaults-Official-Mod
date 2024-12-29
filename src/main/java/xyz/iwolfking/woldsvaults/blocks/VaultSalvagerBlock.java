@@ -27,22 +27,16 @@ import javax.annotation.Nullable;
 
 public class VaultSalvagerBlock extends Block implements EntityBlock {
     public VaultSalvagerBlock() {
-        super(BlockBehaviour.Properties.of(Material.STONE).strength(0.5F).lightLevel((state) -> {
-            return 13;
-        }).noOcclusion());
+        super(BlockBehaviour.Properties.of(Material.STONE).strength(0.5F).lightLevel(state -> 13).noOcclusion());
     }
 
+    @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
-        } else if (player instanceof ServerPlayer) {
-            ServerPlayer sPlayer = (ServerPlayer)player;
-            BlockEntity tile = level.getBlockEntity(pos);
-            if (tile instanceof VaultSalvagerTileEntity) {
-                VaultSalvagerTileEntity recyclerTileEntity = (VaultSalvagerTileEntity) tile;
-                NetworkHooks.openGui(sPlayer, recyclerTileEntity, (buffer) -> {
-                    buffer.writeBlockPos(pos);
-                });
+        } else if (player instanceof ServerPlayer sPlayer) {
+            if (level.getBlockEntity(pos) instanceof VaultSalvagerTileEntity recyclerTileEntity) {
+                NetworkHooks.openGui(sPlayer, recyclerTileEntity, buffer -> buffer.writeBlockPos(pos));
                 return InteractionResult.SUCCESS;
             } else {
                 return InteractionResult.SUCCESS;
@@ -52,20 +46,21 @@ public class VaultSalvagerBlock extends Block implements EntityBlock {
         }
     }
 
+    @Override
     @Nullable
     public <A extends BlockEntity> BlockEntityTicker<A> getTicker(Level world, BlockState state, BlockEntityType<A> type) {
         return BlockHelper.getTicker(type, xyz.iwolfking.woldsvaults.init.ModBlocks.VAULT_SALVAGER_ENTITY, VaultSalvagerTileEntity::tick);
     }
 
+    @Override
     public boolean isPathfindable(BlockState pState, BlockGetter pLevel, BlockPos pPos, PathComputationType pType) {
         return false;
     }
 
+    @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (!pState.is(pNewState.getBlock())) {
-            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
-            if (blockentity instanceof VaultSalvagerTileEntity) {
-                VaultSalvagerTileEntity recycler = (VaultSalvagerTileEntity)blockentity;
+            if (pLevel.getBlockEntity(pPos) instanceof VaultSalvagerTileEntity recycler) {
                 Containers.dropContents(pLevel, pPos, recycler.getInventory());
                 pLevel.updateNeighbourForOutputSignal(pPos, this);
             }

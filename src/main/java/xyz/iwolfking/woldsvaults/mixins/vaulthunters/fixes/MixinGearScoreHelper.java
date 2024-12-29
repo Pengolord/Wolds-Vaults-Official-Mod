@@ -34,7 +34,7 @@ public class MixinGearScoreHelper {
 
             VaultGearRarity rarity = gearData.getRarity();
             weight += rarity.ordinal() * 10000;
-            VaultGearTierConfig cfg = (VaultGearTierConfig) VaultGearTierConfig.getConfig(stack).orElse((VaultGearTierConfig) null);
+            VaultGearTierConfig cfg = VaultGearTierConfig.getConfig(stack).orElse(null);
             if (cfg == null) {
                 return weight;
             } else {
@@ -44,7 +44,7 @@ public class MixinGearScoreHelper {
                 modifiers.addAll(gearData.getModifiers(VaultGearModifier.AffixType.SUFFIX));
                 List<Float> rangePercentage = new ArrayList<>();
                 List<Integer> weightsToAdd = new ArrayList<>();
-                modifiers.forEach((mod) -> {
+                modifiers.forEach(mod -> {
                     if(mod.getAttribute().getRegistryName().equals(VaultMod.id("hammer_size"))) {
                         weightsToAdd.add(50000);
                     }
@@ -53,7 +53,7 @@ public class MixinGearScoreHelper {
                     }
                     VaultGearTierConfig.ModifierConfigRange range = cfg.getTierConfigRange(mod, level);
                     ConfigurableAttributeGenerator generator = mod.getAttribute().getGenerator();
-                    generator.getRollPercentage(mod.getValue(), range.allTierConfigs()).ifPresent((value) -> {
+                    generator.getRollPercentage(mod.getValue(), range.allTierConfigs()).ifPresent(value -> {
                         if (value instanceof Float f) {
                             rangePercentage.add(f);
                         }

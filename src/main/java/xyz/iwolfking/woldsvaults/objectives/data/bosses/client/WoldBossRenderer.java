@@ -32,8 +32,8 @@ public class WoldBossRenderer extends LivingEntityRenderer<LivingEntity, Humanoi
     public static final ResourceLocation TEXTURE = WoldsVaults.id("textures/entity/wold.png");
     private final DynamicHumanoidModelLayer<LivingEntity, HumanoidModel<LivingEntity>, HumanoidModel<LivingEntity>> armorLayer;
     private final HumanoidModel<LivingEntity> thisModel;
-    private final PlayerModel playerModel;
-    private final PlayerModel playerSlimModel;
+    private final PlayerModel<LivingEntity> playerModel;
+    private final PlayerModel<LivingEntity> playerSlimModel;
 
     public WoldBossRenderer(EntityRendererProvider.Context context, ModelLayerLocation modelLayer) {
         this(context, modelLayer, false);
@@ -41,22 +41,23 @@ public class WoldBossRenderer extends LivingEntityRenderer<LivingEntity, Humanoi
 
     public WoldBossRenderer(EntityRendererProvider.Context context, ModelLayerLocation modelLayer, boolean slim) {
         super(context, new FighterModel(context.bakeLayer(modelLayer), slim), 0.5F);
-        this.addLayer(this.armorLayer = new DynamicHumanoidModelLayer(this, new HumanoidModel(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)), new HumanoidModel(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), new HumanoidModel(context.bakeLayer(ModelLayers.PLAYER_SLIM_INNER_ARMOR)), new HumanoidModel(context.bakeLayer(ModelLayers.PLAYER_SLIM_OUTER_ARMOR))));
-        this.addLayer(new CustomHeadLayer(this, context.getModelSet()));
-        this.addLayer(new ElytraLayer(this, context.getModelSet()));
-        this.addLayer(new ItemInHandLayer(this));
-        this.thisModel = (HumanoidModel)this.model;
-        this.playerModel = new PlayerModel(context.bakeLayer(ModelLayers.PLAYER), false);
-        this.playerSlimModel = new PlayerModel(context.bakeLayer(ModelLayers.PLAYER_SLIM), true);
+        this.addLayer(this.armorLayer = new DynamicHumanoidModelLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM_INNER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM_OUTER_ARMOR))));
+        this.addLayer(new CustomHeadLayer<>(this, context.getModelSet()));
+        this.addLayer(new ElytraLayer<>(this, context.getModelSet()));
+        this.addLayer(new ItemInHandLayer<>(this));
+        this.thisModel = this.model;
+        this.playerModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false);
+        this.playerSlimModel = new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER_SLIM), true);
         this.armorLayer.setSlim(slim);
     }
 
 
-
+    @Override
     protected boolean shouldShowName(LivingEntity entity) {
         return entity.isCustomNameVisible() && super.shouldShowName(entity);
     }
 
+    @Override
     public void render(LivingEntity entity, float entityYaw, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int packedLightIn) {
         if (entity instanceof WoldBoss woldBoss) {
             this.setModelVisibilities(woldBoss);
@@ -132,20 +133,21 @@ public class WoldBossRenderer extends LivingEntityRenderer<LivingEntity, Humanoi
     }
 
     public ResourceLocation getTextureLocation(LivingEntity entity) {
-        if (entity instanceof WoldBoss woldBoss) {
+        if (entity instanceof WoldBoss) {
             return TEXTURE;
         } else {
             return MissingTextureAtlasSprite.getLocation();
         }
     }
 
+    @Override
     protected void setupRotations(LivingEntity entity, PoseStack matrixStack, float age, float yaw, float pTicks) {
         float f = entity.getSwimAmount(pTicks);
         float f3;
         float f2;
         if (entity.isFallFlying()) {
             super.setupRotations(entity, matrixStack, age, yaw, pTicks);
-            f3 = (float)entity.getFallFlyingTicks() + pTicks;
+            f3 = entity.getFallFlyingTicks() + pTicks;
             f2 = Mth.clamp(f3 * f3 / 100.0F, 0.0F, 1.0F);
             if (!entity.isAutoSpinAttack()) {
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees(f2 * (-90.0F - entity.getXRot())));
@@ -176,8 +178,8 @@ public class WoldBossRenderer extends LivingEntityRenderer<LivingEntity, Humanoi
 
 
     @Override
-    protected void scale(LivingEntity p_115314_, PoseStack poseStack, float p_115316_) {
-        super.scale(p_115314_, poseStack, p_115316_);
-        poseStack.scale(2.0F, 2.0F, 2.0F);
+    protected void scale(LivingEntity pLivingEntity, PoseStack pMatrixStack, float pPartialTickTime) {
+        super.scale(pLivingEntity, pMatrixStack, pPartialTickTime);
+        pMatrixStack.scale(2.0F, 2.0F, 2.0F);
     }
 }

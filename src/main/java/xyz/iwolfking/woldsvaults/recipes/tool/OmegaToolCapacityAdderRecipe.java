@@ -18,7 +18,7 @@ public class OmegaToolCapacityAdderRecipe extends VanillaAnvilRecipe {
 
         ItemStack primary = context.getInput()[0];
         ItemStack secondary = context.getInput()[1];
-        if (primary.getItem() instanceof ToolItem tool && secondary.getItem() == ModItems.CRYSTAL_REINFORCEMENT) {
+        if (primary.getItem() instanceof ToolItem && secondary.getItem() == ModItems.CRYSTAL_REINFORCEMENT) {
             ItemStack output = primary.copy();
             VaultGearData gear = ToolGearData.read(output);
             int toolCapacity = 0;

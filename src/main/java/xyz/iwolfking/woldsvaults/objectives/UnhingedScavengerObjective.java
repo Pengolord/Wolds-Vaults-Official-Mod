@@ -14,14 +14,12 @@ import iskallia.vault.core.event.CommonEvents;
 import iskallia.vault.core.event.common.BlockSetEvent;
 import iskallia.vault.core.random.JavaRandom;
 import iskallia.vault.core.vault.Vault;
-import iskallia.vault.core.vault.VaultLevel;
 import iskallia.vault.core.vault.modifier.spi.VaultModifier;
 import iskallia.vault.core.vault.objective.Objective;
 import iskallia.vault.core.vault.objective.ScavengerObjective;
 import iskallia.vault.core.vault.objective.scavenger.ScavengeTask;
 import iskallia.vault.core.vault.objective.scavenger.ScavengerGoal;
 import iskallia.vault.core.vault.player.Listener;
-import iskallia.vault.core.vault.player.Listeners;
 import iskallia.vault.core.vault.player.Runner;
 import iskallia.vault.core.world.data.entity.PartialCompoundNbt;
 import iskallia.vault.core.world.data.tile.PartialBlockState;
@@ -33,22 +31,19 @@ import iskallia.vault.item.GodBlessingItem;
 import iskallia.vault.item.KeystoneItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.loading.LoadingModList;
 import xyz.iwolfking.woldsvaults.config.UnhingedScavengerConfig;
 import xyz.iwolfking.woldsvaults.util.VaultModifierUtils;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class UnhingedScavengerObjective extends ScavengerObjective {
 
-    public static final FieldKey<UnhingedScavengerObjective.Config> CONFIG = (FieldKey)FieldKey.of("config", UnhingedScavengerObjective.Config.class).with(Version.v1_19, Adapters.ofEnum(UnhingedScavengerObjective.Config.class, EnumAdapter.Mode.ORDINAL), DISK.all()).register(FIELDS);;
+    public static final FieldKey<UnhingedScavengerObjective.Config> CONFIG = FieldKey.of("config", UnhingedScavengerObjective.Config.class).with(Version.v1_19, Adapters.ofEnum(UnhingedScavengerObjective.Config.class, EnumAdapter.Mode.ORDINAL), DISK.all()).register(FIELDS);
 
-    public static final SupplierKey<Objective> E_KEY = (SupplierKey)SupplierKey.of("unhinged_scavenger", Objective.class).with(Version.v1_12, UnhingedScavengerObjective::new);
+    public static final SupplierKey<Objective> E_KEY = SupplierKey.of("unhinged_scavenger", Objective.class).with(Version.v1_12, UnhingedScavengerObjective::new);
 
     @Override
     public SupplierKey<Objective> getKey() {
@@ -82,16 +77,14 @@ public class UnhingedScavengerObjective extends ScavengerObjective {
             VaultModifierUtils.addModifier(vault, VaultMod.id("normalized"), 1);
         }
 
-        CommonEvents.OBJECTIVE_PIECE_GENERATION.register(this, (data) -> {
-            this.ifPresent(OBJECTIVE_PROBABILITY, (probability) -> {
-                data.setProbability((double)probability);
-            });
+        CommonEvents.OBJECTIVE_PIECE_GENERATION.register(this, data -> {
+            this.ifPresent(OBJECTIVE_PROBABILITY, probability -> data.setProbability(probability));
         });
         if(LoadingModList.get().getModFileById("vaultfaster") != null) {
-            ObjectiveTemplateEvent.INSTANCE.registerObjectiveTemplate((Objective)this, vault);
+            ObjectiveTemplateEvent.INSTANCE.registerObjectiveTemplate(this, vault);
         }
         else {
-            CommonEvents.BLOCK_SET.at(BlockSetEvent.Type.RETURN).in(world).register(this, (data) -> {
+            CommonEvents.BLOCK_SET.at(BlockSetEvent.Type.RETURN).in(world).register(this, data -> {
                 PartialTile target = PartialTile.of(PartialBlockState.of(ModBlocks.PLACEHOLDER), PartialCompoundNbt.empty());
                 target.getState().set(PlaceholderBlock.TYPE, iskallia.vault.block.PlaceholderBlock.Type.OBJECTIVE);
                 if (target.isSubsetOf(PartialTile.of(data.getState()))) {
@@ -101,15 +94,13 @@ public class UnhingedScavengerObjective extends ScavengerObjective {
             });
         }
 
-        CommonEvents.SCAVENGER_ALTAR_CONSUME.register(this, (data) -> {
+        CommonEvents.SCAVENGER_ALTAR_CONSUME.register(this, data -> {
             if (data.getLevel() == world && ((ScavengerAltarTileEntity)data.getTile()).getItemPlacedBy() != null) {
-                Listener listener = ((Listeners)vault.get(Vault.LISTENERS)).get(((ScavengerAltarTileEntity)data.getTile()).getItemPlacedBy());
+                Listener listener = (vault.get(Vault.LISTENERS)).get(((ScavengerAltarTileEntity)data.getTile()).getItemPlacedBy());
                 if (listener instanceof Runner) {
                     BlockState state = data.getTile().getBlockState();
                     if (state.getBlock() == ModBlocks.DIVINE_ALTAR) {
-                        Item patt5959$temp = ((ScavengerAltarTileEntity)data.getTile()).getHeldItem().getItem();
-                        if (patt5959$temp instanceof KeystoneItem) {
-                            KeystoneItem keystone = (KeystoneItem)patt5959$temp;
+                        if (((ScavengerAltarTileEntity)data.getTile()).getHeldItem().getItem() instanceof KeystoneItem keystone) {
                             if (keystone.getGod() != state.getValue(DivineAltarBlock.GOD)) {
                                 return;
                             }
@@ -124,14 +115,11 @@ public class UnhingedScavengerObjective extends ScavengerObjective {
                         }
                     }
 
-                    boolean creative = (Boolean)listener.getPlayer().map(ServerPlayer::isCreative).orElse(false);
+                    boolean creative = listener.getPlayer().map(ServerPlayer::isCreative).orElse(false);
                     CompoundTag nbt = ((ScavengerAltarTileEntity)data.getTile()).getHeldItem().getTag();
-                    if (creative || nbt != null && nbt.getString("VaultId").equals(((UUID)vault.get(Vault.ID)).toString())) {
-                        List<ScavengerGoal> goals = (List)((GoalMap)this.get(GOALS)).get(listener.get(Listener.ID));
-                        Iterator var9 = goals.iterator();
-
-                        while(var9.hasNext()) {
-                            ScavengerGoal goal = (ScavengerGoal)var9.next();
+                    if (creative || nbt != null && nbt.getString("VaultId").equals((vault.get(Vault.ID)).toString())) {
+                        List<ScavengerGoal> goals = this.get(GOALS).get(listener.get(Listener.ID));
+                        for (ScavengerGoal goal: goals) {
                             goal.consume(((ScavengerAltarTileEntity)data.getTile()).getHeldItem());
                         }
 
@@ -139,16 +127,12 @@ public class UnhingedScavengerObjective extends ScavengerObjective {
                 }
             }
         });
-        Iterator var3 = ((UnhingedScavengerObjective.Config)this.getOr(CONFIG, UnhingedScavengerObjective.Config.DEFAULT)).get().getTasks().iterator();
 
-        while(var3.hasNext()) {
-            ScavengeTask task = (ScavengeTask)var3.next();
+        for (ScavengeTask task : (this.getOr(CONFIG, Config.DEFAULT)).get().getTasks()) {
             task.initServer(world, vault, this);
         }
 
-        ((ObjList)this.get(CHILDREN)).forEach((child) -> {
-            child.initServer(world, vault);
-        });
+        (this.get(CHILDREN)).forEach(child -> child.initServer(world, vault));
     }
 
     @Override
@@ -158,31 +142,25 @@ public class UnhingedScavengerObjective extends ScavengerObjective {
             this.generateGoal(vault, listener);
         }
 
-        ScavengerGoal.ObjList goal = (ScavengerGoal.ObjList)((GoalMap)this.get(GOALS)).get(listener.get(Listener.ID));
+        ScavengerGoal.ObjList goal = this.get(GOALS).get(listener.get(Listener.ID));
         if (goal != null && goal.areAllCompleted()) {
-            ((ObjList)this.get(CHILDREN)).forEach((child) -> {
-                child.tickListener(world, vault, listener);
-            });
+            this.get(CHILDREN).forEach(child -> child.tickListener(world, vault, listener));
         }
     }
 
     private void generateGoal(Vault vault, Listener listener) {
         ScavengerGoal.ObjList list = new ScavengerGoal.ObjList();
-        ((GoalMap)this.get(GOALS)).put((UUID)listener.get(Listener.ID), list);
-        JavaRandom random = JavaRandom.ofInternal((Long)vault.get(Vault.SEED) ^ ((UUID)listener.get(Listener.ID)).getMostSignificantBits());
-        list.addAll(((UnhingedScavengerObjective.Config)this.getOr(CONFIG, UnhingedScavengerObjective.Config.DEFAULT)).get().generateGoals(((VaultLevel)vault.get(Vault.LEVEL)).get(), random));
+        this.get(GOALS).put(listener.get(Listener.ID), list);
+        JavaRandom random = JavaRandom.ofInternal(vault.get(Vault.SEED) ^ listener.get(Listener.ID).getMostSignificantBits());
+        list.addAll((this.getOr(CONFIG, UnhingedScavengerObjective.Config.DEFAULT)).get().generateGoals(vault.get(Vault.LEVEL).get(), random));
     }
 
 
 
 
     public static enum Config {
-        DEFAULT(() -> {
-            return xyz.iwolfking.woldsvaults.init.ModConfigs.UNHINGED_SCAVENGER;
-        }),
-        DIVINE_PARADOX(() -> {
-            return ModConfigs.DIVINE_PARADOX;
-        });
+        DEFAULT(() -> xyz.iwolfking.woldsvaults.init.ModConfigs.UNHINGED_SCAVENGER),
+        DIVINE_PARADOX(() -> ModConfigs.DIVINE_PARADOX);
 
         private Supplier<UnhingedScavengerConfig> supplier;
 
@@ -191,7 +169,7 @@ public class UnhingedScavengerObjective extends ScavengerObjective {
         }
 
         public UnhingedScavengerConfig get() {
-            return (UnhingedScavengerConfig)this.supplier.get();
+            return this.supplier.get();
         }
     }
 }

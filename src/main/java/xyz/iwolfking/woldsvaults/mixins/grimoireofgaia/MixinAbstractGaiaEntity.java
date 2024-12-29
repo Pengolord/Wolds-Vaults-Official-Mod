@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.Shadow;
 )
 @Mixin(value = AbstractGaiaEntity.class, remap = false)
 public abstract class MixinAbstractGaiaEntity extends Monster {
-    protected MixinAbstractGaiaEntity(EntityType<? extends Monster> p_33002_, Level p_33003_) {
-        super(p_33002_, p_33003_);
+    protected MixinAbstractGaiaEntity(EntityType<? extends Monster> entityType, Level level) {
+        super(entityType, level);
     }
 
     @Shadow public abstract float getBaseDefense();

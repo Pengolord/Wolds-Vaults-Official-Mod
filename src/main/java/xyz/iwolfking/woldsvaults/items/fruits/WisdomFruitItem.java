@@ -3,7 +3,6 @@ package xyz.iwolfking.woldsvaults.items.fruits;
 import iskallia.vault.VaultMod;
 import iskallia.vault.core.random.ChunkRandom;
 import iskallia.vault.core.random.JavaRandom;
-import iskallia.vault.core.random.RandomSource;
 import iskallia.vault.core.vault.Vault;
 import iskallia.vault.core.vault.modifier.spi.VaultModifier;
 import iskallia.vault.init.ModConfigs;
@@ -18,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -53,7 +51,7 @@ public class WisdomFruitItem extends ItemVaultFruit {
 
                 this.successEaten(level, player);
 
-            level.playSound((Player)null, player.getX(), player.getY(), player.getZ(), SoundEvents.CONDUIT_ACTIVATE, SoundSource.MASTER, 1.0F, 1.0F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CONDUIT_ACTIVATE, SoundSource.MASTER, 1.0F, 1.0F);
         }
 
         return entityLiving.eat(level, stack);
@@ -63,8 +61,8 @@ public class WisdomFruitItem extends ItemVaultFruit {
     protected void successEaten(Level level, ServerPlayer sPlayer) {
         if(ServerVaults.get(level).isPresent()) {
             Vault vault = ServerVaults.get(level).get();
-            List<VaultModifier<?>> hunter_modifier = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id("hunters_enchanted_random"), 0, (RandomSource) JavaRandom.ofNanoTime());
-            List<VaultModifier<?>> negative_modifier = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id("medium_negative"), 0, (RandomSource) JavaRandom.ofNanoTime());
+            List<VaultModifier<?>> hunter_modifier = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id("hunters_enchanted_random"), 0, JavaRandom.ofNanoTime());
+            List<VaultModifier<?>> negative_modifier = ModConfigs.VAULT_MODIFIER_POOLS.getRandom(VaultMod.id("medium_negative"), 0, JavaRandom.ofNanoTime());
             for(VaultModifier<?> mod : hunter_modifier) {
                 vault.get(Vault.MODIFIERS).addModifier(mod, 1, true, ChunkRandom.any());
                 VaultModifierUtils.sendModifierAddedMessage(sPlayer, mod, 1);

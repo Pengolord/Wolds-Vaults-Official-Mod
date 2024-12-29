@@ -21,7 +21,7 @@ public class VendoorCapstoneRecipe extends VanillaAnvilRecipe {
         if (primary.getItem() == ModItems.VAULT_CRYSTAL && secondary.getItem() == xyz.iwolfking.woldsvaults.init.ModItems.VENDOOR_CAPSTONE) {
             ItemStack output = primary.copy();
             CrystalData crystal = CrystalData.read(output);
-            VaultModifierRegistry.getOpt(VaultMod.id("vendoor_hunter")).ifPresent((modifier) -> {
+            VaultModifierRegistry.getOpt(VaultMod.id("vendoor_hunter")).ifPresent(modifier -> {
                 VaultModifierStack modifierStack = VaultModifierStack.of(modifier);
                 if (crystal.addModifierByCrafting(modifierStack, false, true)) {
                     crystal.addModifierByCrafting(modifierStack, false, false);

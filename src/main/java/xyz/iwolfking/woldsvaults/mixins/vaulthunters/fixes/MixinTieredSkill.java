@@ -30,7 +30,7 @@ public abstract class MixinTieredSkill {
         }
 
         for (int i = 0; i < tier; ++i) {
-            points += ((LearnableSkill) this.tiers.get(i)).getLearnPointCost();
+            points += this.tiers.get(i).getLearnPointCost();
         }
 
 

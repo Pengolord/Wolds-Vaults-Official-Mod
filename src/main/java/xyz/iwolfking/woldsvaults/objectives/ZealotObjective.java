@@ -33,18 +33,17 @@ import net.minecraftforge.fml.loading.LoadingModList;
 import xyz.iwolfking.vhapi.api.events.vault.VaultEvents;
 import xyz.iwolfking.woldsvaults.WoldsVaults;
 
-import java.util.Iterator;
 import java.util.Objects;
 
 public class ZealotObjective extends Objective {
     public static final ResourceLocation HUD = WoldsVaults.id("textures/gui/zealot/hud.png");
 
     public static final SupplierKey<Objective> KEY = SupplierKey.of("zealot", Objective.class).with(Version.latest(), ZealotObjective::new);
-    public static final FieldRegistry FIELDS = (FieldRegistry)Objective.FIELDS.merge(new FieldRegistry());
-    public static final FieldKey<Integer> COUNT = (FieldKey)FieldKey.of("count", Integer.class).with(Version.v1_0, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
-    public static final FieldKey<Integer> TARGET = (FieldKey)FieldKey.of("target", Integer.class).with(Version.v1_0, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
-    public static final FieldKey<Integer> BASE_TARGET = (FieldKey)FieldKey.of("base_target", Integer.class).with(Version.v1_25, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
-    public static final FieldKey<Float> OBJECTIVE_PROBABILITY = (FieldKey)FieldKey.of("objective_probability", Float.class).with(Version.v1_2, Adapters.FLOAT, DISK.all()).register(FIELDS);
+    public static final FieldRegistry FIELDS = Objective.FIELDS.merge(new FieldRegistry());
+    public static final FieldKey<Integer> COUNT = FieldKey.of("count", Integer.class).with(Version.v1_0, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
+    public static final FieldKey<Integer> TARGET = FieldKey.of("target", Integer.class).with(Version.v1_0, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
+    public static final FieldKey<Integer> BASE_TARGET = FieldKey.of("base_target", Integer.class).with(Version.v1_25, Adapters.INT_SEGMENTED_3, DISK.all().or(CLIENT.all())).register(FIELDS);
+    public static final FieldKey<Float> OBJECTIVE_PROBABILITY = FieldKey.of("objective_probability", Float.class).with(Version.v1_2, Adapters.FLOAT, DISK.all()).register(FIELDS);
 
 
     protected ZealotObjective() {
@@ -61,42 +60,41 @@ public class ZealotObjective extends Objective {
         return new ZealotObjective(target, objectiveProbability);
     }
 
-
+    @Override
     public FieldRegistry getFields() {
         return FIELDS;
     }
 
+    @Override
     public void initServer(VirtualWorld world, Vault vault) {
         if(LoadingModList.get().getModFileById("vaultfaster") != null) {
         }
-        CommonEvents.OBJECTIVE_PIECE_GENERATION.register(this, (data) -> {
-            this.ifPresent(OBJECTIVE_PROBABILITY, (probability) -> {
-                data.setProbability((double)probability);
-            });
+        CommonEvents.OBJECTIVE_PIECE_GENERATION.register(this, data -> {
+            this.ifPresent(OBJECTIVE_PROBABILITY, probability -> data.setProbability(probability));
         });
-        VaultEvents.GOD_ALTAR_COMPLETED.in(world).register(this, (data -> {
-            this.set(COUNT, (Integer)this.get(COUNT) + 1);
-        }));
+        VaultEvents.GOD_ALTAR_COMPLETED.in(world).register(this, (data -> this.set(COUNT, this.get(COUNT) + 1)));
         super.initServer(world, vault);
     }
 
+    @Override
     public void tickServer(VirtualWorld world, Vault vault) {
         this.ifPresent(BASE_TARGET, (value) -> {
             double increase = CommonEvents.OBJECTIVE_TARGET.invoke(world, vault, 0.0).getIncrease();
-            this.set(TARGET, (int)Math.round((double)(Integer)this.get(BASE_TARGET) * (1.0 + increase)));
+            this.set(TARGET, (int)Math.round((double)this.get(BASE_TARGET) * (1.0 + increase)));
         });
-        if ((Integer)this.get(COUNT) >= (Integer)this.get(TARGET)) {
+        if (this.get(COUNT) >= this.get(TARGET)) {
             super.tickServer(world, vault);
         }
 
     }
 
+    @Override
     public void tickListener(VirtualWorld world, Vault vault, Listener listener) {
         if (listener.getPriority(this) < 0) {
             listener.addObjective(vault, this);
         }
 
-        if (listener instanceof Runner && (Integer)this.get(COUNT) >= (Integer)this.get(TARGET)) {
+        if (listener instanceof Runner && this.get(COUNT) >= this.get(TARGET)) {
             super.tickListener(world, vault, listener);
         }
 
@@ -105,23 +103,17 @@ public class ZealotObjective extends Objective {
 
     @OnlyIn(Dist.CLIENT)
     public boolean render(Vault vault, PoseStack matrixStack, Window window, float partialTicks, Player player) {
-        int current;
-        FormattedCharSequence var10001;
-        float var10002;
-        if ((Integer)this.get(COUNT) >= (Integer)this.get(TARGET)) {
-            current = window.getGuiScaledWidth() / 2;
+        if (this.get(COUNT) >= this.get(TARGET)) {
+            int midX = window.getGuiScaledWidth() / 2;
             Font font = Minecraft.getInstance().font;
             MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
             Component txt = (new TextComponent("The gods are pleased, you may exit when ready.")).withStyle(ChatFormatting.GOLD);
-            var10001 = txt.getVisualOrderText();
-            var10002 = (float)current - (float)font.width(txt) / 2.0F;
-            Objects.requireNonNull(font);
-            font.drawInBatch(var10001, var10002, 9.0F, -1, true, matrixStack.last().pose(), buffer, false, 0, LightmapHelper.getPackedFullbrightCoords());
+            font.drawInBatch(txt.getVisualOrderText(), midX - font.width(txt) / 2.0F, 9.0F, -1, true, matrixStack.last().pose(), buffer, false, 0, LightmapHelper.getPackedFullbrightCoords());
             buffer.endBatch();
             return true;
         } else {
-            current = (Integer)this.get(COUNT);
-            int total = (Integer)this.get(TARGET);
+            int current = this.get(COUNT);
+            int total = this.get(TARGET);
             Component txt = (new TextComponent(String.valueOf(current))).withStyle(ChatFormatting.WHITE).append((new TextComponent(" / ")).withStyle(ChatFormatting.WHITE)).append((new TextComponent(String.valueOf(total))).withStyle(ChatFormatting.WHITE));
             int midX = window.getGuiScaledWidth() / 2;
             matrixStack.pushPose();
@@ -130,7 +122,7 @@ public class ZealotObjective extends Objective {
             int previousTexture = RenderSystem.getShaderTexture(0);
             RenderSystem.setShaderTexture(0, HUD);
             float progress = (float)current / (float)total;
-            matrixStack.translate((double)(midX - 80), 8.0, 0.0);
+            matrixStack.translate((midX - 80), 8.0, 0.0);
             GuiComponent.blit(matrixStack, 0, 0, 0.0F, 0.0F, 200, 26, 200, 100);
             GuiComponent.blit(matrixStack, 0, 8, 0.0F, 30.0F, 13 + (int)(130.0F * progress), 10, 200, 100);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -141,10 +133,7 @@ public class ZealotObjective extends Objective {
             MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
             matrixStack.pushPose();
             matrixStack.scale(0.6F, 0.6F, 0.6F);
-            var10001 = txt.getVisualOrderText();
-            var10002 = (float)midX / 0.6F - (float)font.width(txt) / 2.0F;
-            Objects.requireNonNull(font);
-            font.drawInBatch(var10001, var10002, (float)(9 + 22), -1, true, matrixStack.last().pose(), buffer, false, 0, LightmapHelper.getPackedFullbrightCoords());
+            font.drawInBatch(txt.getVisualOrderText(), midX / 0.6F - font.width(txt) / 2.0F, (9 + 22), -1, true, matrixStack.last().pose(), buffer, false, 0, LightmapHelper.getPackedFullbrightCoords());
             buffer.endBatch();
             matrixStack.popPose();
             return true;
@@ -152,22 +141,16 @@ public class ZealotObjective extends Objective {
     }
 
     @Override
-    public boolean isActive(VirtualWorld virtualWorld, Vault vault, Objective objective) {
-        if ((Integer)this.get(COUNT) < (Integer)this.get(TARGET)) {
+    public boolean isActive(VirtualWorld world, Vault vault, Objective objective) {
+        if (this.get(COUNT) < this.get(TARGET)) {
             return objective == this;
         } else {
-            Iterator var4 = ((Objective.ObjList)this.get(CHILDREN)).iterator();
-
-            Objective child;
-            do {
-                if (!var4.hasNext()) {
-                    return false;
+            for (Objective child : this.get(CHILDREN)) {
+                if (child.isActive(world, vault, objective)) {
+                    return true;
                 }
-
-                child = (Objective)var4.next();
-            } while(!child.isActive(virtualWorld, vault, objective));
-
-            return true;
+            }
+            return false;
         }
     }
 

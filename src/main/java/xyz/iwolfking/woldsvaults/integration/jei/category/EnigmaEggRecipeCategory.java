@@ -59,20 +59,22 @@ public class EnigmaEggRecipeCategory implements IRecipeCategory<EnigmaEggConfig>
     }
 
     @Nonnull
+    @Override
     public RecipeType<EnigmaEggConfig> getRecipeType() {
         return this.RECIPE_TYPE;
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public ResourceLocation getUid() {
         return this.getRecipeType().getUid();
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public Class<? extends EnigmaEggConfig> getRecipeClass() {
         return this.getRecipeType().getRecipeClass();
     }
 
+    @Override
     @ParametersAreNonnullByDefault
     public void setRecipe(IRecipeLayoutBuilder builder, EnigmaEggConfig recipe, IFocusGroup focuses) {
         List<ItemStack> itemList = new ArrayList<>();
@@ -97,7 +99,7 @@ public class EnigmaEggRecipeCategory implements IRecipeCategory<EnigmaEggConfig>
         for(WeightedList.Entry<ProductEntry> entry : entries) {
             if(entry.value.generateItemStack().getItem().equals(stack.getItem())) {
                 MutableComponent component = new TextComponent("Chance: ");
-                double chance = ((double) entry.weight / totalWeight) * 100;
+                double chance = (entry.weight / totalWeight) * 100;
                 component.append(String.format("%.2f", chance));
                 component.append("%");
                 list.add(StringTag.valueOf(Component.Serializer.toJson(component.withStyle(ChatFormatting.YELLOW))));

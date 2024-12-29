@@ -37,7 +37,7 @@ public class SpawnEntityEnchantedEvent extends BasicEnchantedEvent {
         super(eventName, eventDescription, primaryColor);
         this.entities = entities;
         this.amounts = amounts;
-        this.effects = new WeightedList<MobEffectInstance>();
+        this.effects = new WeightedList<>();
         this.heldStack = ItemStack.EMPTY;
     }
 
@@ -53,7 +53,7 @@ public class SpawnEntityEnchantedEvent extends BasicEnchantedEvent {
         super(eventName, eventDescription, primaryColor);
         this.entities = entities;
         this.amounts = amounts;
-        this.effects = new WeightedList<MobEffectInstance>();
+        this.effects = new WeightedList<>();
         this.heldStack = stack;
     }
 
@@ -80,11 +80,11 @@ public class SpawnEntityEnchantedEvent extends BasicEnchantedEvent {
         int z;
         int y;
         for(spawned = null; spawned == null; spawned = spawnMob(world, pos.getX() + x, pos.getY() + y, pos.getZ() + z, random)) {
-            double angle = 6.283185307179586 * random.nextDouble();
+            double angle = 2 * Math.PI * random.nextDouble();
             double distance = Math.sqrt(random.nextDouble() * (max * max - min * min) + min * min);
             x = (int)Math.ceil(distance * Math.cos(angle));
             z = (int)Math.ceil(distance * Math.sin(angle));
-            double xzRadius = Math.sqrt((double)(x * x + z * z));
+            double xzRadius = Math.sqrt(x * x + z * z);
             double yRange = Math.sqrt(max * max - xzRadius * xzRadius);
             y = random.nextInt((int)Math.ceil(yRange) * 2 + 1) - (int)Math.ceil(yRange);
         }
@@ -107,33 +107,32 @@ public class SpawnEntityEnchantedEvent extends BasicEnchantedEvent {
         }
 
         BlockState state = world.getBlockState(new BlockPos(x, y - 1, z));
-        if (!state.isValidSpawn(world, new BlockPos(x, y - 1, z), entity.getType())) {
+        if (entity == null || !state.isValidSpawn(world, new BlockPos(x, y - 1, z), entity.getType())) {
             return null;
-        } else {
-            AABB entityBox = entity.getType().getAABB((double)x + 0.5, (double)y, (double)z + 0.5);
-            if (!world.noCollision(entityBox)) {
-                return null;
-            } else {
-                entity.moveTo((double)((float)x + 0.5F), (double)((float)y + 0.2F), (double)((float)z + 0.5F), (float)(random.nextDouble() * 2.0 * Math.PI), 0.0F);
-               // entity.finalizeSpawn(world, new DifficultyInstance(Difficulty.PEACEFUL, 13000L, 0L, 0.0F), MobSpawnType.STRUCTURE, (SpawnGroupData)null, (CompoundTag)null);
-                if(!heldStack.equals(ItemStack.EMPTY)) {
-                    if(entity instanceof EntityCockroach roach) {
-                        roach.setMaracas(true);
-                    }
-                    else {
-                        entity.setItemSlot(EquipmentSlot.MAINHAND, heldStack);
-                    }
-
-                }
-                if(!effects.isEmpty()) {
-                    effects.forEach((mobEffectInstance, aDouble) -> {
-                        ((LivingEntity)entity).addEffect(mobEffectInstance);
-                    });
-                }
-                world.addWithUUID(entity);
-
-                return (LivingEntity) entity;
-            }
         }
+        AABB entityBox = entity.getType().getAABB(x + 0.5, y, z + 0.5);
+        if (!world.noCollision(entityBox)) {
+            return null;
+        }
+        entity.moveTo(x + 0.5F, y + 0.2F,z + 0.5F, (float)(random.nextDouble() * 2.0 * Math.PI), 0.0F);
+       // entity.finalizeSpawn(world, new DifficultyInstance(Difficulty.PEACEFUL, 13000L, 0L, 0.0F), MobSpawnType.STRUCTURE, (SpawnGroupData)null, (CompoundTag)null);
+        if(!heldStack.equals(ItemStack.EMPTY)) {
+            if(entity instanceof EntityCockroach roach) {
+                roach.setMaracas(true);
+            }
+            else {
+                entity.setItemSlot(EquipmentSlot.MAINHAND, heldStack);
+            }
+
+        }
+        if(!effects.isEmpty()) {
+            effects.forEach((mobEffectInstance, aDouble) -> {
+                ((LivingEntity)entity).addEffect(mobEffectInstance);
+            });
+        }
+        world.addWithUUID(entity);
+
+        return (LivingEntity) entity;
+
     }
 }

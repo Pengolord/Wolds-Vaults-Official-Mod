@@ -20,13 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Restriction(
         require = {
                 @Condition(type = Condition.Type.MOD, value = "itemborders"),
-                @Condition(type = Condition.Type.MOD, value = "tomsstorage")
+                @Condition(type = Condition.Type.MOD, value = "toms_storage")
         }
 )
 @Mixin(value = GuiStorageTerminalBase.class, remap = false)
 public abstract class MixinGuiStorageTerminalBase<T extends ContainerStorageTerminal> extends AbstractContainerScreen<T> implements IDataReceiver {
-    public MixinGuiStorageTerminalBase(T p_97741_, Inventory p_97742_, Component p_97743_) {
-        super(p_97741_, p_97742_, p_97743_);
+
+    public MixinGuiStorageTerminalBase(T pMenu, Inventory pPlayerInventory, Component pTitle) {
+        super(pMenu, pPlayerInventory, pTitle);
     }
 
     @Shadow public abstract Font getFont();

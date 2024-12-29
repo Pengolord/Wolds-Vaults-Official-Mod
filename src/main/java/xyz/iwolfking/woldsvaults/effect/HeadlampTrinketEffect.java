@@ -32,8 +32,8 @@ public class HeadlampTrinketEffect extends TrinketEffect<PotionEffectTrinket.Con
     }
 
     public List<VaultGearAttributeInstance<?>> getAttributes() {
-        iskallia.vault.gear.trinket.effects.PotionEffectTrinket.Config cfg = (iskallia.vault.gear.trinket.effects.PotionEffectTrinket.Config)this.getConfig();
-        return Lists.newArrayList(new VaultGearAttributeInstance[]{new VaultGearAttributeInstance(ModGearAttributes.EFFECT, new EffectGearAttribute(cfg.getEffect(), cfg.getAddedAmplifier())), new VaultGearAttributeInstance<>(ModGearAttributes.COPIOUSLY, 0.25F)});
+        iskallia.vault.gear.trinket.effects.PotionEffectTrinket.Config cfg = this.getConfig();
+        return Lists.newArrayList(new VaultGearAttributeInstance<>(ModGearAttributes.EFFECT, new EffectGearAttribute(cfg.getEffect(), cfg.getAddedAmplifier())), new VaultGearAttributeInstance<>(ModGearAttributes.COPIOUSLY, 0.25F));
     }
 
     public static class Config extends TrinketEffect.Config {
@@ -48,7 +48,7 @@ public class HeadlampTrinketEffect extends TrinketEffect<PotionEffectTrinket.Con
         }
 
         public MobEffect getEffect() {
-            return (MobEffect)ForgeRegistries.MOB_EFFECTS.getValue(this.effect);
+            return ForgeRegistries.MOB_EFFECTS.getValue(this.effect);
         }
 
         public int getAddedAmplifier() {

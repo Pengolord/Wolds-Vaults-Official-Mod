@@ -23,8 +23,9 @@ import java.util.Optional;
 
 @Mixin(value = AugmentItem.class, remap = false)
 public abstract class MixinAugmentItem extends Item implements VaultLevelItem, DataTransferItem {
-    public MixinAugmentItem(Properties p_41383_) {
-        super(p_41383_);
+
+    public MixinAugmentItem(Properties pProperties) {
+        super(pProperties);
     }
 
     @Shadow
@@ -36,9 +37,12 @@ public abstract class MixinAugmentItem extends Item implements VaultLevelItem, D
      * @author iwolfking
      * @reason Add Theme tooltips
      */
-    @Inject(method = "m_7373_", at = @At("TAIL"))
+    @Inject(method = "appendHoverText", at = @At("TAIL"), remap = true)
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag advanced, CallbackInfo ci) {
-        getTheme(stack).ifPresent(key -> {
+        Optional<ThemeKey> theme = getTheme(stack);
+        if(theme == null)
+            return;
+        theme.ifPresent(key -> {
             if(ModConfigs.THEME_TOOLTIPS.tooltips.containsKey(key.getId()) && Screen.hasShiftDown()) {
                 tooltip.add(new TextComponent(ModConfigs.THEME_TOOLTIPS.tooltips.get(key.getId())));
             }

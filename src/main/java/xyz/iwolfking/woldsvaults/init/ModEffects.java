@@ -19,6 +19,6 @@ public class ModEffects {
     public static final MobEffect COLOSSUS = new ColossusAbility.ColossusEffect(MobEffectCategory.BENEFICIAL,0xc90000, CustomScaleTypes.SIZE_NO_MOVEMENT, new ResourceLocation(WoldsVaults.MOD_ID,"colossus"));
     public static final MobEffect SNEAKY_GETAWAY = new SneakyGetawayAbility.SneakyGetawayEffect(MobEffectCategory.BENEFICIAL,0xcca468,CustomScaleTypes.SIZE_NO_MOVEMENT, new ResourceLocation(WoldsVaults.MOD_ID,"sneaky_getaway"));
     public static void register(RegistryEvent.Register<MobEffect> event) {
-        event.getRegistry().registerAll(new MobEffect[]{SHRINKING, GROWING, REAVING,COLOSSUS,SNEAKY_GETAWAY});
+        event.getRegistry().registerAll(SHRINKING, GROWING, REAVING,COLOSSUS,SNEAKY_GETAWAY);
     }
 }

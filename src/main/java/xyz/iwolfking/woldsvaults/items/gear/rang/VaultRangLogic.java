@@ -21,7 +21,7 @@ public class VaultRangLogic {
     }
 
     public static int getTimeout(ItemStack stack) {
-        if(stack.getItem() instanceof VaultGearItem vaultGearItem) {
+        if(stack.getItem() instanceof VaultGearItem) {
             VaultGearData data = VaultGearData.read(stack);
             Optional<Float> timeout = data.getFirstValue(ModGearAttributes.RANGE);
             if(timeout.isPresent()) {
@@ -33,7 +33,7 @@ public class VaultRangLogic {
     }
 
     public static float getVelocity(ItemStack stack) {
-        if(stack.getItem() instanceof VaultGearItem vaultGearItem) {
+        if(stack.getItem() instanceof VaultGearItem) {
             VaultGearData data = VaultGearData.read(stack);
             Optional<Float> velocity = data.getFirstValue(ModGearAttributes.VELOCITY);
             if(velocity.isPresent()) {
@@ -45,7 +45,7 @@ public class VaultRangLogic {
     }
 
     public static float getReturningDamage(ItemStack stack) {
-        if(stack.getItem() instanceof VaultGearItem vaultGearItem) {
+        if(stack.getItem() instanceof VaultGearItem) {
             VaultGearData data = VaultGearData.read(stack);
             Optional<Float> returningDmg = data.getFirstValue(xyz.iwolfking.woldsvaults.init.ModGearAttributes.RETURNING_DAMAGE);
             if(returningDmg.isPresent()) {
@@ -57,7 +57,7 @@ public class VaultRangLogic {
     }
 
     public static int getPiercing(ItemStack stack) {
-        if(stack.getItem() instanceof VaultGearItem vaultGearItem) {
+        if(stack.getItem() instanceof VaultGearItem) {
             VaultGearData data = VaultGearData.read(stack);
             Optional<Integer> piercing = data.getFirstValue(xyz.iwolfking.woldsvaults.init.ModGearAttributes.PIERCING);
             if(piercing.isPresent()) {

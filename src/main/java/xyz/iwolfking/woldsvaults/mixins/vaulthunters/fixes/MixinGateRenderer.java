@@ -14,10 +14,8 @@ import iskallia.vault.init.ModConfigs;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +24,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,9 +45,9 @@ public abstract class MixinGateRenderer {
             BlockState blockstate = entity.getBlockState();
             matrices.pushPose();
             float f = 0.6666667F;
-            Vec3i vector = ((Direction) blockstate.getValue(GateLockBlock.FACING)).getNormal();
-            matrices.translate(0.5 + 0.9 * (double) vector.getX(), 0.5 + 0.9 * (double) vector.getY(), 0.5 + 0.9 * (double) vector.getZ());
-            float f4 = -((Direction) blockstate.getValue(GateLockBlock.FACING)).toYRot();
+            Vec3i vector = blockstate.getValue(GateLockBlock.FACING).getNormal();
+            matrices.translate(0.5 + 0.9 * vector.getX(), 0.5 + 0.9 * vector.getY(), 0.5 + 0.9 * vector.getZ());
+            float f4 = - blockstate.getValue(GateLockBlock.FACING).toYRot();
             matrices.mulPose(Vector3f.YP.rotationDegrees(f4));
             matrices.translate(0.0, -0.3125, -0.4375);
             matrices.translate(0.0, 0.3333333432674408, 0.046666666865348816);
@@ -69,21 +66,19 @@ public abstract class MixinGateRenderer {
                 matrices.pushPose();
                 int right = minecraft.getWindow().getGuiScaledWidth();
                 reputation = minecraft.getWindow().getGuiScaledHeight();
-                matrices.translate((double) (-right), (double) (-reputation), 0.0);
+                matrices.translate(-right, -reputation, 0.0);
                 VaultModifierOverlayConfig config = ModConfigs.VAULT_MODIFIER_OVERLAY;
-                matrices.translate((double) config.spacingX + (double) ((config.size + config.spacingX) * count) / 2.0, 0.0, 0.0);
+                matrices.translate(config.spacingX + (config.size + config.spacingX) * count / 2.0, 0.0, 0.0);
                 ModifiersRenderer.renderVaultModifiers(entity.getModifiers(), matrices);
                 matrices.popPose();
             }
 
             AtomicInteger index = new AtomicInteger(1);
-            Iterator var19 = entity.getModifiers().iterator();
 
-            while (var19.hasNext()) {
-                VaultModifierStack stack = (VaultModifierStack) var19.next();
-                VaultModifierRegistry.getOpt(stack.getModifierId()).ifPresent((modifier) -> {
+            for (VaultModifierStack stack: entity.getModifiers()) {
+                VaultModifierRegistry.getOpt(stack.getModifierId()).ifPresent(modifier -> {
                     matrices.pushPose();
-                    matrices.translate(0.0, 10.0 * (double) index.get(), 0.0);
+                    matrices.translate(0.0, 10.0 * index.get(), 0.0);
                     String modifierName = modifier.getChatDisplayNameComponent(stack.getSize()).getString();
                     modifierName = modifierName.replaceAll(":.*: *", "");
                     Style style = Style.EMPTY.withColor(modifier.getDisplayTextColor());
@@ -94,7 +89,7 @@ public abstract class MixinGateRenderer {
             }
 
             if (entity.getReputationCost() > 0) {
-                matrices.translate(0.0, 10.0 * (double) index.get(), 0.0);
+                matrices.translate(0.0, 10.0 * index.get(), 0.0);
                 matrices.pushPose();
                 reputation = ClientStatisticsData.getReputation(entity.getGod());
                 ChatFormatting form = reputation >= entity.getReputationCost() ? ChatFormatting.WHITE : ChatFormatting.RED;
@@ -102,15 +97,10 @@ public abstract class MixinGateRenderer {
                 matrices.popPose();
             }
 
-            var19 = entity.getCost().iterator();
-
-            while (var19.hasNext()) {
-                ItemStack stack = (ItemStack) var19.next();
+            for (ItemStack stack : entity.getCost()) {
                 matrices.translate(0.0, 45.0, 0.0);
                 ChatFormatting color = this.check(items, stack.copy(), true) && this.check(items, stack.copy(), false) ? ChatFormatting.WHITE : ChatFormatting.RED;
-                MutableComponent var10002 = stack.getHoverName().copy().withStyle(color);
-                String var10005 = stack.getCount() < 10 ? " " : "";
-                this.renderItemLine(stack, var10002, (new TextComponent(var10005 + stack.getCount())).withStyle(color), true, matrices, pBufferSource, pPackedLight);
+                this.renderItemLine(stack, stack.getHoverName().copy().withStyle(color), (new TextComponent(stack.getCount() < 10 ? " " : "" + stack.getCount())).withStyle(color), true, matrices, pBufferSource, pPackedLight);
             }
 
             matrices.popPose();

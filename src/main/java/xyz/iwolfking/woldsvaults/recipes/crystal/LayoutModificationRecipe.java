@@ -15,7 +15,7 @@ public class LayoutModificationRecipe extends VanillaAnvilRecipe {
     public boolean onSimpleCraft(AnvilContext context) {
         ItemStack primary = context.getInput()[0];
         ItemStack secondary = context.getInput()[1];
-        if (primary.getItem() instanceof VaultCrystalItem crystal && secondary.getItem() == ModItems.LAYOUT_MANIPULATOR) {
+        if (primary.getItem() instanceof VaultCrystalItem && secondary.getItem() == ModItems.LAYOUT_MANIPULATOR) {
             ItemStack output = primary.copy();
             CrystalData data = CrystalData.read(output);
 

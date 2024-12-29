@@ -18,26 +18,26 @@ public class VaultTeamCommand {
         dispatcher.register(Commands.literal("team_admin")
                 .then(Commands.literal("add")
                         .then(Commands.argument("target", StringArgumentType.string())
-                                .then(((Commands.argument("amount", IntegerArgumentType.integer())
-                                        .executes((p_137341_) -> {
-                                            addPoints(p_137341_.getSource(), StringArgumentType.getString(p_137341_, "target"), IntegerArgumentType.getInteger(p_137341_, "amount"));
+                                .then(Commands.argument("amount", IntegerArgumentType.integer())
+                                        .executes(ctx -> {
+                                            addPoints(ctx.getSource(), StringArgumentType.getString(ctx, "target"), IntegerArgumentType.getInteger(ctx, "amount"));
                                             return 0;
-                                        }))))))
+                                        }))))
                 .then(Commands.literal("set").then(Commands.argument("target", StringArgumentType.string())
                         .then((Commands.argument("amount", IntegerArgumentType.integer())
-                                .executes((p_137341_) -> {
-                                    setPoints(p_137341_.getSource(), StringArgumentType.getString(p_137341_, "target"), IntegerArgumentType.getInteger(p_137341_, "amount"));
+                                .executes(ctx -> {
+                                    setPoints(ctx.getSource(), StringArgumentType.getString(ctx, "target"), IntegerArgumentType.getInteger(ctx, "amount"));
                                     return 0;
                                 })))))
                 .then(Commands.literal("remove").then(Commands.argument("target", StringArgumentType.string())
                         .then((Commands.argument("amount", IntegerArgumentType.integer())
-                                .executes((p_137341_) -> {
-                                    removePoints(p_137341_.getSource(), StringArgumentType.getString(p_137341_, "target"), IntegerArgumentType.getInteger(p_137341_, "amount"));
+                                .executes(ctx -> {
+                                    removePoints(ctx.getSource(), StringArgumentType.getString(ctx, "target"), IntegerArgumentType.getInteger(ctx, "amount"));
                                     return 0;
                                 })))))
                 .then(Commands.literal("get").then(Commands.argument("target", StringArgumentType.string())
-                                .executes((p_137341_) -> {
-                                    getPoints(p_137341_.getSource(), StringArgumentType.getString(p_137341_, "target"));
+                                .executes(ctx -> {
+                                    getPoints(ctx.getSource(), StringArgumentType.getString(ctx, "target"));
                                     return 0;
                                 }))));
     }

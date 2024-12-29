@@ -37,7 +37,7 @@ public class ModifierWorkbenchCraftMessage {
      */
     @Overwrite
     public static void handle(iskallia.vault.network.message.ModifierWorkbenchCraftMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = (NetworkEvent.Context) contextSupplier.get();
+        NetworkEvent.Context context = contextSupplier.get();
 
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
@@ -48,7 +48,7 @@ public class ModifierWorkbenchCraftMessage {
                 craftsmanLevel = craftsmanExpertise.getCraftsmanLevel();
             }
             int numberOfAllowedModifiers = craftsmanLevel == 0 ? 1 : craftsmanLevel;
-            BlockPos pos = ((MixinModifierWorkbenchCraftMessageAccessor)(Object)message).getPos();
+            BlockPos pos = ((MixinModifierWorkbenchCraftMessageAccessor)message).getPos();
             BlockEntity tile = player.getLevel().getBlockEntity(pos);
             if (tile instanceof ModifierWorkbenchTileEntity workbenchTile) {
                 ItemStack input = workbenchTile.getInventory().getItem(0);
@@ -59,8 +59,8 @@ public class ModifierWorkbenchCraftMessage {
                             ItemStack inputCopy = input.copy();
                             VaultGearModifier.AffixType targetAffix = null;
                             VaultGearModifier<?> createdModifier = null;
-                            List<ItemStack> cost = new ArrayList();
-                            if (((MixinModifierWorkbenchCraftMessageAccessor)(Object)message).getCraftModifierIdentifier() == null) {
+                            List<ItemStack> cost = new ArrayList<>();
+                            if (((MixinModifierWorkbenchCraftMessageAccessor)message).getCraftModifierIdentifier() == null) {
                                 if (!ModifierWorkbenchHelper.hasCraftedModifier(inputCopy)) {
                                     return;
                                 }
@@ -69,7 +69,7 @@ public class ModifierWorkbenchCraftMessage {
 
 
                             } else {
-                                VaultGearWorkbenchConfig.CraftableModifierConfig modifierConfig = cfg.getConfig(((MixinModifierWorkbenchCraftMessageAccessor)(Object)message).getCraftModifierIdentifier());
+                                VaultGearWorkbenchConfig.CraftableModifierConfig modifierConfig = cfg.getConfig(((MixinModifierWorkbenchCraftMessageAccessor)message).getCraftModifierIdentifier());
                                 if (modifierConfig == null) {
                                     return;
                                 }
@@ -102,7 +102,7 @@ public class ModifierWorkbenchCraftMessage {
                                     return;
                                 }
 
-                                createdModifier = modifierConfig.createModifier().orElse((VaultGearModifier<?>) null);
+                                createdModifier = modifierConfig.createModifier().orElse(null);
                                 if (createdModifier == null) {
                                     return;
                                 }

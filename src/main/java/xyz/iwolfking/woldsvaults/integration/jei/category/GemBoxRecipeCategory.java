@@ -58,20 +58,22 @@ public class GemBoxRecipeCategory implements IRecipeCategory<GemBoxConfig> {
     }
 
     @Nonnull
+    @Override
     public RecipeType<GemBoxConfig> getRecipeType() {
         return this.RECIPE_TYPE;
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public ResourceLocation getUid() {
         return this.getRecipeType().getUid();
     }
 
-    @Nonnull
+    @Nonnull @SuppressWarnings("removal")
     public Class<? extends GemBoxConfig> getRecipeClass() {
         return this.getRecipeType().getRecipeClass();
     }
 
+    @Override
     @ParametersAreNonnullByDefault
     public void setRecipe(IRecipeLayoutBuilder builder, GemBoxConfig recipe, IFocusGroup focuses) {
         List<ItemStack> itemList = new ArrayList<>();
@@ -86,7 +88,7 @@ public class GemBoxRecipeCategory implements IRecipeCategory<GemBoxConfig> {
 
 
         for(int i = 0; i < count; ++i) {
-            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip((ItemStack)itemList.get(i), amounts.get(i)));
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 1 + 18 * (i % 9), 1 + 18 * (i / 9)).addItemStack(addChanceTooltip(itemList.get(i), amounts.get(i)));
         }
 
     }
@@ -102,7 +104,7 @@ public class GemBoxRecipeCategory implements IRecipeCategory<GemBoxConfig> {
         for(WeightedList.Entry<ProductEntry> entry : entries) {
             if(entry.value.getItem().equals(stack.getItem())) {
                 MutableComponent component = new TextComponent("Chance: ");
-                double chance = ((double) entry.weight / totalWeight) * 100;
+                double chance = (entry.weight / totalWeight) * 100;
                 component.append(String.format("%.2f", chance));
                 component.append("%");
                 list.add(StringTag.valueOf(Component.Serializer.toJson(component.withStyle(ChatFormatting.YELLOW))));

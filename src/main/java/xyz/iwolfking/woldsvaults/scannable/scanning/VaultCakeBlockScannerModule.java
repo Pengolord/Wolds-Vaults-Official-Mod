@@ -30,9 +30,7 @@ public enum VaultCakeBlockScannerModule implements BlockScannerModule {
 
     private Predicate<BlockState> filter;
 
-    public static Set<ResourceLocation> vaultBlocks = (Set) Util.make(new HashSet(), (c) -> {
-        c.add(ModBlocks.CAKE.getRegistryName());
-    });
+    public static Set<ResourceLocation> vaultBlocks = Util.make(new HashSet<>(), c -> c.add(ModBlocks.CAKE.getRegistryName()));
 
     @Override
     public int getEnergyCost(final ItemStack module) {

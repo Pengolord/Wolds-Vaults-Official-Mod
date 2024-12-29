@@ -3,7 +3,6 @@ package xyz.iwolfking.woldsvaults.items.rings;
 import dev.denismasterherobrine.angelring.utils.ExternalMods;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -43,29 +42,31 @@ public class ChromaticSteelAngelRing extends AngelRingItem {
         }
     }
 
+    @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag unused) {
         return ExternalMods.CURIOS.isLoaded() ? ChromaticSteelAngelRingInteraction.initCapabilities(stack) : super.initCapabilities(stack, unused);
     }
 
+    @Override
     public boolean isBarVisible(ItemStack stack) {
-        IEnergyStorage energy = (IEnergyStorage)stack.getCapability(CapabilityEnergy.ENERGY, (Direction)null).orElse((IEnergyStorage) null);
+        IEnergyStorage energy = stack.getCapability(CapabilityEnergy.ENERGY, null).orElse(null);
         return energy.getEnergyStored() < energy.getMaxEnergyStored();
     }
 
+    @Override
     public int getBarWidth(ItemStack stack) {
-        return (Integer)stack.getCapability(CapabilityEnergy.ENERGY, (Direction)null).map((e) -> {
-            return Math.min(13 * e.getEnergyStored() / e.getMaxEnergyStored(), 13);
-        }).orElse(0);
+        return stack.getCapability(CapabilityEnergy.ENERGY, null).map(e -> Math.min(13 * e.getEnergyStored() / e.getMaxEnergyStored(), 13)).orElse(0);
     }
 
+    @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag tooltipFlag) {
-        IEnergyStorage energy = (IEnergyStorage)stack.getCapability(CapabilityEnergy.ENERGY, (Direction)null).orElse((IEnergyStorage) null);
+        IEnergyStorage energy = stack.getCapability(CapabilityEnergy.ENERGY, null).orElse(null);
         if (!Screen.hasShiftDown()) {
             tooltip.add((new TranslatableComponent("item.angelring.energetic_angel_ring.tooltip")).withStyle(ChatFormatting.GRAY));
         } else {
             tooltip.add((new TranslatableComponent("item.angelring.energetic_angel_ring.desc0")).withStyle(ChatFormatting.GOLD));
-            tooltip.add((new TranslatableComponent("item.angelring.energetic_angel_ring.desc1", new Object[]{energy.getEnergyStored(), energy.getMaxEnergyStored()})).withStyle(ChatFormatting.GRAY));
+            tooltip.add((new TranslatableComponent("item.angelring.energetic_angel_ring.desc1", energy.getEnergyStored(), energy.getMaxEnergyStored())).withStyle(ChatFormatting.GRAY));
         }
 
     }

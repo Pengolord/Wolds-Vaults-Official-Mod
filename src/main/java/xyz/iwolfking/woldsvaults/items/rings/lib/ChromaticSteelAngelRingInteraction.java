@@ -31,7 +31,7 @@ public class ChromaticSteelAngelRingInteraction {
             private final int fePerTick;
 
             {
-                this.fePerTick = (Integer)Configuration.EnergeticFEPerTick.get();
+                this.fePerTick = Configuration.EnergeticFEPerTick.get();
             }
 
             public ItemStack getStack() {
@@ -39,7 +39,7 @@ public class ChromaticSteelAngelRingInteraction {
             }
 
             private @NotNull IEnergyStorage getEnergyStorage(ItemStack stackx) {
-                return (IEnergyStorage)this.getStack().getCapability(CapabilityEnergy.ENERGY).resolve().get();
+                return this.getStack().getCapability(CapabilityEnergy.ENERGY).resolve().get();
             }
 
             protected boolean checkIfAllowedToFly(Player player, ItemStack stackx) {
@@ -55,14 +55,10 @@ public class ChromaticSteelAngelRingInteraction {
             }
 
         };
-        final EnergyItem energyItem = new EnergyItem(stack, (Integer)Configuration.EnergeticFECapacity.get());
+        final EnergyItem energyItem = new EnergyItem(stack, Configuration.EnergeticFECapacity.get());
         return new ICapabilityProvider() {
-            private final LazyOptional<ICurio> curioOpt = LazyOptional.of(() -> {
-                return curio;
-            });
-            private final LazyOptional<IEnergyStorage> energyStorageOpt = LazyOptional.of(() -> {
-                return energyItem;
-            });
+            private final LazyOptional<ICurio> curioOpt = LazyOptional.of(() -> curio);
+            private final LazyOptional<IEnergyStorage> energyStorageOpt = LazyOptional.of(() -> energyItem);
 
             @Nonnull
             public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {

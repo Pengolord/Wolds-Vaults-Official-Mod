@@ -25,7 +25,10 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -39,7 +42,7 @@ public class DecoObeliskBlock extends Block implements EntityBlock {
 
     public DecoObeliskBlock() {
         super(Properties.of(Material.STONE).sound(SoundType.METAL).strength(2.0F, 3600000.0F));
-        this.registerDefaultState((BlockState)((BlockState)((BlockState)this.stateDefinition.any()).setValue(HALF, DoubleBlockHalf.LOWER)).setValue(FILLED, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(FILLED, false));
     }
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -60,8 +63,8 @@ public class DecoObeliskBlock extends Block implements EntityBlock {
             return InteractionResult.FAIL;
         }
         else if(state.getValue(FILLED)) {
-            world.setBlock(pos, (BlockState)world.getBlockState(pos).setValue(DecoObeliskBlock.FILLED, false), 3);
-            world.setBlock(pos.above(), (BlockState)world.getBlockState(pos.above()).setValue(DecoObeliskBlock.FILLED, false), 3);
+            world.setBlock(pos, world.getBlockState(pos).setValue(DecoObeliskBlock.FILLED, false), 3);
+            world.setBlock(pos.above(), world.getBlockState(pos.above()).setValue(DecoObeliskBlock.FILLED, false), 3);
             return InteractionResult.CONSUME;
         }
         else {
@@ -71,13 +74,13 @@ public class DecoObeliskBlock extends Block implements EntityBlock {
             }
             lightningbolt.setDamage(0);
             lightningbolt.moveTo(Vec3.atBottomCenterOf(pos));
-            lightningbolt.setCause(player instanceof ServerPlayer ? (ServerPlayer)player : null);
+            lightningbolt.setCause(player instanceof ServerPlayer sPlayer ? sPlayer : null);
             world.addFreshEntity(lightningbolt);
             SoundEvent soundevent = SoundEvents.TRIDENT_THUNDER;
             float f1 = 5.0F;
             player.playSound(soundevent, f1, 0.5F);
-            world.setBlock(pos, (BlockState)world.getBlockState(pos).setValue(DecoObeliskBlock.FILLED, true), 3);
-            world.setBlock(pos.above(), (BlockState)world.getBlockState(pos.above()).setValue(DecoObeliskBlock.FILLED, true), 3);
+            world.setBlock(pos, world.getBlockState(pos).setValue(DecoObeliskBlock.FILLED, true), 3);
+            world.setBlock(pos.above(), world.getBlockState(pos.above()).setValue(DecoObeliskBlock.FILLED, true), 3);
             return InteractionResult.CONSUME;
         }
     }
@@ -88,14 +91,17 @@ public class DecoObeliskBlock extends Block implements EntityBlock {
     private static final VoxelShape SHAPE_TOP;
 
 
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(new Property[]{HALF}).add(new Property[]{FILLED});
+        builder.add(HALF).add(FILLED);
     }
 
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return state.getValue(HALF) == DoubleBlockHalf.UPPER ? SHAPE_TOP : SHAPE;
     }
 
+    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
@@ -106,12 +112,13 @@ public class DecoObeliskBlock extends Block implements EntityBlock {
             double d0 = world.random.nextGaussian() * 0.02;
             double d1 = world.random.nextGaussian() * 0.02;
             double d2 = world.random.nextGaussian() * 0.02;
-            ((ServerLevel)world).sendParticles(ParticleTypes.POOF, (double)pos.getX() + world.random.nextDouble() - d0, (double)pos.getY() + world.random.nextDouble() - d1, (double)pos.getZ() + world.random.nextDouble() - d2, 10, d0, d1, d2, 1.0);
+            ((ServerLevel)world).sendParticles(ParticleTypes.POOF, pos.getX() + world.random.nextDouble() - d0, pos.getY() + world.random.nextDouble() - d1, pos.getZ() + world.random.nextDouble() - d2, 10, d0, d1, d2, 1.0);
         }
 
-        world.playSound((Player)null, pos, SoundEvents.CONDUIT_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+        world.playSound(null, pos, SoundEvents.CONDUIT_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
 
+    @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         super.onRemove(state, world, pos, newState, isMoving);
         if (!state.is(newState.getBlock())) {

@@ -12,18 +12,21 @@ public class UnusualPrefixAttribute extends AffixAttribute {
         return VaultGearModifier.AffixType.PREFIX;
     }
 
+    @Override
     public boolean shouldList(VaultGearModifier<?> modifier) {
         return modifier.hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL"));
     }
 
+    @Override
     public boolean checkModifier(VaultGearModifier<?> modifier) {
-        return modifier.hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL")) && ((String)this.value).equals(getName(modifier));
+        return modifier.hasCategory(VaultGearModifier.AffixCategory.valueOf("UNUSUAL")) && this.value.equals(getName(modifier));
     }
 
     public String getTranslationKey() {
         return "unusual_prefix";
     }
 
+    @Override
     public String getLegacyKey() {
         return "unusualPrefix";
     }

@@ -74,20 +74,18 @@ public class ModEntities {
 
     private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder, RegistryEvent.Register<EntityType<?>> event) {
         EntityType<T> entityType = builder.build(VaultMod.sId(name));
-        event.getRegistry().register((EntityType)entityType.setRegistryName(VaultMod.id(name)));
+        event.getRegistry().register(entityType.setRegistryName(VaultMod.id(name)));
         return entityType;
     }
 
     private static <T extends Entity> EntityType<T> registerWV(String name, EntityType.Builder<T> builder, RegistryEvent.Register<EntityType<?>> event) {
         EntityType<T> entityType = builder.build(WoldsVaults.sId(name));
-        event.getRegistry().register((EntityType)entityType.setRegistryName(WoldsVaults.id(name)));
+        event.getRegistry().register(entityType.setRegistryName(WoldsVaults.id(name)));
         return entityType;
     }
 
     public static void registerAttributes(EntityAttributeCreationEvent event) {
-        ATTRIBUTE_BUILDERS.forEach((e, b) -> {
-            event.put(e, ((AttributeSupplier.Builder)b.get()).build());
-        });
+        ATTRIBUTE_BUILDERS.forEach((e, b) -> event.put(e, b.get().build()));
         ATTRIBUTE_BUILDERS.clear();
     }
 }

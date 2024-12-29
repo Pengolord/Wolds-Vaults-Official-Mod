@@ -2,7 +2,11 @@ package xyz.iwolfking.woldsvaults.config.fake;
 
 import iskallia.vault.gear.VaultGearRarity;
 import net.minecraft.resources.ResourceLocation;
-import xyz.iwolfking.woldsvaults.models.*;
+import xyz.iwolfking.woldsvaults.models.Battlestaffs;
+import xyz.iwolfking.woldsvaults.models.LootSacks;
+import xyz.iwolfking.woldsvaults.models.Plushies;
+import xyz.iwolfking.woldsvaults.models.Rangs;
+import xyz.iwolfking.woldsvaults.models.Tridents;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,17 +22,17 @@ public class CustomVaultGearModelRollRaritiesConfig {
     public static final Map<VaultGearRarity, List<String>> RANG_MODEL_ROLLS = new HashMap<>();
 
     static {
-        BATTLESTAFF_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, (List<String>) Battlestaffs.REGISTRY
+        BATTLESTAFF_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, Battlestaffs.REGISTRY
                 .getIds().stream()
                 .map(ResourceLocation::toString)
                 .collect(Collectors.toList()));
-        TRIDENT_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, (List<String>) Tridents.REGISTRY.getIds().stream()
+        TRIDENT_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, Tridents.REGISTRY.getIds().stream()
                 .map(ResourceLocation::toString).collect(Collectors.toList()));
-        PLUSHIE_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, (List<String>) Plushies.REGISTRY.getIds().stream()
+        PLUSHIE_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, Plushies.REGISTRY.getIds().stream()
                 .map(ResourceLocation::toString).collect(Collectors.toList()));
-        LOOT_SACKS_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, (List<String>) LootSacks.REGISTRY.getIds().stream()
+        LOOT_SACKS_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, LootSacks.REGISTRY.getIds().stream()
                 .map(ResourceLocation::toString).collect(Collectors.toList()));
-        RANG_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, (List<String>) Rangs.REGISTRY.getIds().stream()
+        RANG_MODEL_ROLLS.put(VaultGearRarity.SCRAPPY, Rangs.REGISTRY.getIds().stream()
                 .map(ResourceLocation::toString).collect(Collectors.toList()));
     }
 

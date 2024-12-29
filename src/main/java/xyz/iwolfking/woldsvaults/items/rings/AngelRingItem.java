@@ -15,9 +15,7 @@ public class AngelRingItem extends Item {
         super((new Properties()).stacksTo(1).tab(AngelRingTab.ANGELRING2));
     }
 
-    private static final Predicate<ItemStack> ringItems = itemStack -> {
-        return itemStack.getItem() instanceof AngelRingItem;
-    };
+    private static final Predicate<ItemStack> ringItems = itemStack -> itemStack.getItem() instanceof AngelRingItem;
     public static boolean isRingInCurioSlot(Player player) {
 
         List<SlotResult> slots =  CuriosApi.getCuriosHelper().findCurios(player, ringItems);

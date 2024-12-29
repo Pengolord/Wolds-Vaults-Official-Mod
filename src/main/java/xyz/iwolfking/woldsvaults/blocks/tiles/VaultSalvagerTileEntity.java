@@ -11,10 +11,8 @@ import iskallia.vault.item.gear.RecyclableItem;
 import iskallia.vault.network.message.RecyclerParticleMessage;
 import iskallia.vault.util.MiscUtils;
 import iskallia.vault.util.nbt.NBTHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -26,14 +24,10 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -61,7 +55,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
 
     public VaultSalvagerTileEntity(BlockPos pWorldPosition, BlockState pBlockState) {
         super(ModBlocks.VAULT_SALVAGER_ENTITY, pWorldPosition, pBlockState);
-        this.handlers = SidedInvWrapper.create(this.inventory, new Direction[]{Direction.UP, Direction.DOWN});
+        this.handlers = SidedInvWrapper.create(this.inventory, Direction.UP, Direction.DOWN);
     }
 
     public boolean stillValid(Player player) {
@@ -79,8 +73,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
                 }
 
                 tile.setChanged();
-                if (world instanceof ServerLevel) {
-                    ServerLevel serverWorld = (ServerLevel)world;
+                if (world instanceof ServerLevel serverWorld) {
                     serverWorld.sendBlockUpdated(pos, state, state, 3);
                 }
 
@@ -92,7 +85,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
         VaultRecyclerConfig.RecyclerOutput output = this.getRecipeOutput();
         if (output != null) {
             if (this.level != null) {
-                this.level.playSound((Player)null, this.getBlockPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 0.5F + (new Random()).nextFloat() * 0.25F, 0.75F + (new Random()).nextFloat() * 0.25F);
+                this.level.playSound(null, this.getBlockPos(), SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 0.5F + new Random().nextFloat() * 0.25F, 0.75F + new Random().nextFloat() * 0.25F);
             }
 
             ItemStack input = this.inventory.getItem(0).copy();
@@ -135,7 +128,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
 
     private ItemStack getUseRelatedOutput(ItemStack input, ItemStack output) {
         float chance = this.getResultPercentage(input);
-        float out = (float)output.getCount() * chance;
+        float out = output.getCount() * chance;
         int resultCount = Mth.floor(out);
         if (resultCount < 1 && out > 0.0F && rand.nextFloat() < out) {
             ++resultCount;
@@ -171,9 +164,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
         if (!this.isValidInput(input)) {
             return null;
         } else {
-            Item var3 = input.getItem();
-            if (var3 instanceof RecyclableItem) {
-                RecyclableItem recyclableItem = (RecyclableItem)var3;
+            if (input.getItem() instanceof RecyclableItem recyclableItem) {
                 return recyclableItem.getOutput(input);
             }
             else return CustomRecyclerOutputs.CUSTOM_OUTPUTS.getOrDefault(input.getItem().getRegistryName(), null);
@@ -183,14 +174,12 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
     private void triggerItemChange() {
         ItemStack input = this.inventory.getItem(0);
         if (!this.isValidInput(input)) {
-            this.resetProcess((Level)null);
+            this.resetProcess(null);
         } else {
-            Item var3 = input.getItem();
-            if (var3 instanceof RecyclableItem) {
-                RecyclableItem recyclableItem = (RecyclableItem)var3;
-                recyclableItem.getUuid(input).ifPresent((itemId) -> {
+            if (input.getItem() instanceof RecyclableItem recyclableItem) {
+                recyclableItem.getUuid(input).ifPresent(itemId -> {
                     if ((this.gearIdProcessing == null || !this.gearIdProcessing.equals(itemId)) && this.canCraft()) {
-                        this.startProcess((Level)null, itemId);
+                        this.startProcess(null, itemId);
                     }
 
                 });
@@ -198,23 +187,21 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
             else {
                 UUID uuid = UUID.randomUUID();
                 if ((this.gearIdProcessing == null || !this.gearIdProcessing.equals(uuid)) && this.canCraft()) {
-                    this.startProcess((Level)null, uuid);
+                    this.startProcess(null, uuid);
                 }
             }
         }
     }
 
     public boolean isValidInput(ItemStack input) {
-        Item var3 = input.getItem();
-        if (var3 instanceof RecyclableItem recyclableItem) {
+        if (input.getItem() instanceof RecyclableItem recyclableItem) {
             return recyclableItem.isValidInput(input);
         }
         else return CustomRecyclerOutputs.CUSTOM_OUTPUTS.containsKey(input.getItem().getRegistryName());
     }
 
     public float getResultPercentage(ItemStack input) {
-        Item var3 = input.getItem();
-        if (var3 instanceof RecyclableItem recyclableItem) {
+        if (input.getItem() instanceof RecyclableItem recyclableItem) {
             return recyclableItem.getResultPercentage(input);
         } else {
             if(CustomRecyclerOutputs.CUSTOM_OUTPUTS.containsKey(input.getItem().getRegistryName())) {
@@ -228,7 +215,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
     }
 
     private void resetProcess(@Nullable Level world) {
-        this.startProcess(world, (UUID)null);
+        this.startProcess(world, null);
     }
 
     private void startProcess(@Nullable Level world, UUID id) {
@@ -250,6 +237,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
         return this.inventory;
     }
 
+    @Override
     public void load(CompoundTag tag) {
         super.load(tag);
         NBTHelper.deserializeSimpleContainer( this.inventory, tag.getList("inventory", 10));
@@ -260,6 +248,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
 
     }
 
+    @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("inventory", NBTHelper.serializeSimpleContainer(this.inventory));
@@ -279,15 +268,18 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
         return this.getLevel() == null ? null : new VaultSalvagerContainer(containerId, this.getLevel(), this.getBlockPos(), inv);
     }
 
+    @Override
     public CompoundTag getUpdateTag() {
         return this.saveWithoutMetadata();
     }
 
+    @Override
     @Nullable
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
         if (!this.remove && facing != null && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             if (facing == Direction.UP) {
@@ -302,49 +294,18 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
         return super.getCapability(capability, facing);
     }
 
+    @Override
     public void invalidateCaps() {
         super.invalidateCaps();
         Arrays.stream(this.handlers).forEach(LazyOptional::invalidate);
     }
 
+    @Override
     public void reviveCaps() {
         super.reviveCaps();
-        this.handlers = SidedInvWrapper.create(this.inventory, new Direction[]{Direction.UP, Direction.DOWN});
+        this.handlers = SidedInvWrapper.create(this.inventory, Direction.UP, Direction.DOWN);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public static void spawnRecycleParticles(BlockPos pos) {
-        Level level = Minecraft.getInstance().level;
-        if (level != null) {
-            int i;
-            Random random;
-            Vec3 offset;
-            for(i = 0; i < 4; ++i) {
-                random = level.getRandom();
-                offset = new Vec3(random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 0.0, random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1));
-                level.addParticle(ParticleTypes.LAVA, true, (double)pos.getX() + 0.5 + offset.x, (double)pos.getY() + random.nextDouble() * 0.15000000596046448 + 0.25, (double)pos.getZ() + 0.5 + offset.z, offset.x / 2.0, random.nextDouble() * 0.1, offset.z / 2.0);
-            }
-
-            for(i = 0; i < 3; ++i) {
-                random = level.getRandom();
-                offset = new Vec3(random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 0.0, random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1));
-                level.addParticle(ParticleTypes.LAVA, true, (double)pos.getX() + 0.5 + offset.x, (double)pos.above().getY() + random.nextDouble() * 0.15000000596046448, (double)pos.getZ() + 0.5 + offset.z, offset.x / 20.0, random.nextDouble() * 0.2, offset.z / 20.0);
-            }
-
-            for(i = 0; i < 3; ++i) {
-                random = level.getRandom();
-                offset = new Vec3(random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 0.0, random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1));
-                level.addParticle(ParticleTypes.SMOKE, true, (double)pos.getX() + 0.5 + offset.x, (double)pos.above().getY() + random.nextDouble() * 0.15000000596046448, (double)pos.getZ() + 0.5 + offset.z, offset.x / 20.0, random.nextDouble() * 0.2, offset.z / 20.0);
-            }
-
-            for(i = 0; i < 3; ++i) {
-                random = level.getRandom();
-                offset = new Vec3(random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 0.0, random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1));
-                level.addParticle(ParticleTypes.LARGE_SMOKE, true, (double)pos.getX() + 0.5 + offset.x, (double)pos.above().getY() + random.nextDouble() * 0.15000000596046448, (double)pos.getZ() + 0.5 + offset.z, offset.x / 10.0, random.nextDouble() * 0.05, offset.z / 10.0);
-            }
-
-        }
-    }
 
     public class SalvagerInventory extends SimpleOversizedSidedContainer {
 
@@ -353,17 +314,16 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
         }
 
         public List<Direction> getAccessibleSlots(int slot) {
-            return slot == 0 ? Lists.newArrayList(new Direction[]{Direction.UP}) : Lists.newArrayList(new Direction[]{Direction.DOWN});
+            return slot == 0 ? Lists.newArrayList(Direction.UP) : Lists.newArrayList(Direction.DOWN);
         }
 
+        @Override
         public boolean canPlaceItem(int slot, ItemStack stack) {
             if (stack.isEmpty()) {
                 return false;
             } else {
                 if (slot == 0) {
-                    Item var4 = stack.getItem();
-                    if (var4 instanceof RecyclableItem) {
-                        RecyclableItem recyclableItem = (RecyclableItem)var4;
+                    if (stack.getItem() instanceof RecyclableItem recyclableItem) {
                         return recyclableItem.isValidInput(stack);
                     }
                     else {
@@ -375,6 +335,7 @@ public class VaultSalvagerTileEntity extends BlockEntity implements MenuProvider
             }
         }
 
+        @Override
         public void setChanged() {
             super.setChanged();
             VaultSalvagerTileEntity.this.setChanged();
