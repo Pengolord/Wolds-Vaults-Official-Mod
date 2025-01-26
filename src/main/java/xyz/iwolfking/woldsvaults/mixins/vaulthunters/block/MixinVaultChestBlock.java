@@ -9,6 +9,7 @@ import iskallia.vault.block.VaultChestBlock;
 import iskallia.vault.gear.attribute.type.VaultGearAttributeTypeMerger;
 import iskallia.vault.gear.data.AttributeGearData;
 import iskallia.vault.gear.data.VaultGearData;
+import iskallia.vault.item.tool.ToolItem;
 import iskallia.vault.gear.item.VaultGearItem;
 import iskallia.vault.snapshot.AttributeSnapshotHelper;
 import net.minecraft.core.BlockPos;
@@ -71,10 +72,16 @@ public class MixinVaultChestBlock extends ChestBlock {
                         if(!hasBreach) {
                             if (dismantle_chance >= 1.0F) {
                                 dismantle_chance -= 1.0F;
+                                if (stack != null && stack.getItem() instanceof ToolItem tool) {
+                                    tool.hurt(stack, world, player, 0.25);
+                                }
                                 this.spawnDestroyParticles(world, player, pos, state);
                             } else if (dismantle_chance > 0.0F) {
                                 if (dismantle_chance < Math.random()) {
                                     break;
+                                }
+                                if (stack != null && stack.getItem() instanceof ToolItem tool) {
+                                    tool.hurt(stack, world, player, 0.25);
                                 }
                                 this.spawnDestroyParticles(world, player, pos, state);
                                 dismantle_chance = 0.0F;
@@ -86,6 +93,9 @@ public class MixinVaultChestBlock extends ChestBlock {
                 }
                 if(hasBreach || chest.isEmpty()) {
                     world.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                    if (stack != null && stack.getItem() instanceof ToolItem tool) {
+                        tool.hurt(stack, world, player, 3.0);
+                    }
                 }
             }
         }
